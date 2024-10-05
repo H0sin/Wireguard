@@ -1,4 +1,6 @@
-﻿namespace Wireguard.Api.Data.Dtos;
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace Wireguard.Api.Data.Dtos;
 
 public class AddInterfaceDto
 {
@@ -14,4 +16,6 @@ public class AddInterfaceDto
     public string? PrivateKey { get; set; }
     public string? IpAddress { get; set; }
     public string? PublicKey { get; set; }
+
+    [SwaggerSchema(ReadOnly = true)] public string Status { get; set; } = "disabled";
 }

@@ -36,3 +36,4 @@ D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Dapper.dl
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Npgsql.dll
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Newtonsoft.Json.dll
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\obj\Debug\net8.0\Wireguard.Api.sourcelink.json
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll
