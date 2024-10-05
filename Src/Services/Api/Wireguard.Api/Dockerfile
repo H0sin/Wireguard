@@ -7,6 +7,12 @@ WORKDIR /app
 EXPOSE 8000
 ENV ASPNETCORE_URLS=http://+:8000
 
+
+RUN apt-get update && \
+    apt-get install -y iproute2 wireguard wireguard-tools && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
