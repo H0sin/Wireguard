@@ -2,6 +2,7 @@
 
 public class AddInterfaceDto
 {
+    public string Name { get; set; }
     public string? Address { get; set; }
     public string? EndPoint { get; set; }
     public bool SaveConfig { get; set; }

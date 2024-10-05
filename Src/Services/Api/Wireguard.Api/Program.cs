@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IInterfaceRepository, InterfaceRepository>();
+builder.Services.AddScoped<IIpAddressRepository, IpAddressRepository>();
 
 builder.Services.AddSingleton<ExceptionHandlerFilter>();
 
@@ -34,6 +35,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
 }
+
 app.UseCors("master");
 
 app.UseSwagger();

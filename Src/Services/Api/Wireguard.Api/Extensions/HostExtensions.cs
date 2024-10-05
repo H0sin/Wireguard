@@ -34,6 +34,7 @@ namespace Wireguard.Api.Extensions
                     command.CommandText = """
                                           CREATE TABLE Interface(
                                               Id BIGSERIAL PRIMARY KEY,
+                                              Name VARCHAR(60) NOT NULL,
                                               Address VARCHAR(100) NOT NULL,
                                               EndPoint VARCHAR(200) NOT NULL,
                                               SaveConfig BOOLEAN NOT NULL,
@@ -50,6 +51,22 @@ namespace Wireguard.Api.Extensions
                                           );
                                           """;
 
+                    command.ExecuteNonQuery();
+                    
+                    command.CommandText = "DROP TABLE IF EXISTS IpAddress";
+                    command.ExecuteNonQueryAsync();
+                    
+                    command.CommandText = """
+                                          CREATE TABLE IpAddress(
+                                              Id BIGSERIAL PRIMARY KEY,
+                                              InterfaceId BIGINT,
+                                              Ip VARCHAR(50) NOT NULL,
+                                              Available BOOLEAN DEFAULT FALSE,
+                                              CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                              UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                              FOREIGN KEY (InterfaceId) REFERENCES Interface(Id)
+                                          )
+                                          """;
                     command.ExecuteNonQuery();
 
                     // seed data

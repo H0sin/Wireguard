@@ -4,6 +4,7 @@ namespace Wireguard.Api.Data.Entities;
 
 public class Interface : EntityBase
 {
+    public string? Name { get; set; }
     public string? Address { get; set; }
     public string? EndPoint { get; set; }
     public bool SaveConfig { get; set; }

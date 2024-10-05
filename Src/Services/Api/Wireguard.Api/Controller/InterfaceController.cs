@@ -10,7 +10,8 @@ namespace Wireguard.Api.Controller;
 [Route("[controller]")]
 [ApiResultFilter]
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
-public class InterfaceController(IInterfaceRepository interfaceRepository) : ControllerBase
+public class InterfaceController(IInterfaceRepository interfaceRepository, IpAddressRepository ipAddressRepository)
+    : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(ApiResult<List<Interface>>), StatusCodes.Status200OK)]
@@ -22,10 +23,16 @@ public class InterfaceController(IInterfaceRepository interfaceRepository) : Con
 
     [HttpPost]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesDefaultResponseType]
     public async Task<ApiResult> Post([FromBody] AddInterfaceDto @interface)
     {
-        await interfaceRepository.InsertAsync(@interface); 
+        await ipAddressRepository.ExistIpAddressAsync(@interface.IpAddress);
+        bool checkout = await ipAddressRepository.AddIpAddressAsync(@interface.IpAddress);
+
+        if (checkout) await interfaceRepository.InsertAsync(@interface);
+        else return BadRequest("ip address already exist");
+
         return Ok();
     }
 }

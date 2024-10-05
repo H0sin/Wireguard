@@ -17,13 +17,29 @@ public class InterfaceRepository(IConfiguration configuration) : IInterfaceRepos
         return interfaces.ToList();
     }
 
+    public async Task<Interface?> GetInterfaceByNameAsync(string name)
+    {
+        await using var connection = new NpgsqlConnection
+            (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        var @interface =
+            await connection.QueryFirstOrDefaultAsync<Interface>("SELECT * FROM Interface WHERE Name = @name",
+                new { name });
+
+        return @interface;
+    }
+
     public async Task<bool> InsertAsync(AddInterfaceDto entity)
     {
+        if (await GetInterfaceByNameAsync(entity.Name) is not null)
+            throw new ApplicationException($"interface by name {entity.Name} already exists");
+
         await using var connection = new NpgsqlConnection
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         string command = """
                          INSERT INTO Interface (
+                         Name,
                          Address,
                          EndPoint,
                          SaveConfig,
@@ -35,7 +51,7 @@ public class InterfaceRepository(IConfiguration configuration) : IInterfaceRepos
                          PrivateKey,
                          IpAddress,
                          PublicKey)
-                         VALUES (@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey
+                         VALUES (@Address,@Name,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey
                          )
                          """;
 

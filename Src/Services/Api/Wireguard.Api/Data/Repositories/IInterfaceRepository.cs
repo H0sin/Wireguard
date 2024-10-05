@@ -7,7 +7,7 @@ namespace Wireguard.Api.Data.Repositories;
 
 public interface IInterfaceRepository
 {
+    Task<Interface?> GetInterfaceByNameAsync(string name);
     Task<ICollection<Interface>> GetAllAsync();
-    
     Task<bool> InsertAsync(AddInterfaceDto entity);
 }
