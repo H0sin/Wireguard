@@ -145,11 +145,11 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             File.Delete(configuration.GetValue<string>("Interface_Directory") + $"{@interface.Name}.conf");
 
             // delete peer
-            string command = "DELETE FROM PEER WHERE InerfaceId = @InterfaceId";
+            string command = "DELETE FROM PEER WHERE InterfaceId = @InterfaceId";
             await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
 
             // delete ip address
-            string command2 = "DELETE FROM IpAddress WHERE InerfaceId = @InterfaceId";
+            string command2 = "DELETE FROM IpAddress WHERE InterfaceId = @InterfaceId";
             await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
 
             //delete interface
