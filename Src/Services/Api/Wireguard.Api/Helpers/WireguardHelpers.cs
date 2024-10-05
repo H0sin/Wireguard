@@ -104,4 +104,41 @@ public static class WireguardHelpers
             return (e.Message, false);
         }
     }
+
+    public static async Task<bool> DeleteInterfaceFile(string name)
+    {
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "rm",
+            Arguments = $"-r {name}.conf",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            UserName = "root"
+        };
+
+        try
+        {
+            using Process process = Process.Start(psi);
+            string output = await process.StandardOutput.ReadToEndAsync();
+            await process.WaitForExitAsync();
+            
+            if (!string.IsNullOrEmpty(output))
+            {
+                Console.WriteLine("Output: " + output);
+            }
+            else
+            {
+                Console.WriteLine("No output received from wg show command.");
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("An error occurred: " + e.Message);
+
+            return false;
+        }
+    }
 }
