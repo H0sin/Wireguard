@@ -1,0 +1,17 @@
+services:
+  wireguarddb:
+    image: postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+
+  wireguard.api:
+    image: wireguard.api
+    build:
+      context: Src
+      dockerfile: Services/Api/Wireguard.Api/Dockerfile
+
+
+volumes:
+  postgres_data:
+  pgadmin_data:

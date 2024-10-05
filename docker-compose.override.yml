@@ -1,0 +1,35 @@
+services:
+  wireguarddb:
+    container_name: wireguarddb
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=WireguardDb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  
+  pgadmin:
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@aspnetrun.com
+      - PGADMIN_DEFAULT_PASSWORD=admin1234
+    restart: always
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/root/.pgadmin
+    depends_on:
+      - wireguarddb
+  
+  wireguard.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8000
+      - "DatabaseSettings:ConnectionString=Server=wireguarddb;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - wireguarddb

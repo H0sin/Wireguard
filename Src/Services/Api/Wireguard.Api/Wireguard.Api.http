@@ -1,0 +1,6 @@
+@Wireguard.Api_HostAddress = http://localhost:5072
+
+GET {{Wireguard.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
