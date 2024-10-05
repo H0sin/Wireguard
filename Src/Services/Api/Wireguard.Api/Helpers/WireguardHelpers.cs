@@ -16,7 +16,6 @@ public static class WireguardHelpers
                           PublicKey = {peer.PublicKey}
                           PresharedKey = {peer.PresharedKey}
                           AllowedIPs = {string.Join(", ", peer.AllowedIPs)}
-                          Endpoint = {@interface.EndPoint}
                           """;
         try
         {
