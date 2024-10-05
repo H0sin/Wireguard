@@ -11,7 +11,7 @@ namespace Wireguard.Api.Controller;
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
 public class PeerController(IPeerRepository peerRepository) : ControllerBase
 {
-    [HttpPost("{interfacename:string}")]
+    [HttpPost("{interfacename:length(50)}")]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesDefaultResponseType]
