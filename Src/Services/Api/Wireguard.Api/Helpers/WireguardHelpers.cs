@@ -105,12 +105,12 @@ public static class WireguardHelpers
         }
     }
 
-    public static async Task<bool> DeleteInterfaceFile(string name)
+    public static async Task<bool> DeleteInterfaceFile(string path)
     {
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "rm",
-            Arguments = $"-r {name}.conf",
+            Arguments = $"-r {path}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true,

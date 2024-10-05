@@ -141,8 +141,10 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             bool change = await ChangeStatusInterfaceAsync(@interface.Name, InterfaceStatus.disabled);
 
             if (!change) throw new ApplicationException("failed to remove interface");
-
-            if (!await WireguardHelpers.DeleteInterfaceFile(name))
+            
+            string path = configuration.GetValue<string>("Interface_Directory");
+            
+            if (!await WireguardHelpers.DeleteInterfaceFile(path + $"/{name}.conf"))
                 throw new ApplicationException("failed to delete interface file");
 
             // delete peer
