@@ -27,6 +27,7 @@ services:
     network_mode: host
     
   wireguard.api:
+    user: root
     environment:
       #      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8000
@@ -36,6 +37,9 @@ services:
     depends_on:
       - wireguarddb
     network_mode: host
+    privileged: true
     cap_add:
       - NET_ADMIN
+      - NET_RAW
+
 
