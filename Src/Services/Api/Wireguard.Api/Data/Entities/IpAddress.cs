@@ -5,7 +5,7 @@ namespace Wireguard.Api.Data.Entities;
 
 public class IpAddress : EntityBase
 {
-    public long? InterfaceId { get; set; }
+    public int InterfaceId { get; set; }
     public string? Ip { get; set; }
     public bool Available { get; set; } = false;
 } 

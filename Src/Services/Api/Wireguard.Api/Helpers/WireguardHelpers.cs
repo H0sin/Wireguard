@@ -86,7 +86,7 @@ public static class WireguardHelpers
             using Process process = Process.Start(psi);
             string output = await process.StandardOutput.ReadToEndAsync();
             await process.WaitForExitAsync();
-            
+
             if (!string.IsNullOrEmpty(output))
             {
                 Console.WriteLine("Output: " + output);
@@ -116,29 +116,20 @@ public static class WireguardHelpers
             CreateNoWindow = true,
             UserName = "root"
         };
+        
+        using Process process = Process.Start(psi);
+        string output = await process.StandardOutput.ReadToEndAsync();
+        await process.WaitForExitAsync();
 
-        try
+        if (!string.IsNullOrEmpty(output))
         {
-            using Process process = Process.Start(psi);
-            string output = await process.StandardOutput.ReadToEndAsync();
-            await process.WaitForExitAsync();
-            
-            if (!string.IsNullOrEmpty(output))
-            {
-                Console.WriteLine("Output: " + output);
-            }
-            else
-            {
-                Console.WriteLine("No output received from wg show command.");
-            }
-
-            return true;
+            Console.WriteLine("Output: " + output);
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine("An error occurred: " + e.Message);
-
-            return false;
+            Console.WriteLine("No output received from wg show command.");
         }
+
+        return true;
     }
 }

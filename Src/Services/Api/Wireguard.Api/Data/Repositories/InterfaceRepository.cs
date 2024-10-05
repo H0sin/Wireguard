@@ -153,11 +153,11 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
             // delete ip address
             string command2 = "DELETE FROM IpAddress WHERE InterfaceId = @InterfaceId";
-            await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
+            await connection.ExecuteAsync(command2, new { InterfaceId = @interface.Id });
 
             //delete interface
             string command3 = "DELETE FROM Interface WHERE Id = @Id";
-            int response = await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
+            int response = await connection.ExecuteAsync(command3, new { InterfaceId = @interface.Id });
 
             await transaction.CommitAsync();
 
