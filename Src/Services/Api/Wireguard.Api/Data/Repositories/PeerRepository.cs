@@ -34,7 +34,15 @@ public class PeerRepository(IConfiguration configuration, IInterfaceRepository i
                                                   ) Values (@InterfaceId,@Name,@PublicKey,@PresharedKey,@AllowedIPs,@EndPoint)
                              """;
 
-            int response = await connection.ExecuteAsync(command, peer);
+            int response = await connection.ExecuteAsync(command, new
+            {
+                peer.Name,
+                peer.PublicKey,
+                peer.EndPoint,
+                peer.PresharedKey,
+                peer.AllowedIPs,
+                interfaceId = @interface.Id
+            });
 
             var filepaht = configuration.GetValue<string>("Interface_Directory") + $"/{@interface.Name}.conf";
 
