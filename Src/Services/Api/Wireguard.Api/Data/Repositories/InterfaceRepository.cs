@@ -70,7 +70,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                              """;
             var id = await connection.ExecuteScalarAsync<int>(command, entity);
 
-            bool checkout = await ipAddressRepository.AddIpAddressAsync(entity.IpAddress, id);
+            bool checkout = await ipAddressRepository.AddIpAddressAsync(entity.IpAddress, id, connection, transaction);
 
             if (!checkout) throw new ApplicationException("failed to add ip address");
 

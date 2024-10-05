@@ -21,21 +21,16 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         return count > 0;
     }
 
-    public async Task<bool> AddIpAddressAsync(string ipAddress, int interfaceId)
+    public async Task<bool> AddIpAddressAsync(string ipAddress, int interfaceId,NpgsqlConnection connection,NpgsqlTransaction transaction)
     {
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentNullException(nameof(ipAddress), "IP Range cannot be null or empty");
 
         var (startIp, subnetMask) = ParseIpRange(ipAddress);
         var ipAddresses = GetIpRange(startIp, subnetMask);
-
-        await using var connection =
-            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
-
+        
         await connection.OpenAsync();
-
-        await using var transaction = await connection.BeginTransactionAsync();
-
+        
         try
         {
             foreach (var ip in ipAddresses)
@@ -45,10 +40,9 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
                                        VALUES (@Ip, false,@interfaceId)
                                        """;
 
-                await connection.ExecuteAsync(insertCommand, new { Ip = ip, interfaceId });
+                await connection.ExecuteAsync(insertCommand, new { Ip = ip, interfaceId },transaction);
             }
-
-            await transaction.CommitAsync();
+            
             return true;
         }
         catch (Exception ex)
