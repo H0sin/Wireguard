@@ -31,7 +31,7 @@ public class PeerRepository(IConfiguration configuration, IInterfaceRepository i
                                                   PresharedKey,
                                                   AllowedIPs,
                                                   EndPoint
-                                                  Values (@InterfaceId,@Name,@PublicKey,@PresharedKey,@AllowedIPs,@EndPoint))
+                                                  ) Values (@InterfaceId,@Name,@PublicKey,@PresharedKey,@AllowedIPs,@EndPoint)
                              """;
 
             int response = await connection.ExecuteAsync(command, peer);
