@@ -1,0 +1,37 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  wireguard.api:
+    build:
+      context: "D:\\Wireguard\\Wireguard\\Src"
+      dockerfile: "Services/Api/Wireguard.Api/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/rider-debugger/linux-x64/JetBrains.Debugger.Worker"
+    - "--runtimeconfig"
+    - "/opt/rider-debugger/JetBrains.Debugger.Worker.runtimeconfig.json"
+    - "--mode=server"
+    - "--frontend-port=57100"
+    - "--backend-port=57300"
+    - "--timeout=60"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/rider-debugger"
+      RESHARPER_LOG_CONF: "/etc/opt/rider-debugger/backend-log.xml"
+    image: "wireguard.api:dev"
+    ports:
+    - "127.0.0.1:57007:57100"
+    - "127.0.0.1:57207:57300"
+    volumes:
+    - "C:\\Users\\hfara\\.nuget\\packages:/root/.nuget/packages"
+    - "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api:/app:rw"
+    - "D:\\Wireguard\\Wireguard:/src:rw"
+    - "C:\\Users\\hfara\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2024.2.5\\\
+      Linux64:/opt/rider-debugger"
+    - "C:\\Program Files\\JetBrains\\JetBrains Rider 2024.2.3\\bin:/etc/opt/rider-debugger/backend-log.xml"
+    - "C:\\Users\\hfara\\AppData\\Local\\JetBrains\\Rider2024.2\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2024_10_05_16_23_03:/var/opt/rider-debugger:rw"
+    working_dir: "/app"

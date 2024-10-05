@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Wireguard\\Wireguard\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{29FB6C07-24F4-495D-99E5-7FBCAD05E349}|Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj|d:\\wireguard\\wireguard\\src\\services\\api\\wireguard.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{29FB6C07-24F4-495D-99E5-7FBCAD05E349}|Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj|solutionrelative:src\\services\\api\\wireguard.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D65AF812-9DE0-42B6-BA81-54580DAD3652}|docker-compose.dcproj|d:\\wireguard\\wireguard\\docker-compose.dcproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{D65AF812-9DE0-42B6-BA81-54580DAD3652}|docker-compose.dcproj|solutionrelative:docker-compose.dcproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Program.cs",
+              "RelativeDocumentMoniker": "Src\\Services\\Api\\Wireguard.Api\\Program.cs",
+              "ToolTip": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Program.cs",
+              "RelativeToolTip": "Src\\Services\\Api\\Wireguard.Api\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-05T08:03:50.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "docker-compose",
+              "DocumentMoniker": "D:\\Wireguard\\Wireguard\\docker-compose.dcproj",
+              "RelativeDocumentMoniker": "docker-compose.dcproj",
+              "ToolTip": "D:\\Wireguard\\Wireguard\\docker-compose.dcproj",
+              "RelativeToolTip": "docker-compose.dcproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-05T08:03:18.951Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

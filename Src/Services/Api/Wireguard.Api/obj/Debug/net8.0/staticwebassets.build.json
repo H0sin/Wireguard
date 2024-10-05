@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "c0FMlQFLqqyVWDDN7vbmEeA/UyYg4Ww4fRwxlBN066E=",
+  "Source": "Wireguard.Api",
+  "BasePath": "_content/Wireguard.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
