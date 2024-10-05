@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
 using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Filters;
@@ -6,7 +7,7 @@ using Wireguard.Api.Filters;
 namespace Wireguard.Api.Controller;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiResultFilter]
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
 public class InterfaceController(IInterfaceRepository interfaceRepository) : ControllerBase
@@ -22,7 +23,7 @@ public class InterfaceController(IInterfaceRepository interfaceRepository) : Con
     [HttpPost]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult> Post([FromBody] Interface @interface)
+    public async Task<ApiResult> Post([FromBody] AddInterfaceDto @interface)
     {
         await interfaceRepository.InsertAsync(@interface); 
         return Ok();

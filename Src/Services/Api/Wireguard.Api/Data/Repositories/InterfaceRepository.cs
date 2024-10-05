@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
+using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
 
 namespace Wireguard.Api.Data.Repositories;
@@ -16,7 +17,7 @@ public class InterfaceRepository(IConfiguration configuration) : IInterfaceRepos
         return interfaces.ToList();
     }
 
-    public async Task<bool> InsertAsync(Interface entity)
+    public async Task<bool> InsertAsync(AddInterfaceDto entity)
     {
         await using var connection = new NpgsqlConnection
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
