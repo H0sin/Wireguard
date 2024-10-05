@@ -26,7 +26,7 @@ services:
   
   wireguard.api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+#      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8000
       - "DatabaseSettings:ConnectionString=Server=wireguarddb;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234"
     ports:
