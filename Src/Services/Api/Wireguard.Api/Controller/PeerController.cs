@@ -11,13 +11,13 @@ namespace Wireguard.Api.Controller;
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
 public class PeerController(IPeerRepository peerRepository) : ControllerBase
 {
-    [HttpPost("{interface_name:string}")]
+    [HttpPost("{interfacename:string}")]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult> Post(string? interface_name, [FromBody] AddPeerDto peer)
+    public async Task<ApiResult> Post(string? interfacename, [FromBody] AddPeerDto peer)
     {
-        bool response = await peerRepository.InsertAsync(peer, interface_name);
+        bool response = await peerRepository.InsertAsync(peer, interfacename);
         if (!response) throw new ApplicationException("failed to add peer");
         return Ok();
     }
