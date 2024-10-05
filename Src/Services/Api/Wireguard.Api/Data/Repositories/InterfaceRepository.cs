@@ -45,11 +45,6 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
         try
         {
-            bool file = await Process
-                .AddInterfaceFile(entity, configuration.GetValue<string>("Interface_Directory"));
-
-            if (file == false) throw new ApplicationException("failed to add interface file");
-
             bool exist = await ipAddressRepository.ExistIpAddressAsync(entity.IpAddress);
 
             if (exist) throw new ApplicationException("this address has already been added.");
@@ -70,12 +65,19 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                              PublicKey)
                              VALUES (@Name,@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey
                              )
+
+                             RETURNING Id;
                              """;
             var id = await connection.ExecuteScalarAsync<int>(command, entity);
 
             bool checkout = await ipAddressRepository.AddIpAddressAsync(entity.IpAddress, id);
 
             if (!checkout) throw new ApplicationException("failed to add ip address");
+
+            bool file = await Process
+                .AddInterfaceFile(entity, configuration.GetValue<string>("Interface_Directory"));
+
+            if (file == false) throw new ApplicationException("failed to add interface file");
 
             await transaction.CommitAsync();
 
