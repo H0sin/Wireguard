@@ -23,6 +23,7 @@ namespace Wireguard.Api.Extensions
                         new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
                     
                     connection.Open();
+                    
                     using var command = new NpgsqlCommand
                     {
                         Connection = connection
@@ -51,7 +52,8 @@ namespace Wireguard.Api.Extensions
                                               IpAddress VARCHAR(100),
                                               PublicKey VARCHAR(255),
                                               CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                              UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                              UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                              Status VARCHAR(30)
                                           );
                                           """;
 

@@ -53,6 +53,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             string command = """
                              INSERT INTO Interface (
                              Name,
+                             Status,                       
                              Address,
                              EndPoint,
                              SaveConfig,
@@ -64,9 +65,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                              PrivateKey,
                              IpAddress,
                              PublicKey)
-                             VALUES (@Name,@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey
-                             )
-
+                             VALUES (@Name,"disabled",@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey)
                              RETURNING Id;
                              """;
             var id = await connection.ExecuteScalarAsync<int>(command, entity);
@@ -114,7 +113,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             if (!response.Item2) throw new ApplicationException($"failed to update interface {response.Item1}");
 
             await transaction.CommitAsync();
-            
+
             return output > 0;
         }
         catch (Exception e)
