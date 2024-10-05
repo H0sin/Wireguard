@@ -11,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IInterfaceRepository, InterfaceRepository>();
 builder.Services.AddScoped<IIpAddressRepository, IpAddressRepository>();
+builder.Services.AddScoped<IPeerRepository, PeerRepository>();
 
 builder.Services.AddSingleton<ExceptionHandlerFilter>();
 

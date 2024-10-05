@@ -8,6 +8,30 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
+    public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface, string fileAddress)
+    {
+        string content = $"""
+                            
+                          [Peer]
+                          PublicKey = {peer.PublicKey}
+                          PresharedKey = {peer.PresharedKey}
+                          AllowedIPs = {string.Join(", ", peer.AllowedIPs)}
+                          Endpoint = {@interface.EndPoint}
+                          """;
+        try
+        {
+            await using StreamWriter writer = new StreamWriter(fileAddress, append: true);
+
+            await writer.WriteLineAsync(content);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
     public static async Task<bool> AddInterfaceFile(AddInterfaceDto @interface, string? directory = "")
     {
         try

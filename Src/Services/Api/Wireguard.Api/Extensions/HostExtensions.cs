@@ -30,7 +30,8 @@ namespace Wireguard.Api.Extensions
                     };
 
                     // Check if 'Interface' table exists
-                    command.CommandText = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'interface')";
+                    command.CommandText =
+                        "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'interface')";
                     var interfaceExists = (bool)command.ExecuteScalar();
 
                     if (!interfaceExists)
@@ -69,7 +70,8 @@ namespace Wireguard.Api.Extensions
                     }
 
                     // Check if 'IpAddress' table exists
-                    command.CommandText = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ipaddress')";
+                    command.CommandText =
+                        "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ipaddress')";
                     var ipAddressExists = (bool)command.ExecuteScalar();
 
                     if (!ipAddressExists)
@@ -91,14 +93,35 @@ namespace Wireguard.Api.Extensions
                     else
                     {
                         // Modify 'IpAddress' table if it exists
+                    }
+
+                    // Check if 'Peer' table exists
+                    command.CommandText =
+                        "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'peer')";
+                    var peerExists = (bool)command.ExecuteScalar();
+
+                    if (!peerExists)
+                    {
+                        // Create 'Peer' table if it doesn't exist
                         command.CommandText = """
-                                              ALTER TABLE IpAddress
-                                              ADD COLUMN IF NOT EXISTS SubnetMask VARCHAR(50)
+                                              CREATE TABLE Peer(
+                                                  Id BIGSERIAL PRIMARY KEY,
+                                                  InterfaceId VARCHAR(255) NOT NULL,
+                                                  Name VARCHAR(100),
+                                                  PublicKey VARCHAR(255),
+                                                  PresharedKey VARCHAR(255),
+                                                  AllowedIPs TEXT[],
+                                                  EndPoint VARCHAR(255),
+                                                  CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                  UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                  FOREIGN KEY (InterfaceId) REFERENCES Interface(Id)
+                                              );
                                               """;
                         command.ExecuteNonQuery();
                     }
-
-                    // Seed data if necessary
+                    else
+                    {
+                    }
 
                     logger.LogInformation("Migration has been completed!");
                 }
