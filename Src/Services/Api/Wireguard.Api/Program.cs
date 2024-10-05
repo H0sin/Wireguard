@@ -1,5 +1,6 @@
 using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Extensions;
+using Wireguard.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IInterfaceRepository, InterfaceRepository>();
 
+builder.Services.AddSingleton<ExceptionHandlerFilter>();
 
 #region c o r s
 

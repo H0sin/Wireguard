@@ -24,7 +24,7 @@ public class InterfaceController(IInterfaceRepository interfaceRepository) : Con
     [ProducesDefaultResponseType]
     public async Task<ApiResult> Post([FromBody] Interface @interface)
     {
-        await interfaceRepository.InsertAsync(@interface);
+        await interfaceRepository.InsertAsync(@interface); 
         return Ok();
     }
 }
