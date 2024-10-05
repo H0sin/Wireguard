@@ -76,7 +76,6 @@ public static class WireguardHelpers
             FileName = "wg-quick",
             Arguments = arguments,
             RedirectStandardOutput = true,
-            RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
             UserName = "root"
@@ -86,14 +85,8 @@ public static class WireguardHelpers
         {
             using Process process = Process.Start(psi);
             string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
             await process.WaitForExitAsync();
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                Console.WriteLine("Error: " + error);
-            }
-
+            
             if (!string.IsNullOrEmpty(output))
             {
                 Console.WriteLine("Output: " + output);
