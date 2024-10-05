@@ -98,6 +98,7 @@ namespace Wireguard.Api.Extensions
                     // Check if 'Peer' table exists
                     command.CommandText =
                         "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'peer')";
+
                     var peerExists = (bool)command.ExecuteScalar();
 
                     if (!peerExists)
@@ -106,7 +107,7 @@ namespace Wireguard.Api.Extensions
                         command.CommandText = """
                                               CREATE TABLE Peer(
                                                   Id BIGSERIAL PRIMARY KEY,
-                                                  InterfaceId VARCHAR(255) NOT NULL,
+                                                  InterfaceId BIGINT,
                                                   Name VARCHAR(100),
                                                   PublicKey VARCHAR(255),
                                                   PresharedKey VARCHAR(255),

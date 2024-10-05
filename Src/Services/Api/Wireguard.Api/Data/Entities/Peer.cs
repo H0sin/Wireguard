@@ -4,7 +4,7 @@ namespace Wireguard.Api.Data.Entities;
 
 public class Peer : EntityBase
 {
-    public string InterfaceId { get; set; }
+    public int InterfaceId { get; set; }
 
     public string? Name { get; set; }
 
