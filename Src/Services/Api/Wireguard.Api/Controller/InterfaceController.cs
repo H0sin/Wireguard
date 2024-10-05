@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
 using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Filters;
+using Process = Wireguard.Api.Helpers.Process;
 
 namespace Wireguard.Api.Controller;
 
@@ -10,7 +12,10 @@ namespace Wireguard.Api.Controller;
 [Route("[controller]")]
 [ApiResultFilter]
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
-public class InterfaceController(IInterfaceRepository interfaceRepository, IIpAddressRepository ipAddressRepository)
+public class InterfaceController(
+    IInterfaceRepository interfaceRepository,
+    IIpAddressRepository ipAddressRepository,
+    IConfiguration configuration)
     : ControllerBase
 {
     [HttpGet]
@@ -27,12 +32,8 @@ public class InterfaceController(IInterfaceRepository interfaceRepository, IIpAd
     [ProducesDefaultResponseType]
     public async Task<ApiResult> Post([FromBody] AddInterfaceDto @interface)
     {
-        await ipAddressRepository.ExistIpAddressAsync(@interface.IpAddress);
-        bool checkout = await ipAddressRepository.AddIpAddressAsync(@interface.IpAddress);
-
-        if (checkout) await interfaceRepository.InsertAsync(@interface);
-        else return BadRequest("ip address already exist");
-
+        bool response = await interfaceRepository.InsertAsync(@interface);
+        if(!response) throw new ApplicationException("failed to add interface");
         return Ok();
     }
 }

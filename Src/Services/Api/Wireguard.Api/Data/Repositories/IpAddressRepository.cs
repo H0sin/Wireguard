@@ -14,14 +14,14 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-        string command = "SELECT COUNT(*) FROM IpAddress Where IpAddress = @IpAddress";
+        string command = "SELECT COUNT(*) FROM IpAddress Where Ip = @ipAddress";
 
-        int count = await connection.QueryFirstOrDefaultAsync<int>(command, ipAddress);
+        int count = await connection.QueryFirstOrDefaultAsync<int>(command, new { ipAddress });
 
         return count > 0;
     }
 
-    public async Task<bool> AddIpAddressAsync(string ipAddress)
+    public async Task<bool> AddIpAddressAsync(string ipAddress, int interfaceId)
     {
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentNullException(nameof(ipAddress), "IP Range cannot be null or empty");
@@ -32,6 +32,8 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
+        await connection.OpenAsync();
+
         await using var transaction = await connection.BeginTransactionAsync();
 
         try
@@ -39,11 +41,11 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
             foreach (var ip in ipAddresses)
             {
                 string insertCommand = """
-                                       INSERT INTO IpAddress (Ip, Available) 
-                                       VALUES (@Ip, false)
+                                       INSERT INTO IpAddress (Ip, Available,InterfaceId) 
+                                       VALUES (@Ip, false,@interfaceId)
                                        """;
 
-                await connection.ExecuteAsync(insertCommand, new { Ip = ip });
+                await connection.ExecuteAsync(insertCommand, new { Ip = ip, interfaceId });
             }
 
             await transaction.CommitAsync();
@@ -70,9 +72,8 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         var ip = IPAddress.Parse(startIp);
         var ipBytes = ip.GetAddressBytes();
 
-        int numAddresses = (int)Math.Pow(2, 32 - subnetMask);
 
-        for (int i = 0; i < numAddresses; i++)
+        for (int i = (ipBytes[3] + 1); i <= 255; ++i)
         {
             var newIpBytes = BitConverter.GetBytes(BitConverter.ToUInt32(ipBytes.Reverse().ToArray(), 0) + (uint)i);
             yield return new IPAddress(newIpBytes.Reverse().ToArray()).ToString();

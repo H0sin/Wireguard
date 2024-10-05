@@ -2,10 +2,12 @@
 using Npgsql;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Data.Repositories;
 
-public class InterfaceRepository(IConfiguration configuration) : IInterfaceRepository
+public class InterfaceRepository(IConfiguration configuration, IIpAddressRepository ipAddressRepository)
+    : IInterfaceRepository
 {
     public async Task<ICollection<Interface>> GetAllAsync()
     {
@@ -37,25 +39,52 @@ public class InterfaceRepository(IConfiguration configuration) : IInterfaceRepos
         await using var connection = new NpgsqlConnection
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-        string command = """
-                         INSERT INTO Interface (
-                         Name,
-                         Address,
-                         EndPoint,
-                         SaveConfig,
-                         PreUp,
-                         PostUp,
-                         PreDown,
-                         PostDown,
-                         ListenPort,
-                         PrivateKey,
-                         IpAddress,
-                         PublicKey)
-                         VALUES (@Address,@Name,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey
-                         )
-                         """;
+        await connection.OpenAsync();
 
-        var affected = await connection.ExecuteAsync(command, entity);
-        return affected > 0;
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            bool file = await Process
+                .AddInterfaceFile(entity, configuration.GetValue<string>("Interface_Directory"));
+
+            if (file == false) throw new ApplicationException("failed to add interface file");
+
+            bool exist = await ipAddressRepository.ExistIpAddressAsync(entity.IpAddress);
+
+            if (exist) throw new ApplicationException("this address has already been added.");
+
+            string command = """
+                             INSERT INTO Interface (
+                             Name,
+                             Address,
+                             EndPoint,
+                             SaveConfig,
+                             PreUp, 
+                             PostUp,
+                             PreDown,
+                             PostDown,
+                             ListenPort,
+                             PrivateKey,
+                             IpAddress,
+                             PublicKey)
+                             VALUES (@Name,@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey
+                             )
+                             """;
+            var id = await connection.ExecuteScalarAsync<int>(command, entity);
+
+            bool checkout = await ipAddressRepository.AddIpAddressAsync(entity.IpAddress, id);
+
+            if (!checkout) throw new ApplicationException("failed to add ip address");
+
+            await transaction.CommitAsync();
+
+            return id > 0;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
     }
 }

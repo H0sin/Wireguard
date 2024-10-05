@@ -21,13 +21,17 @@ namespace Wireguard.Api.Extensions
 
                     using var connection =
                         new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+                    
                     connection.Open();
-
                     using var command = new NpgsqlCommand
                     {
                         Connection = connection
                     };
 
+                                        
+                    command.CommandText = "DROP TABLE IF EXISTS IpAddress";
+                    command.ExecuteNonQuery();
+                    
                     command.CommandText = "DROP TABLE IF EXISTS Interface";
                     command.ExecuteNonQuery();
 
@@ -52,10 +56,7 @@ namespace Wireguard.Api.Extensions
                                           """;
 
                     command.ExecuteNonQuery();
-                    
-                    command.CommandText = "DROP TABLE IF EXISTS IpAddress";
-                    command.ExecuteNonQueryAsync();
-                    
+
                     command.CommandText = """
                                           CREATE TABLE IpAddress(
                                               Id BIGSERIAL PRIMARY KEY,
