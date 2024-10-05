@@ -10,7 +10,7 @@ namespace Wireguard.Api.Controller;
 [Route("[controller]")]
 [ApiResultFilter]
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
-public class InterfaceController(IInterfaceRepository interfaceRepository, IpAddressRepository ipAddressRepository)
+public class InterfaceController(IInterfaceRepository interfaceRepository, IIpAddressRepository ipAddressRepository)
     : ControllerBase
 {
     [HttpGet]
