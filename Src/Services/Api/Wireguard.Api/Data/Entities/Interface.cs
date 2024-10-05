@@ -1,4 +1,5 @@
 ﻿using Wireguard.Api.Data.Common;
+using Wireguard.Api.Data.Enums;
 
 namespace Wireguard.Api.Data.Entities;
 
@@ -16,4 +17,5 @@ public class Interface : EntityBase
     public string? PrivateKey { get; set; }
     public string? IpAddress { get; set; }
     public string? PublicKey { get; set; }
+    public string Status { get; set; } = "active";
 }

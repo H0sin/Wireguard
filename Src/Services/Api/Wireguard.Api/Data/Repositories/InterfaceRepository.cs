@@ -2,6 +2,7 @@
 using Npgsql;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Data.Enums;
 using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Data.Repositories;
@@ -74,7 +75,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
             if (!checkout) throw new ApplicationException("failed to add ip address");
 
-            bool file = await Process
+            bool file = await WireguardHelpers
                 .AddInterfaceFile(entity, configuration.GetValue<string>("Interface_Directory"));
 
             if (file == false) throw new ApplicationException("failed to add interface file");
@@ -82,6 +83,39 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             await transaction.CommitAsync();
 
             return id > 0;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+    }
+
+    public async Task<bool> ChangeStatusInterfaceAsync(string name, InterfaceStatus status)
+    {
+        await using var connection = new NpgsqlConnection
+            (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            var @interface = await GetInterfaceByNameAsync(name);
+
+            if (@interface == null) throw new ApplicationException($"interface by name \"{name}\" not found");
+
+            var output = await connection.ExecuteAsync("UPDATE Interface SET Status = @Status WHERE Name = @Name",
+                new { Name = name, Status = status.ToString() });
+
+            var response = await WireguardHelpers.StatusWireguard(status, name);
+
+            if (!response.Item2) throw new ApplicationException($"failed to update interface {response.Item1}");
+
+            await transaction.CommitAsync();
+            
+            return output > 0;
         }
         catch (Exception e)
         {
