@@ -36,3 +36,6 @@ services:
     depends_on:
       - wireguarddb
     network_mode: host
+    cap_add:
+      - NET_ADMIN
+
