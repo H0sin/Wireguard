@@ -65,7 +65,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                              PrivateKey,
                              IpAddress,
                              PublicKey)
-                             VALUES (@Name,@Disabled,@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey)
+                             VALUES (@Name,@Status,@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey)
                              RETURNING Id;
                              """;
             var id = await connection.ExecuteScalarAsync<int>(command, entity);
