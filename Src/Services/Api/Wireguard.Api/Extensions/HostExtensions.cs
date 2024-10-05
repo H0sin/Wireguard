@@ -29,10 +29,10 @@ namespace Wireguard.Api.Extensions
                     };
 
                                         
-                    command.CommandText = "DROP TABLE IF EXISTS IpAddress";
+                    command.CommandText = "DROP TABLE IF EXISTS IpAddress CASCADE";
                     command.ExecuteNonQuery();
                     
-                    command.CommandText = "DROP TABLE IF EXISTS Interface";
+                    command.CommandText = "DROP TABLE IF EXISTS Interface CASCADE";
                     command.ExecuteNonQuery();
 
                     command.CommandText = """
