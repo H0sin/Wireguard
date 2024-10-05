@@ -29,8 +29,6 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         var (startIp, subnetMask) = ParseIpRange(ipAddress);
         var ipAddresses = GetIpRange(startIp, subnetMask);
         
-        await connection.OpenAsync();
-        
         try
         {
             foreach (var ip in ipAddresses)
