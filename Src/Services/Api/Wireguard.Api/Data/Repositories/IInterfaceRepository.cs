@@ -12,4 +12,5 @@ public interface IInterfaceRepository
     Task<ICollection<Interface>> GetAllAsync();
     Task<bool> InsertAsync(AddInterfaceDto entity);
     Task<bool> ChangeStatusInterfaceAsync(string name,InterfaceStatus status);
+    Task<bool> DeleteAsync(string name);
 }

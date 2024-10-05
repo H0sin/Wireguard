@@ -122,4 +122,48 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             return false;
         }
     }
+
+    public async Task<bool> DeleteAsync(string name)
+    {
+        await using var connection = new NpgsqlConnection
+            (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            var @interface = await GetInterfaceByNameAsync(name);
+
+            if (@interface == null) throw new ApplicationException($"interface by name \"{name}\" not found");
+
+            bool change = await ChangeStatusInterfaceAsync(@interface.Name, InterfaceStatus.disabled);
+
+            if (!change) throw new ApplicationException("failed to remove interface");
+
+            File.Delete(configuration.GetValue<string>("Interface_Directory") + $"{@interface.Name}.conf");
+
+            // delete peer
+            string command = "DELETE FROM PEER WHERE InerfaceId = @InterfaceId";
+            await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
+
+            // delete ip address
+            string command2 = "DELETE FROM IpAddress WHERE InerfaceId = @InterfaceId";
+            await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
+
+            //delete interface
+            string command3 = "DELETE FROM Interface WHERE Id = @Id";
+            int response = await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
+
+            await transaction.CommitAsync();
+
+            return response > 0;
+        }
+        catch (Exception e)
+        {
+            transaction.RollbackAsync();
+            return false;
+        }
+    }
 }

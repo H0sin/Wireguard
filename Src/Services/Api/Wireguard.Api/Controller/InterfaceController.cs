@@ -47,4 +47,12 @@ public class InterfaceController(
         if (!response) throw new ApplicationException("failed to change status interface");
         return Ok();
     }
+
+    [HttpDelete("{name}")]
+    public async Task<ApiResult> Delete(string name)
+    {
+        bool response = await interfaceRepository.DeleteAsync(name);
+        if (!response) throw new ApplicationException("failed to delete interface");
+        return Ok();
+    }
 }
