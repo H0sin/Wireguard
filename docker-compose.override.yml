@@ -37,7 +37,7 @@ services:
     depends_on:
       - wireguarddb
     volumes:
-      - /root/backup/wireguard/interfaces:../etc/wireguard/
+      - /root/backup/wireguard/interfaces:./etc/wireguard/
     network_mode: host
     privileged: true
     cap_add:
