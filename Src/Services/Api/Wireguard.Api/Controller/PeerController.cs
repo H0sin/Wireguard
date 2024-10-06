@@ -26,7 +26,7 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(ApiResult<FilterPeerDto>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult<FilterPeerDto>> Post([FromQuery] FilterPeerDto filterPeer)
+    public async Task<ApiResult<FilterPeerDto>> Get([FromQuery] FilterPeerDto filterPeer)
     {
         var peers = await peerRepository.FilterPeerAsync(filterPeer,new CancellationToken(default));
         return Ok(peers);
