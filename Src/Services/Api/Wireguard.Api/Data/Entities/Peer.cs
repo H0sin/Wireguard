@@ -10,6 +10,8 @@ public class Peer : EntityBase
 
     public string? PublicKey { get; set; }
 
+    public string? PrivateKey { get; set; }
+
     public string? PresharedKey { get; set; }
 
     public List<string>? AllowedIPs { get; set; }

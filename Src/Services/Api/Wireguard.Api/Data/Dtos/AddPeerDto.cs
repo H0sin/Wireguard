@@ -6,6 +6,8 @@ public class AddPeerDto
     public string? PublicKey { get; set; }
     public string? PresharedKey { get; set; }
     public List<string>? AllowedIPs { get; set; }
-
     public string? EndPoint { get; set; }
+    public bool Bulk { get; set; }
+    public int Count { get; set; } = 1;
+    
 }

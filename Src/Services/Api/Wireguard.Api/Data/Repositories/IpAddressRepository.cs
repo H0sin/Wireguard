@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Dapper;
 using Npgsql;
+using Wireguard.Api.Data.Entities;
 
 namespace Wireguard.Api.Data.Repositories;
 
@@ -21,14 +22,15 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         return count > 0;
     }
 
-    public async Task<bool> AddIpAddressAsync(string ipAddress, int interfaceId,NpgsqlConnection connection,NpgsqlTransaction transaction)
+    public async Task<bool> AddIpAddressAsync(string ipAddress, int interfaceId, NpgsqlConnection connection,
+        NpgsqlTransaction transaction)
     {
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentNullException(nameof(ipAddress), "IP Range cannot be null or empty");
 
         var (startIp, subnetMask) = ParseIpRange(ipAddress);
         var ipAddresses = GetIpRange(startIp, subnetMask);
-        
+
         try
         {
             foreach (var ip in ipAddresses)
@@ -38,15 +40,57 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
                                        VALUES (@Ip, false,@interfaceId)
                                        """;
 
-                await connection.ExecuteAsync(insertCommand, new { Ip = ip, interfaceId },transaction);
+                await connection.ExecuteAsync(insertCommand, new { Ip = ip, interfaceId }, transaction);
             }
-            
+
             return true;
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
             throw new ApplicationException("An error occurred while inserting IP addresses", ex);
+        }
+    }
+
+    public async Task<List<IpAddress?>> GetIpAddressByInterfaceIdAsync(int interfaceId)
+    {
+        try
+        {
+            await using var connection =
+                new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+            var ipAddresses =
+                await connection.QueryAsync<IpAddress>("SELECT * FROM IpAddress Where InterfaceId = @InterfaceId");
+
+            return ipAddresses.ToList();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<bool> OutOfReachIpAddressAsync(List<int> ids,NpgsqlConnection connection,
+        NpgsqlTransaction transaction)
+    {
+        try
+        {
+            foreach (var id in ids)
+            {
+                await connection.ExecuteAsync("UPDATE IpAddress SET Available = 0 WHERE Id = @Id",new
+                {
+                    Id = id
+                });
+            }
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw new ApplicationException("An error occurred while updating IP addresses", e);
+            return false;
         }
     }
 

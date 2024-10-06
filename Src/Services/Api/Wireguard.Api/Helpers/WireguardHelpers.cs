@@ -8,25 +8,39 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
-    public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface, string fileAddress)
+    public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface)
     {
-        string content = $"""
-                            
-                          [Peer]
-                          PublicKey = {peer.PublicKey}
-                          PresharedKey = {peer.PresharedKey}
-                          AllowedIPs = {string.Join(", ", peer.AllowedIPs)}
-                          """;
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "wg",
+            Arguments =
+                $"set {@interface.Name} peer id {peer.PublicKey} allowed-ips [${string.Join(", ", peer.AllowedIPs)}] preshared-key {peer.PresharedKey}",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            UserName = "root"
+        };
+
         try
         {
-            await using StreamWriter writer = new StreamWriter(fileAddress, append: true);
+            using Process process = Process.Start(psi);
+            string output = await process.StandardOutput.ReadToEndAsync();
+            await process.WaitForExitAsync();
 
-            await writer.WriteLineAsync(content);
+            if (!string.IsNullOrEmpty(output))
+            {
+                Console.WriteLine("Output: " + output);
+            }
+            else
+            {
+                Console.WriteLine("No output received from wg show command.");
+            }
 
             return true;
         }
         catch (Exception e)
         {
+            Console.WriteLine("An error occurred: " + e.Message);
             return false;
         }
     }
@@ -115,7 +129,7 @@ public static class WireguardHelpers
             CreateNoWindow = true,
             UserName = "root"
         };
-        
+
         using Process process = Process.Start(psi);
         string output = await process.StandardOutput.ReadToEndAsync();
         await process.WaitForExitAsync();

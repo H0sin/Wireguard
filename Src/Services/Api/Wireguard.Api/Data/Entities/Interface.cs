@@ -18,4 +18,6 @@ public class Interface : EntityBase
     public string? IpAddress { get; set; }
     public string? PublicKey { get; set; }
     public string Status { get; set; } = "active";
+    public ICollection<Peer>? Peers { get; set; }
+    public ICollection<IpAddress>? IpAddresses { get; set; }
 }
