@@ -28,6 +28,10 @@ public class PeerRepository(
 
         List<IpAddress> ipAddresses = await ipAddressRepository.GetIpAddressByInterfaceIdAsync(@interface.Id);
 
+        Console.WriteLine(ipAddresses.Count());
+        Console.WriteLine(ipAddresses.Count(x=>x.Available));
+        Console.WriteLine(ipAddresses.Count(x=>! x.Available));
+        
         if (peer.Count > ipAddresses.Count(x => x.Available == true)) throw new ApplicationException("peer is full");
 
         if (peer.Bulk)
