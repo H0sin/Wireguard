@@ -52,6 +52,7 @@ public class PeerRepository(
 
                     string command = """
                                         INSERT INTO PEER (InterfaceId,
+                                                          Name,
                                                           PublicKey,
                                                           PrivateKey,
                                                           PresharedKey,
