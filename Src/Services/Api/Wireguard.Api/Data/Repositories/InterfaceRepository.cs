@@ -20,6 +20,23 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
         return interfaces.ToList();
     }
 
+    public async Task<ICollection<Interface>> GetAsync(string name)
+    {
+        await using var connection = new NpgsqlConnection
+            (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        string commands = $"""
+                           SELECT * FROM Interface I
+                                    LEFT JOIN Peer P ON P.InterfaceId == I.Id 
+                                    WHERE Name = @Name
+                           """;
+
+        var interfaces =
+            await connection.QueryAsync<Interface>(commands, new { Name = name });
+
+        return interfaces.ToList();
+    }
+
     public async Task<Interface?> GetInterfaceByNameAsync(string name)
     {
         await using var connection = new NpgsqlConnection
@@ -107,11 +124,11 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
             var output = await connection.ExecuteAsync("UPDATE Interface SET Status = @Status WHERE Name = @Name",
                 new { Name = name, Status = status.ToString() });
-            
+
             var response = await WireguardHelpers.StatusWireguard(status, name);
-            
+
             Console.WriteLine(status.ToString());
-            
+
             if (!response.Item2) throw new ApplicationException($"failed to update interface {response.Item1}");
 
             await transaction.CommitAsync();
@@ -143,9 +160,9 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             bool change = await ChangeStatusInterfaceAsync(@interface.Name, InterfaceStatus.disabled);
 
             if (!change) throw new ApplicationException("failed to remove interface");
-            
+
             string path = configuration.GetValue<string>("Interface_Directory");
-            
+
             if (!await WireguardHelpers.DeleteInterfaceFile(path + $"/{name}.conf"))
                 throw new ApplicationException("failed to delete interface file");
 

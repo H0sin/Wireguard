@@ -10,6 +10,7 @@ public interface IInterfaceRepository
 {
     Task<Interface?> GetInterfaceByNameAsync(string name);
     Task<ICollection<Interface>> GetAllAsync();
+    Task<ICollection<Interface>> GetAsync(string name);
     Task<bool> InsertAsync(AddInterfaceDto entity);
     Task<bool> ChangeStatusInterfaceAsync(string name,InterfaceStatus status);
     Task<bool> DeleteAsync(string name);
