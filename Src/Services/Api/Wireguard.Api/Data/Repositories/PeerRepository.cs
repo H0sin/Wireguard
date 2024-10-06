@@ -49,6 +49,8 @@ public class PeerRepository(
                     KeyPair keyPair = KeyGeneratorHelper.GenerateKeys();
 
                     peer.Name ??= Guid.NewGuid().ToString("N");
+                    peer.PublicKey ??= keyPair.PublicKey;
+                    peer.PresharedKey ??= keyPair.PresharedKey;
 
                     string command = """
                                         INSERT INTO PEER (InterfaceId,
