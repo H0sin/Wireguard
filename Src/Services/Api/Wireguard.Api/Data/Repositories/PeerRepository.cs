@@ -132,7 +132,7 @@ public class PeerRepository(
         }
     }
 
-    public async Task<ICollection<Peer>> GetPeerByInterfaceNameAsync(string name,
+    public async Task<FilterPeerDto> FilterPeerAsync(FilterPeerDto filter,
         CancellationToken cancellationToken = default)
     {
         await using var connection =
@@ -140,13 +140,75 @@ public class PeerRepository(
 
         await connection.OpenAsync(cancellationToken);
 
-        string qurey = """
-                       SELECT * FROM PEER P 
+        var countSql = """
+                       SELECT COUNT(*)
+                       FROM PEER P
+                       JOIN Interface I ON P.InterfaceId = I.Id
+                       WHERE 
+                           (P.Name = @Name OR @Name IS NULL) AND
+                           (I.Name = @InterfaceName OR @InterfaceName IS NULL) AND
+                           (P.PublicKey = @PublicKey OR @PublicKey IS NULL);
+                       """;
+
+        var countPeer = await connection.ExecuteScalarAsync<int>(countSql, new
+        {
+            filter.Name,
+            filter.InterfaceName,
+            filter.PublicKey
+        });
+
+        var sql = """
+                  SELECT P.*, I.*
+                  FROM PEER P
+                  JOIN Interface I ON P.InterfaceId = I.Id
+                  WHERE 
+                      (P.Name = @Name OR @Name IS NULL) AND
+                      (I.Name = @InterfaceName OR @InterfaceName IS NULL) AND
+                      (P.PublicKey = @PublicKey OR @PublicKey IS NULL)
+                  ORDER BY P.Id
+                  LIMIT @Take OFFSET @Skip;
+                  """;
+
+
+        string query = """
+                       SELECT 
+                       P.InterfaceId,
+                       P.Name,
+                       P.PublicKey,
+                       P.PrivateKey,
+                       P.PresharedKey,
+                       P.AllowedIPs,
+                       P.EndPoint FROM PEER P 
                        JOIN Interface I ON P.InterfaceId = I.Id
                        WHERE I.Name = @Name
                        """;
 
-        var response = await connection.QueryAsync<Peer>(qurey, new { Name = name });
-        return response.ToList();
+        var peers = await connection.QueryAsync<Peer, Interface, Peer>(
+            sql,
+            (peer, @interface) =>
+            {
+                peer.InterfaceId = @interface.Id;
+                return peer;
+            },
+            new
+            {
+                filter.Name,
+                filter.InterfaceName,
+                filter.PublicKey,
+                filter.Take,
+                filter.Skip
+            }, splitOn: "Id");
+
+
+        return new FilterPeerDto
+        {
+            Take = filter.Take,
+            Skip = filter.Skip,
+            Name = filter.Name,
+            InterfaceName = filter.InterfaceName,
+            PublicKey = filter.PublicKey,
+            CountPeer = countPeer,
+            Peers = peers.ToList()
+        };
     }
 }

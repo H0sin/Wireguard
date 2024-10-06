@@ -23,12 +23,12 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         return Ok();
     }
 
-    [HttpGet("{name}")]
-    [ProducesResponseType(typeof(ApiResult<List<Peer>>), StatusCodes.Status200OK)]
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResult<FilterPeerDto>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult<List<Peer>>> Get(string name)
+    public async Task<ApiResult<FilterPeerDto>> Post([FromQuery] FilterPeerDto filterPeer)
     {
-        var peers = await peerRepository.GetPeerByInterfaceNameAsync(name);
+        var peers = await peerRepository.FilterPeerAsync(filterPeer,new CancellationToken(default));
         return Ok(peers);
     }
 }

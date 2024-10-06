@@ -27,7 +27,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
         string query = $"""
                            SELECT * FROM Interface I
-                                    LEFT JOIN Peer P ON P.InterfaceId == I.Id 
+                                    LEFT JOIN Peer P ON P.InterfaceId = I.Id 
                                     WHERE Name = @Name
                            """;
 
