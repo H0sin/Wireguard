@@ -13,8 +13,7 @@ public static class WireguardHelpers
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
-            Arguments =
-                $"set {@interface.Name} peer id {peer.PublicKey} allowed-ips [${string.Join(", ", peer.AllowedIPs)}] preshared-key {peer.PresharedKey}",
+            Arguments = $"set {@interface.Name} peer {peer.PublicKey} allowed-ips ${string.Join(",", peer.AllowedIPs)} preshared-key {peer.PresharedKey}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true,
@@ -150,7 +149,7 @@ public static class WireguardHelpers
     {
         ProcessStartInfo psi = new ProcessStartInfo
         {
-            FileName = "wg",
+            FileName = "wg-quick",
             Arguments = $"save {name}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
