@@ -14,7 +14,7 @@ public static class WireguardHelpers
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
-            Arguments = $"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)} preshared-key {peer.PresharedKey}",
+            Arguments = $"wg set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)} preshared-key {peer.PresharedKey}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true,
@@ -36,6 +36,7 @@ public static class WireguardHelpers
                 Console.WriteLine("No output received from wg show command.");
             }
             await Save(@interface.Name);
+            
             return true;
         }
         catch (Exception e)
