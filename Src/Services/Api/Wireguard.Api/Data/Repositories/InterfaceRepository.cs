@@ -109,7 +109,9 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                 new { Name = name, Status = status.ToString() });
             
             var response = await WireguardHelpers.StatusWireguard(status, name);
-
+            
+            Console.WriteLine(status.ToString());
+            
             if (!response.Item2) throw new ApplicationException($"failed to update interface {response.Item1}");
 
             await transaction.CommitAsync();
