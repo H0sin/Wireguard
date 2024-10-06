@@ -35,7 +35,7 @@ public static class WireguardHelpers
             {
                 Console.WriteLine("No output received from wg show command.");
             }
-
+            await Save(@interface.Name);
             return true;
         }
         catch (Exception e)
@@ -130,6 +130,33 @@ public static class WireguardHelpers
             UserName = "root"
         };
 
+        using Process process = Process.Start(psi);
+        string output = await process.StandardOutput.ReadToEndAsync();
+        await process.WaitForExitAsync();
+
+        if (!string.IsNullOrEmpty(output))
+        {
+            Console.WriteLine("Output: " + output);
+        }
+        else
+        {
+            Console.WriteLine("No output received from wg show command.");
+        }
+
+        return true;
+    }
+
+    public static async Task<bool> Save(string name)
+    {
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "wg",
+            Arguments = $"save {name}",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            UserName = "root"
+        };
         using Process process = Process.Start(psi);
         string output = await process.StandardOutput.ReadToEndAsync();
         await process.WaitForExitAsync();
