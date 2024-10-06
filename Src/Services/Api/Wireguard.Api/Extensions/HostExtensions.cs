@@ -112,7 +112,7 @@ namespace Wireguard.Api.Extensions
                                                   PublicKey VARCHAR(255),
                                                   PresharedKey VARCHAR(255),
                                                   PrivateKey VARCHAR(255),
-                                                  AllowedIPs TEXT[],
+                                                  AllowedIPs VARCHAR(700),
                                                   EndPoint VARCHAR(255),
                                                   CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                   UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

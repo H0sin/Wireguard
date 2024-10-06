@@ -61,13 +61,12 @@ public class PeerRepository(
 
                     int response = await connection.ExecuteAsync(command, new
                     {
+                        interfaceId = @interface.Id,
                         peer.Name,
                         keyPair.PublicKey,
                         keyPair.PrivateKey,
                         keyPair.PresharedKey,
-                        availableIp.Id,
-
-                        interfaceId = @interface.Id
+                        AllowedIPs = string.Join(",",peer.AllowedIPs),
                     });
 
                     if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
@@ -108,7 +107,7 @@ public class PeerRepository(
                     peer.PublicKey,
                     peer.EndPoint,
                     peer.PresharedKey,
-                    peer.AllowedIPs,
+                    AllowedIPs = string.Join(",",peer.AllowedIPs),
                     interfaceId = @interface.Id
                 });
 

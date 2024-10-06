@@ -14,7 +14,7 @@ public class Peer : EntityBase
 
     public string? PresharedKey { get; set; }
 
-    public List<string>? AllowedIPs { get; set; }
+    public string? AllowedIPs { get; set; }
 
     public string? EndPoint { get; set; }
 }
