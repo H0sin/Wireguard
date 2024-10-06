@@ -28,24 +28,24 @@ public class PeerRepository(
 
         List<IpAddress> ipAddresses = await ipAddressRepository.GetIpAddressByInterfaceIdAsync(@interface.Id);
 
-        if (peer.Count > ipAddresses.Count(x => x.Available)) throw new ApplicationException("peer is full");
+        if (peer.Count > ipAddresses.Count(x => x.Available == true)) throw new ApplicationException("peer is full");
 
         if (peer.Bulk)
         {
             try
             {
                 List<int> idsIp = new List<int>();
-                
+
                 while (0 < peer.Count)
                 {
                     var availableIp = ipAddresses.FirstOrDefault(x => x.Available);
-                    
+
                     ipAddresses.ElementAt(ipAddresses.IndexOf(availableIp)).Available = false;
-                    
+
                     idsIp.Add(availableIp.Id);
-                   
+
                     if (availableIp == null) throw new ApplicationException("no available ip address");
-                    
+
                     KeyPair keyPair = KeyGeneratorHelper.GenerateKeys();
 
                     peer.Name ??= Guid.NewGuid().ToString("N");
@@ -66,7 +66,7 @@ public class PeerRepository(
                         keyPair.PrivateKey,
                         keyPair.PresharedKey,
                         availableIp.Id,
-                        
+
                         interfaceId = @interface.Id
                     });
 
@@ -75,9 +75,9 @@ public class PeerRepository(
 
                     peer.Count--;
                 }
-                
-                await ipAddressRepository.OutOfReachIpAddressAsync(idsIp,connection, transaction);
-                
+
+                await ipAddressRepository.OutOfReachIpAddressAsync(idsIp, connection, transaction);
+
                 await transaction.CommitAsync(cancellationToken);
                 return true;
             }
@@ -87,7 +87,7 @@ public class PeerRepository(
                 throw;
             }
         }
-        
+
         else
         {
             try
