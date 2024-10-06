@@ -27,7 +27,7 @@ public class PeerRepository(
         if (@interface == null) throw new ApplicationException($"not found interface by name {interfaceName}");
 
         List<IpAddress> ipAddresses = await ipAddressRepository.GetIpAddressByInterfaceIdAsync(@interface.Id);
-        
+
         if (peer.Count > ipAddresses.Count(x => x.Available == true)) throw new ApplicationException("peer is full");
 
         if (peer.Bulk)
@@ -51,7 +51,8 @@ public class PeerRepository(
                     peer.Name ??= Guid.NewGuid().ToString("N");
                     peer.PublicKey ??= keyPair.PublicKey;
                     peer.PresharedKey ??= keyPair.PresharedKey;
-
+                    peer.AllowedIPs ??= new List<string> { availableIp.Ip };
+                    
                     string command = """
                                         INSERT INTO PEER (InterfaceId,
                                                           Name,
@@ -69,7 +70,7 @@ public class PeerRepository(
                         keyPair.PublicKey,
                         keyPair.PrivateKey,
                         keyPair.PresharedKey,
-                        AllowedIPs = string.Join(",",peer.AllowedIPs),
+                        AllowedIPs = string.Join(",", peer.AllowedIPs),
                     });
 
                     if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
@@ -110,7 +111,7 @@ public class PeerRepository(
                     peer.PublicKey,
                     peer.EndPoint,
                     peer.PresharedKey,
-                    AllowedIPs = string.Join(",",peer.AllowedIPs),
+                    AllowedIPs = string.Join(",", peer.AllowedIPs),
                     interfaceId = @interface.Id
                 });
 
