@@ -78,7 +78,7 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         {
             foreach (var id in ids)
             {
-                await connection.ExecuteAsync("UPDATE IpAddress SET Available = 0 WHERE Id = @Id",new
+                await connection.ExecuteAsync("UPDATE IpAddress SET Available = false WHERE Id = @Id",new
                 {
                     Id = id
                 });
