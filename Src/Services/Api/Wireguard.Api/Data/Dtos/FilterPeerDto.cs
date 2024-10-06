@@ -8,7 +8,7 @@ public class FilterPeerDto
     public int Skip { get; set; }
     public string? Name { get; set; }
     public string InterfaceName { get; set; }
-    public string PublicKey { get; set; }
-    public int CountPeer { get; set; }
-    public List<Peer> Peers { get; set; }
+    public string? PublicKey { get; set; }
+    public int? CountPeer { get; set; }
+    public List<Peer>? Peers { get; set; }
 }

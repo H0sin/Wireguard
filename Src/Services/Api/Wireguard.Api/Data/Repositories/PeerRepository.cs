@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Text;
+using Dapper;
 using Npgsql;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
@@ -131,58 +132,34 @@ public class PeerRepository(
             }
         }
     }
-
+    
     public async Task<FilterPeerDto> FilterPeerAsync(FilterPeerDto filter,
         CancellationToken cancellationToken = default)
     {
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
-
         await connection.OpenAsync(cancellationToken);
 
-        var countSql = """
-                       SELECT COUNT(*)
-                       FROM PEER P
-                       JOIN Interface I ON P.InterfaceId = I.Id
-                       WHERE 
-                           (P.Name = @Name OR @Name IS NULL) AND
-                           (I.Name = @InterfaceName OR @InterfaceName IS NULL) AND
-                           (P.PublicKey = @PublicKey OR @PublicKey IS NULL);
-                       """;
+        // Dynamically building the SQL query
+        var sqlBuilder = new StringBuilder();
+        sqlBuilder.AppendLine("""
+                                  SELECT P.*, I.*
+                                  FROM PEER P
+                                  JOIN Interface I ON P.InterfaceId = I.Id
+                                  WHERE I.Name = @InterfaceName
+                              """);
 
-        var countPeer = await connection.ExecuteScalarAsync<int>(countSql, new
+        // Add the condition for Name only if it's not null or empty
+        if (!string.IsNullOrWhiteSpace(filter.Name))
         {
-            filter.Name,
-            filter.InterfaceName,
-            filter.PublicKey
-        });
+            sqlBuilder.AppendLine("AND P.Name ILIKE '%' || @Name || '%'");
+        }
 
-        var sql = """
-                  SELECT P.*, I.*
-                  FROM PEER P
-                  JOIN Interface I ON P.InterfaceId = I.Id
-                  WHERE 
-                      (P.Name = @Name OR @Name IS NULL) AND
-                      (I.Name = @InterfaceName OR @InterfaceName IS NULL) AND
-                      (P.PublicKey = @PublicKey OR @PublicKey IS NULL)
-                  ORDER BY P.Id
-                  LIMIT @Take OFFSET @Skip;
-                  """;
+        sqlBuilder.AppendLine("ORDER BY P.Id LIMIT @Take OFFSET @Skip;");
 
+        var sql = sqlBuilder.ToString();
 
-        string query = """
-                       SELECT 
-                       P.InterfaceId,
-                       P.Name,
-                       P.PublicKey,
-                       P.PrivateKey,
-                       P.PresharedKey,
-                       P.AllowedIPs,
-                       P.EndPoint FROM PEER P 
-                       JOIN Interface I ON P.InterfaceId = I.Id
-                       WHERE I.Name = @Name
-                       """;
-
+        // Execute the query to retrieve data
         var peers = await connection.QueryAsync<Peer, Interface, Peer>(
             sql,
             (peer, @interface) =>
@@ -192,13 +169,36 @@ public class PeerRepository(
             },
             new
             {
-                filter.Name,
+                Name = string.IsNullOrWhiteSpace(filter.Name) ? null : filter.Name, // Pass null if Name is empty
                 filter.InterfaceName,
-                filter.PublicKey,
                 filter.Take,
                 filter.Skip
-            }, splitOn: "Id");
+            },
+            splitOn: "Id"
+        );
 
+        // Dynamically building the SQL query for counting records
+        var countSqlBuilder = new StringBuilder();
+        countSqlBuilder.AppendLine("""
+                                       SELECT COUNT(*)
+                                       FROM PEER P
+                                       JOIN Interface I ON P.InterfaceId = I.Id
+                                       WHERE I.Name = @InterfaceName
+                                   """);
+
+        if (!string.IsNullOrWhiteSpace(filter.Name))
+        {
+            countSqlBuilder.AppendLine("AND P.Name ILIKE '%' || @Name || '%'");
+        }
+
+        var countSql = countSqlBuilder.ToString();
+
+        // Execute the query to count records
+        var countPeer = await connection.ExecuteScalarAsync<int>(countSql, new
+        {
+            Name = string.IsNullOrWhiteSpace(filter.Name) ? null : filter.Name, // Pass null if Name is empty
+            filter.InterfaceName
+        });
 
         return new FilterPeerDto
         {
