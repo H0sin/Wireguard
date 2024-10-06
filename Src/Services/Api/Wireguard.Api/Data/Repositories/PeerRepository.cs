@@ -27,10 +27,6 @@ public class PeerRepository(
         if (@interface == null) throw new ApplicationException($"not found interface by name {interfaceName}");
 
         List<IpAddress> ipAddresses = await ipAddressRepository.GetIpAddressByInterfaceIdAsync(@interface.Id);
-
-        Console.WriteLine(ipAddresses.Count());
-        Console.WriteLine(ipAddresses.Count(x=>x.Available));
-        Console.WriteLine(ipAddresses.Count(x=>! x.Available));
         
         if (peer.Count > ipAddresses.Count(x => x.Available == true)) throw new ApplicationException("peer is full");
 

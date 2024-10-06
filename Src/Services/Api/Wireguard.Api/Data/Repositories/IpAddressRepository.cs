@@ -37,7 +37,7 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
             {
                 string insertCommand = """
                                        INSERT INTO IpAddress (Ip, Available,InterfaceId) 
-                                       VALUES (@Ip, false,@interfaceId)
+                                       VALUES (@Ip, true,@interfaceId)
                                        """;
 
                 await connection.ExecuteAsync(insertCommand, new { Ip = ip, interfaceId }, transaction);
