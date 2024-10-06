@@ -40,7 +40,7 @@ public class PeerRepository(
                 {
                     var availableIp = ipAddresses.FirstOrDefault(x => x.Available);
 
-                    ipAddresses.ElementAt(ipAddresses.IndexOf(availableIp)).Available = false;
+                    ipAddresses.RemoveAt(ipAddresses.IndexOf(availableIp));
 
                     idsIp.Add(availableIp.Id);
 
