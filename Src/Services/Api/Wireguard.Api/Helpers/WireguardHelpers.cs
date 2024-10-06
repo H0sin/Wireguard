@@ -10,7 +10,7 @@ public static class WireguardHelpers
 {
     public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface)
     {
-        Console.WriteLine($"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}/32 preshared-key {peer.PresharedKey}");
+        Console.WriteLine($"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}/32");
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
