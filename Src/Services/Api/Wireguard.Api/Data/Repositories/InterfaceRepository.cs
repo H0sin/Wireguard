@@ -25,14 +25,14 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
         await using var connection = new NpgsqlConnection
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-        string commands = $"""
+        string query = $"""
                            SELECT * FROM Interface I
                                     LEFT JOIN Peer P ON P.InterfaceId == I.Id 
                                     WHERE Name = @Name
                            """;
 
         var interfaces =
-            await connection.QueryAsync<Interface>(commands, new { Name = name });
+            await connection.QueryAsync<Interface>(query, new { Name = name });
 
         return interfaces.ToList();
     }

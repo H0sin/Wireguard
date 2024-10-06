@@ -47,12 +47,12 @@ public class PeerRepository(
                     if (availableIp == null) throw new ApplicationException("no available ip address");
 
                     KeyPair keyPair = KeyGeneratorHelper.GenerateKeys();
-                    
+
                     peer.Name = Guid.NewGuid().ToString("N");
                     peer.PublicKey = keyPair.PublicKey;
                     peer.PresharedKey = keyPair.PresharedKey;
                     peer.AllowedIPs = new List<string> { availableIp.Ip };
-                    
+
                     string command = """
                                         INSERT INTO PEER (InterfaceId,
                                                           Name,
@@ -130,5 +130,23 @@ public class PeerRepository(
                 throw;
             }
         }
+    }
+
+    public async Task<ICollection<Peer>> GetPeerByInterfaceNameAsync(string name,
+        CancellationToken cancellationToken = default)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync(cancellationToken);
+
+        string qurey = """
+                       SELECT * FROM PEER P 
+                       JOIN Interface I ON P.InterfaceId = I.Id
+                       WHERE I.Name = @Name
+                       """;
+
+        var response = await connection.QueryAsync<Peer>(qurey, new { Name = name });
+        return response.ToList();
     }
 }

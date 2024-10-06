@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Wireguard.Api.Data.Dtos;
+using Wireguard.Api.Data.Entities;
 using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Filters;
 
@@ -20,5 +21,14 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         bool response = await peerRepository.InsertAsync(peer, interfacename);
         if (!response) throw new ApplicationException("failed to add peer");
         return Ok();
+    }
+
+    [HttpGet("{name}")]
+    [ProducesResponseType(typeof(ApiResult<List<Peer>>), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult<List<Peer>>> Get(string name)
+    {
+        var peers = await peerRepository.GetPeerByInterfaceNameAsync(name);
+        return Ok(peers);
     }
 }
