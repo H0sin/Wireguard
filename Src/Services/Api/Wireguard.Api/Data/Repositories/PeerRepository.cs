@@ -47,11 +47,11 @@ public class PeerRepository(
                     if (availableIp == null) throw new ApplicationException("no available ip address");
 
                     KeyPair keyPair = KeyGeneratorHelper.GenerateKeys();
-
-                    peer.Name ??= Guid.NewGuid().ToString("N");
-                    peer.PublicKey ??= keyPair.PublicKey;
-                    peer.PresharedKey ??= keyPair.PresharedKey;
-                    peer.AllowedIPs ??= new List<string> { availableIp.Ip };
+                    
+                    peer.Name = Guid.NewGuid().ToString("N");
+                    peer.PublicKey = keyPair.PublicKey;
+                    peer.PresharedKey = keyPair.PresharedKey;
+                    peer.AllowedIPs = new List<string> { availableIp.Ip };
                     
                     string command = """
                                         INSERT INTO PEER (InterfaceId,
