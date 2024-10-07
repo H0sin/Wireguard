@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{1B
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{D65AF812-9DE0-42B6-BA81-54580DAD3652}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{9433ADEA-4F51-4798-9EEB-5F928529B58E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBus.Messages", "Src\BuildingBlocks\EventBus.Messages\EventBus.Messages.csproj", "{3C22F6EF-DED1-4565-A350-55B3E53B8171}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{D65AF812-9DE0-42B6-BA81-54580DAD3652}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D65AF812-9DE0-42B6-BA81-54580DAD3652}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D65AF812-9DE0-42B6-BA81-54580DAD3652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C22F6EF-DED1-4565-A350-55B3E53B8171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C22F6EF-DED1-4565-A350-55B3E53B8171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C22F6EF-DED1-4565-A350-55B3E53B8171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C22F6EF-DED1-4565-A350-55B3E53B8171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{29FB6C07-24F4-495D-99E5-7FBCAD05E349} = {1BFA3658-3ACB-4312-9D87-93C0C8324254}
 		{1BFA3658-3ACB-4312-9D87-93C0C8324254} = {42958A06-5E22-4472-89B9-94DFECA2D41F}
+		{9433ADEA-4F51-4798-9EEB-5F928529B58E} = {42958A06-5E22-4472-89B9-94DFECA2D41F}
+		{3C22F6EF-DED1-4565-A350-55B3E53B8171} = {9433ADEA-4F51-4798-9EEB-5F928529B58E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AEC06B05-56E1-49D4-9CC0-78C408A152D7}

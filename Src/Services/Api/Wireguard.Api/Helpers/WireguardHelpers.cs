@@ -173,4 +173,32 @@ public static class WireguardHelpers
 
         return true;
     }
+
+    public static async Task<string> WgShow()
+    {
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "wg",
+            Arguments = $"show",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            UserName = "root"
+        };
+        
+        using Process process = Process.Start(psi);
+        string output = await process.StandardOutput.ReadToEndAsync();
+        await process.WaitForExitAsync();
+
+        if (!string.IsNullOrEmpty(output))
+        {
+            Console.WriteLine("Output: " + output);
+        }
+        else
+        {
+            Console.WriteLine("No output received from wg show command.");
+        }
+
+        return output;
+    }
 }

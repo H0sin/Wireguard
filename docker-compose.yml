@@ -1,7 +1,7 @@
 services:
-  rabbitmq:
-    image: rabbitmq:4.0-management-alpine
-  
+#  rabbitmq:
+#    image: rabbitmq:4.0-management-alpine
+#  
   wireguarddb:
     image: postgres
 
