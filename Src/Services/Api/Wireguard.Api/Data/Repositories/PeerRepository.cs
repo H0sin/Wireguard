@@ -240,7 +240,7 @@ public class PeerRepository(
         var query = """
                     SELECT * FROM PEER P
                     JOIN Interface I ON P.InterfaceId = I.Id
-                    WHERE Name = @Name
+                    WHERE P.Name = @Name
                     """;
 
         var content = await connection.QueryAsync<Peer, Interface, string>(query, (peer, @interface) =>
