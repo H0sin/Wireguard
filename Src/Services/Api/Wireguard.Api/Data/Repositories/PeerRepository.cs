@@ -238,7 +238,7 @@ public class PeerRepository(
         await connection.OpenAsync();
 
         var query = """
-                    SELECTA * FROM PEER P
+                    SELECT * FROM PEER P
                     JOIN Interface I ON P.InterfaceId = I.Id
                     WHERE Name = @Name
                     """;
