@@ -103,6 +103,15 @@ public class PeerRepository(
         {
             try
             {
+                string query = """  
+                                SELECT COUNT(*) FROM PEER
+                                WHERE Name = @Name
+                               """;
+
+                int exist = await connection.QueryFirstOrDefaultAsync<int>(query, new { Name = peer.Name });
+
+                if (exist > 0) throw new ApplicationException("peer by name is exist");
+
                 string command = """
                                     INSERT INTO PEER (InterfaceId,
                                                       Name,
@@ -147,9 +156,9 @@ public class PeerRepository(
     {
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
         await connection.OpenAsync(cancellationToken);
 
-        // Dynamically building the SQL query
         var sqlBuilder = new StringBuilder();
         sqlBuilder.AppendLine("""
                                   SELECT P.*, I.*
@@ -219,5 +228,44 @@ public class PeerRepository(
             CountPeer = countPeer,
             Peers = peers.ToList()
         };
+    }
+
+    public async Task<string> GeneratePeerContentConfig(string name)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var query = """
+                    SELECTA * FROM PEER P
+                    JOIN Interface I ON P.InterfaceId = I.Id
+                    WHERE Name = @Name
+                    """;
+
+        var content = await connection.QueryAsync<Peer, Interface, string>(query, (peer, @interface) =>
+        {
+            if (@interface is null) throw new ApplicationException("interface not found");
+            return peer switch
+            {
+                null => throw new ApplicationException("peer by name is null"),
+                _ => $"""
+                      [Interface]
+                      PrivateKey = {peer.PrivateKey}
+                      Address = {peer.AllowedIPs}
+                      MTU = {peer.Mtu}
+                      DNS = {peer.Dns}
+
+                      [Peer]
+                      PublicKey = {@interface.PublicKey}
+                      AllowedIPs = {string.Join(", ", peer.AllowedIPs)}
+                      Endpoint = {@interface.EndPoint}:{@interface.ListenPort}
+                      PersistentKeepalive = {peer.PersistentKeepalive} 
+
+                      """
+            };
+        }, new { Name = name });
+
+        return content.FirstOrDefault();
     }
 }

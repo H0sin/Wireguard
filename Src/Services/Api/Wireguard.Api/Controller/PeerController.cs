@@ -28,7 +28,16 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ApiResult<FilterPeerDto>> Get([FromQuery] FilterPeerDto filterPeer)
     {
-        var peers = await peerRepository.FilterPeerAsync(filterPeer,new CancellationToken(default));
+        var peers = await peerRepository.FilterPeerAsync(filterPeer, new CancellationToken(default));
         return Ok(peers);
+    }
+
+    [HttpGet("GetPeerConfig/{name}")]
+    [ProducesResponseType(typeof(ApiResult<string>), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult<string>> Get(string name)
+    {
+        var config = await peerRepository.GeneratePeerContentConfig(name);
+        return Ok(config);
     }
 }
