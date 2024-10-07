@@ -64,7 +64,7 @@ public class PeerRepository(
                                                           Mut,
                                                           EndpointAllowedIPs,
                                                           Dns,
-                                                          PersistentKeepalive,
+                                                          PersistentKeepalive
                                                           ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,@PersistentKeepalive)
                                      """;
 
@@ -113,7 +113,7 @@ public class PeerRepository(
                                                       Mut,
                                                       EndpointAllowedIPs,
                                                       Dns,
-                                                      PersistentKeepalive,
+                                                      PersistentKeepalive
                                                       ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,@PersistentKeepalive)
                                  """;
 
