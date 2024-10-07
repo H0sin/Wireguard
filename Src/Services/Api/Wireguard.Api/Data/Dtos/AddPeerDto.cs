@@ -9,5 +9,8 @@ public class AddPeerDto
     public string? EndPoint { get; set; }
     public bool Bulk { get; set; }
     public int Count { get; set; } = 1;
-    
+    public string? Dns { get; set; }
+    public int? Mtu { get; set; } = 1420;
+    public int? PersistentKeepalive { get; set; } = 21;
+    public string EndpointAllowedIPs { get; set; } = "0.0.0.0/0";
 }

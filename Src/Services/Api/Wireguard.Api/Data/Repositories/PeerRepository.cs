@@ -60,8 +60,12 @@ public class PeerRepository(
                                                           PublicKey,
                                                           PrivateKey,
                                                           PresharedKey,
-                                                          AllowedIPs
-                                                          ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs)
+                                                          AllowedIPs,
+                                                          Mut,
+                                                          EndpointAllowedIPs,
+                                                          Dns,
+                                                          PersistentKeepalive,
+                                                          ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,@PersistentKeepalive)
                                      """;
 
                     int response = await connection.ExecuteAsync(command, new
@@ -72,6 +76,10 @@ public class PeerRepository(
                         keyPair.PrivateKey,
                         keyPair.PresharedKey,
                         AllowedIPs = string.Join(",", peer.AllowedIPs),
+                        Mut = peer.Mtu,
+                        EndpointAllowedIPs = peer.EndpointAllowedIPs,
+                        Dns = peer.Dns,
+                        PersistentKeepalive = peer.PersistentKeepalive
                     });
 
                     if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
@@ -91,7 +99,6 @@ public class PeerRepository(
                 throw;
             }
         }
-
         else
         {
             try
@@ -100,10 +107,14 @@ public class PeerRepository(
                                     INSERT INTO PEER (InterfaceId,
                                                       Name,
                                                       PublicKey,
+                                                      PrivateKey,
                                                       PresharedKey,
                                                       AllowedIPs,
-                                                      EndPoint
-                                                      ) Values (@InterfaceId,@Name,@PublicKey,@PresharedKey,@AllowedIPs,@EndPoint)
+                                                      Mut,
+                                                      EndpointAllowedIPs,
+                                                      Dns,
+                                                      PersistentKeepalive,
+                                                      ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,@PersistentKeepalive)
                                  """;
 
                 int response = await connection.ExecuteAsync(command, new
@@ -115,8 +126,6 @@ public class PeerRepository(
                     AllowedIPs = string.Join(",", peer.AllowedIPs),
                     interfaceId = @interface.Id
                 });
-
-                var filepaht = configuration.GetValue<string>("Interface_Directory") + $"/{@interface.Name}.conf";
 
                 if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
                     throw new ApplicationException("failed to create peer");
@@ -132,7 +141,7 @@ public class PeerRepository(
             }
         }
     }
-    
+
     public async Task<FilterPeerDto> FilterPeerAsync(FilterPeerDto filter,
         CancellationToken cancellationToken = default)
     {

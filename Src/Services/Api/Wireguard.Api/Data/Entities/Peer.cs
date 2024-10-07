@@ -17,4 +17,12 @@ public class Peer : EntityBase
     public string? AllowedIPs { get; set; }
 
     public string? EndPoint { get; set; }
+
+    public string? EndpointAllowedIPs { get; set; }
+
+    public string? Dns { get; set; }
+
+    public int? Mtu { get; set; } = 1420;
+
+    public int? PersistentKeepalive { get; set; } = 21;
 }
