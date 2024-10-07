@@ -165,18 +165,18 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
             if (!await WireguardHelpers.DeleteInterfaceFile(path + $"/{name}.conf"))
                 throw new ApplicationException("failed to delete interface file");
-
-            // delete peer
-            string command = "DELETE FROM PEER WHERE InterfaceId = @InterfaceId";
-            await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
-
-            // delete ip address
-            string command2 = "DELETE FROM IpAddress WHERE InterfaceId = @InterfaceId";
-            await connection.ExecuteAsync(command2, new { InterfaceId = @interface.Id });
+            //
+            // // delete peer
+            // string command = "DELETE FROM PEER WHERE InterfaceId = @InterfaceId";
+            // await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
+            //
+            // // delete ip address
+            // string command2 = "DELETE FROM IpAddress WHERE InterfaceId = @InterfaceId";
+            // await connection.ExecuteAsync(command2, new { InterfaceId = @interface.Id });
 
             //delete interface
-            string command3 = "DELETE FROM Interface WHERE Id = @Id";
-            int response = await connection.ExecuteAsync(command3, new { InterfaceId = @interface.Id });
+            string command = "DELETE FROM Interface WHERE Id = @Id";
+            int response = await connection.ExecuteAsync(command, new { InterfaceId = @interface.Id });
 
             await transaction.CommitAsync();
 

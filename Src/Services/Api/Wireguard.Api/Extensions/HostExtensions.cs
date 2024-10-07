@@ -85,7 +85,7 @@ namespace Wireguard.Api.Extensions
                                                   Available BOOLEAN DEFAULT FALSE,
                                                   CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                   UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                                  FOREIGN KEY (InterfaceId) REFERENCES Interface(Id)
+                                                  FOREIGN KEY (InterfaceId) REFERENCES Interface(Id) ON DELETE CASCADE;
                                               );
                                               """;
                         command.ExecuteNonQuery();
@@ -120,7 +120,7 @@ namespace Wireguard.Api.Extensions
                                                   EndPoint VARCHAR(255),
                                                   CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                   UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                                  FOREIGN KEY (InterfaceId) REFERENCES Interface(Id)
+                                                  FOREIGN KEY (InterfaceId) REFERENCES Interface(Id) ON DELETE CASCADE;
                                               );
                                               """;
                         command.ExecuteNonQuery();
