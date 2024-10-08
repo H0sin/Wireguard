@@ -28,7 +28,6 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Wireguard.Api.dll"] 
 
-COPY ["Services/Api/Wireguard.Api/config.template.json","/usr/local/etc/v2ray/config.json"]
 
 RUN apt-get update && \
     apt-get install -y iproute2 wireguard wireguard-tools curl unzip nano iptables && \
@@ -39,6 +38,8 @@ RUN mkdir -p /usr/local/etc/v2ray && mkdir -p /usr/local/etc/v2ray && cd /usr/lo
     curl -L -o v2ray.zip https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip \
     && unzip v2ray.zip \
     && rm -r v2ray.zip
+
+COPY ["Services/Api/Wireguard.Api/config.template.json","/usr/local/etc/v2ray/config.json"]
 
 RUN -config /usr/local/etc/v2ray/config.json & 
 
