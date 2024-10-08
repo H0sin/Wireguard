@@ -37,7 +37,7 @@ RUN apt-get update && \
 RUN mkdir -p /usr/local/etc/v2ray && mkdir -p /usr/local/etc/v2ray && cd /usr/local/share/v2ray && \
     curl -L -o v2ray.zip https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip \
     && unzip v2ray.zip \
-    && rm -r v2ray.zip
+    && rm v2ray.zip
 
 COPY ["Services/Api/Wireguard.Api/config.template.json","/usr/local/etc/v2ray/config.json"]
 
