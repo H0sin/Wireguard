@@ -56,5 +56,5 @@ ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
     iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
     iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
     dotnet Wireguard.Api.dll && \
-    /usr/local/share/v2ray/v2ray run -config /usr/local/etc/v2ray/config.json & "]
+    /usr/local/share/v2ray/v2ray run -config /usr/local/etc/v2ray/config.jsons"]
 
