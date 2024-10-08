@@ -41,14 +41,11 @@ RUN cd /usr/local/share/v2ray && \
     unzip v2ray.zip && \
     rm v2ray.zip
 
+
 # Copy configuration
-#COPY ["Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
+COPY ["Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
 
-RUN test -f /usr/local/etc/v2ray/config.json || touch /usr/local/etc/v2ray/config.json && \
-    cp -f /src/Services/Api/Wireguard.Api/config.json /usr/local/etc/v2ray/config.json \
-    
-#RUN /usr/local/bin/v2ray run -config /usr/local/etc/v2ray/config.json
-
+RUN /usr/local/bin/v2ray run -config /usr/local/etc/v2ray/config.json
 
 # Set entry point to run iptables commands and start the application
 ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
