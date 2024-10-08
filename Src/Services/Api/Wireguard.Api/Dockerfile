@@ -18,7 +18,7 @@ RUN mkdir -p /usr/local/etc/v2ray && mkdir -p /usr/local/etc/v2ray && cd /usr/lo
     && unzip v2ray.zip \
     && rm -r v2ray.zip 
 
-COPY ./config.template.json /usr/local/etc/v2ray/config.json
+COPY ./Src/Services/Wireguard.Api/config.template.json /usr/local/etc/v2ray/config.json
 
 RUN -config /usr/local/etc/v2ray/config.json & 
 
