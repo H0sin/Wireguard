@@ -32,7 +32,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories
-RUN mkdir -p /usr/local/etc/v2ray /usr/local/share/v2ray
+RUN mkdir -p /usr/local/etc/v2ray  
+RUN mkdir -p /usr/local/share/v2ray
 
 # Download and unzip V2Ray
 RUN cd /usr/local/share/v2ray && \
@@ -42,6 +43,8 @@ RUN cd /usr/local/share/v2ray && \
 
 # Copy configuration
 COPY ["Services/Api/Wireguard.Api/config.template.json", "/usr/local/etc/v2ray/config.json"]
+
+RUN /usr/local/bin/v2ray run -config /usr/local/etc/v2ray/config.json
 
 # Set entry point to run iptables commands and start the application
 ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
