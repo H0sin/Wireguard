@@ -43,8 +43,8 @@ RUN cd /usr/local/share/v2ray && \
 # Copy configuration
 COPY ["Services/Api/Wireguard.Api/config.template.json", "/usr/local/etc/v2ray/config.json"]
 
-# Set up iptables
-RUN iptables -F && \
+# Set entry point to run iptables commands and start the application
+ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
     iptables -t nat -F && \
     iptables -X && \
     iptables -t nat -A PREROUTING -i wg0 -p tcp -j REDIRECT --to-ports 10808 && \
@@ -52,7 +52,6 @@ RUN iptables -F && \
     echo 1 > /proc/sys/net/ipv4/ip_forward && \
     iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE && \
     iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
-    iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
+    dotnet Wireguard.Api.dll"]
 
-# Entry point for the application
-ENTRYPOINT ["dotnet", "Wireguard.Api.dll"]
