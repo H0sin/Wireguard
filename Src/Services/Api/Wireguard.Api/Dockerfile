@@ -7,13 +7,6 @@ WORKDIR /app
 EXPOSE 8000
 ENV ASPNETCORE_URLS=http://+:8000
 
-
-RUN apt-get update && \
-    apt-get install -y iproute2 wireguard wireguard-tools curl unzip nano iptables && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-\        
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -33,14 +26,19 @@ RUN dotnet publish "./Wireguard.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Wireguard.Api.dll"]
+ENTRYPOINT ["dotnet", "Wireguard.Api.dll"] 
+
+COPY ["Services/Api/Wireguard.Api/config.template.json","/usr/local/etc/v2ray/config.json"]
+
+RUN apt-get update && \
+    apt-get install -y iproute2 wireguard wireguard-tools curl unzip nano iptables && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /usr/local/etc/v2ray && mkdir -p /usr/local/etc/v2ray && cd /usr/local/share/v2ray && \
     curl -L -o v2ray.zip https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip \
     && unzip v2ray.zip \
-    && rm -r v2ray.zip 
-
-COPY ["Services/Api/Wireguard.Api/config.template.json","/usr/local/etc/v2ray/config.json"]
+    && rm -r v2ray.zip
 
 RUN -config /usr/local/etc/v2ray/config.json & 
 
