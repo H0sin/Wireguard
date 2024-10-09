@@ -133,7 +133,7 @@ namespace Wireguard.Api.Extensions
                 }
                 catch (NpgsqlException ex)
                 {
-                    logger.LogError("An error occurred while migrating the PostgreSQL database", ex);
+                    logger.LogError("An error occurred while migrating the PostgreSQL database : {ex}", ex);
 
                     if (retryForAvailability < 50)
                     {
