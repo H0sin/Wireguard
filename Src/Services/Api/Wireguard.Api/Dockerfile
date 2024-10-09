@@ -41,7 +41,6 @@ RUN cd /usr/local/share/v2ray && \
     unzip v2ray.zip && \
     rm v2ray.zip
 
-
 # Copy configuration
 COPY ["./Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
 

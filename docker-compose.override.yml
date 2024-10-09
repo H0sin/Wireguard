@@ -32,12 +32,11 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin1234
     restart: always
     ports:
-      - "5050:80"
+      - "50500:80"
     volumes:
       - pgadmin_data:/root/.pgadmin
     depends_on:
       - wireguarddb
-    network_mode: host
   
   wireguard.api:
     user: root
