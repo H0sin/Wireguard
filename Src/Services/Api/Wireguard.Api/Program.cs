@@ -1,6 +1,9 @@
 using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Extensions;
 using Wireguard.Api.Filters;
+using Quartz;
+using Wireguard.Api.Jobs;
+using Wireguard.Api.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,36 @@ builder.Services.AddScoped<IIpAddressRepository, IpAddressRepository>();
 builder.Services.AddScoped<IPeerRepository, PeerRepository>();
 
 builder.Services.AddSingleton<ExceptionHandlerFilter>();
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+    var jobSettings = builder.Configuration.GetSection("Quartz:Jobs").Get<List<JobSettings>>();
+
+    if (jobSettings != null)
+        foreach (var settings in jobSettings)
+        {
+            var jobType = Type.GetType(settings.JobType);
+            if (jobType == null)
+            {
+                throw new InvalidOperationException($"Job type '{settings.JobType}' could not be found.");
+            }
+
+            var jobKey = new JobKey(settings.JobName, settings.JobGroup);
+
+            switch (settings.JobName)
+            {
+                case "SyncPeer":
+                    q.AddJob<SyncPeer>(opts => opts.WithIdentity(jobKey));
+                    break;
+            }
+
+            q.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity(settings.TriggerName, settings.TriggerGroup)
+                .WithCronSchedule(settings.CronSchedule));
+        }
+});
 
 #region c o r s
 

@@ -78,6 +78,14 @@
               "target": "Package",
               "version": "[3.13.0, )"
             },
+            "Quartz.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[3.13.0, )"
+            },
+            "Quartz.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[3.11.0, )"
+            },
             "RabbitMQ.Client": {
               "target": "Package",
               "version": "[7.0.0-rc.11, )"
