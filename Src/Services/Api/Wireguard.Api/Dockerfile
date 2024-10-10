@@ -25,6 +25,8 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+RUN chmod +x /etc/xray
+
 # Install necessary packages
 RUN apt-get update && \
     apt-get install -y iproute2 wireguard wireguard-tools curl unzip nano iptables && \
