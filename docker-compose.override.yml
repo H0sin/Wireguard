@@ -42,14 +42,14 @@ services:
     user: root
     environment:
       - ASPNETCORE_HTTP_PORTS=8000
-      - "DatabaseSettings:ConnectionString=Host=188.245.125.107;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234;"
+      - "DatabaseSettings:ConnectionString=Host=193.151.134.103;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234;"
     ports:
       - "8000:8000"
     depends_on:
       - wireguarddb
     volumes:
       - /root/backup/wireguard/interfaces:/etc/wireguard/
-      - /root/Wireguard/Src/xray:/etc/xray
+      - /root/Wireguard/Src/xray:/etc/xray/
     network_mode: host
     privileged: true
     cap_add:
