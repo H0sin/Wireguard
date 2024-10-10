@@ -7,7 +7,10 @@ public class SyncPeer(ILogger<SyncPeer> logger) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        logger.LogInformation("job started");
         string wgs = await WireguardHelpers.WgShow();
+        
+        logger.LogInformation("job endded");
         return;
     }
 
