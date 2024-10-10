@@ -11,8 +11,8 @@ public static class WireguardHelpers
 {
     public static async Task<List<WireGuardTransfer>> GetTransferData()
     {
-           var transferData = new List<WireGuardTransfer>();
-
+        var transferData = new List<WireGuardTransfer>();
+        
         try
         {
             var processStartInfo = new ProcessStartInfo
@@ -25,12 +25,15 @@ public static class WireguardHelpers
             };
 
             using var process = Process.Start(processStartInfo);
+            
             if (process == null)
                 throw new Exception("Failed to start wg process.");
 
             string output = await process.StandardOutput.ReadToEndAsync();
-            
+        
             await process.WaitForExitAsync();
+            
+            Console.WriteLine(output);
             
             var lines = output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
@@ -42,10 +45,10 @@ public static class WireguardHelpers
                     string peer = parts[1];
                     string received = parts[2];
                     string sent = parts[3];
-                    
+
                     long receivedBytes = ParseDataSize(received);
                     long sentBytes = ParseDataSize(sent);
-
+                    
                     transferData.Add(new WireGuardTransfer
                     {
                         Interface = iface,
@@ -69,7 +72,7 @@ public static class WireguardHelpers
     {
         if (data == "0")
             return 0;
-        
+
         if (long.TryParse(data, out long bytes))
         {
             return bytes;
@@ -77,10 +80,11 @@ public static class WireguardHelpers
 
         return 0;
     }
-    
+
     public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface)
     {
-        Console.WriteLine($"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}/32");
+        Console.WriteLine(
+            $"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}/32");
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
@@ -105,8 +109,9 @@ public static class WireguardHelpers
             {
                 Console.WriteLine("No output received from wg show command.");
             }
+
             await Save(@interface.Name);
-            
+
             return true;
         }
         catch (Exception e)
@@ -255,7 +260,7 @@ public static class WireguardHelpers
             CreateNoWindow = true,
             UserName = "root"
         };
-        
+
         using Process process = Process.Start(psi);
         string output = await process.StandardOutput.ReadToEndAsync();
         await process.WaitForExitAsync();
