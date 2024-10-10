@@ -41,7 +41,6 @@ RUN cd /usr/local/share/v2ray && \
      unzip Xray-linux-64.zip && \
      rm Xray-linux-64.zip
 
-
 COPY ["./Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
 
 ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
