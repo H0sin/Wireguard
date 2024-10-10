@@ -7,6 +7,7 @@ public class SyncPeer() : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
         // logger.LogInformation("job started");
         string wgs = await WireguardHelpers.WgShow();
         

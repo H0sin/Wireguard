@@ -22,10 +22,11 @@ builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
     var jobSettings = builder.Configuration.GetSection("Quartz:Jobs").Get<List<JobSettings>>();
-
+    Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     if (jobSettings != null)
         foreach (var settings in jobSettings)
         {
+            Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
             var jobType = Type.GetType(settings.JobType);
             if (jobType == null)
             {
