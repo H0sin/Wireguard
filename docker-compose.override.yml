@@ -1,17 +1,17 @@
 services:
-#  rabbitmq:
-#    container_name: rabbitmq
-#    restart: always
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
-#    network_mode: host
-#    environment:
-#      RABBITMQ_DEFAULT_USER: hossein
-#      RABBITMQ_DEFAULT_PASS: hossein*(!^
-#    volumes:
-#      - rabbitmq_data:/var/lib/rabbitmq
-#      
+  #  rabbitmq:
+  #    container_name: rabbitmq
+  #    restart: always
+  #    ports:
+  #      - "5672:5672"
+  #      - "15672:15672"
+  #    network_mode: host
+  #    environment:
+  #      RABBITMQ_DEFAULT_USER: hossein
+  #      RABBITMQ_DEFAULT_PASS: hossein*(!^
+  #    volumes:
+  #      - rabbitmq_data:/var/lib/rabbitmq
+  #      
   wireguarddb:
     container_name: wireguarddb
     environment:
@@ -49,6 +49,7 @@ services:
       - wireguarddb
     volumes:
       - /root/backup/wireguard/interfaces:/etc/wireguard/
+      - /root/Wireguard/Src/xray:/etc/xray
     network_mode: host
     privileged: true
     cap_add:

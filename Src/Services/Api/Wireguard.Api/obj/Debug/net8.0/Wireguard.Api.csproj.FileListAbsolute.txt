@@ -38,6 +38,8 @@ D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Newtonsof
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\obj\Debug\net8.0\Wireguard.Api.sourcelink.json
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\NaCl.dll
-D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\config.template.json
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Quartz.dll
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\RabbitMQ.Client.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\config.json
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Quartz.Extensions.DependencyInjection.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Quartz.Extensions.Hosting.dll

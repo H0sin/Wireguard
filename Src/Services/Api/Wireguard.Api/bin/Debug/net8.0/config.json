@@ -1,0 +1,54 @@
+{
+  "inbounds": [
+    {
+      "tag": "iran",
+      "port": 10808,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "network": "tcp,udp",
+        "followRedirect": true
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "fl",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "2a01:4f9:c010:aac9::1",
+            "port": 30809,
+            "users": [
+              {
+                "id": "e414e1c9-6f1a-4c3f-8e22-4488679d314f",
+                "flow": "",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "none",
+        "grpcSettings": {
+          "serviceName": "",
+          "authority": "",
+          "multiMode": false
+        }
+      }
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "iran"
+        ],
+        "outboundTag": "fl"
+      }
+    ]
+  }
+}

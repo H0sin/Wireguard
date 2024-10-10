@@ -1,0 +1,12 @@
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\bin\Debug\net8.0\EventBus.Messages.deps.json
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\bin\Debug\net8.0\EventBus.Messages.dll
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\bin\Debug\net8.0\EventBus.Messages.pdb
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.GeneratedMSBuildEditorConfig.editorconfig
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.AssemblyInfoInputs.cache
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.AssemblyInfo.cs
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.csproj.CoreCompileInputs.cache
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.sourcelink.json
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.dll
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\refint\EventBus.Messages.dll
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\EventBus.Messages.pdb
+D:\Wireguard\Wireguard\Src\BuildingBlocks\EventBus.Messages\obj\Debug\net8.0\ref\EventBus.Messages.dll
