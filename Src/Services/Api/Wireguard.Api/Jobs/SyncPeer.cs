@@ -3,25 +3,21 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer : IJob
+public class SyncPeer(ILogger<SyncPeer> logger) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-        while (!cts.IsCancellationRequested)
-        {
-            try
-            {
-                var transferData = WireguardHelpers.GetTransferData();
+        logger.LogInformation("SyncPeer starting...");
 
-                if (transferData != null && transferData.Count > 0)
-                {
-                    Console.WriteLine(transferData);
-                }
-            }
-            catch (Exception ex)
+        var transferData = WireguardHelpers.GetTransferData();
+
+        logger.LogInformation(transferData.ToString());
+        
+        if (transferData != null && transferData.Count > 0)
+        {
+            foreach (var transfer in transferData)
             {
-                Console.WriteLine(ex + "An error occurred while processing transfer data.");
+                logger.LogInformation(transfer.PeerPublicKey);
             }
         }
     }
