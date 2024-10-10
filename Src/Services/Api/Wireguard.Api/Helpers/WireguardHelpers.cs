@@ -9,7 +9,7 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
-    public static List<WireGuardTransfer> GetTransferData()
+    public static async Task<List<WireGuardTransfer>> GetTransferData()
     {
            var transferData = new List<WireGuardTransfer>();
 
@@ -28,8 +28,9 @@ public static class WireguardHelpers
             if (process == null)
                 throw new Exception("Failed to start wg process.");
 
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
+            string output = await process.StandardOutput.ReadToEndAsync();
+            
+            await process.WaitForExitAsync();
             
             var lines = output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
@@ -57,6 +58,7 @@ public static class WireguardHelpers
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             return null;
         }
 

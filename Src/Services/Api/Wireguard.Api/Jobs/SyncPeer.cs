@@ -9,7 +9,7 @@ public class SyncPeer(ILogger<SyncPeer> logger) : IJob
     {
         logger.LogInformation("SyncPeer starting...");
 
-        var transferData = WireguardHelpers.GetTransferData();
+        var transferData = await WireguardHelpers.GetTransferData();
 
         logger.LogInformation(transferData.ToString());
         
@@ -20,5 +20,7 @@ public class SyncPeer(ILogger<SyncPeer> logger) : IJob
                 logger.LogInformation(transfer.PeerPublicKey);
             }
         }
+        
+        await Task.CompletedTask;
     }
 }
