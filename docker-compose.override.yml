@@ -49,7 +49,7 @@ services:
       - wireguarddb
     volumes:
       - /root/backup/wireguard/interfaces:/etc/wireguard/
-      - /root/Wireguard/Src/xray:/etc/xray/
+      - /root/Wireguard/Src/Srvices/Api/config.json:/usr/local/etc/v2ray/
     network_mode: host
     privileged: true
     cap_add:
