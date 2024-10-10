@@ -3,24 +3,25 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer(ILogger<SyncPeer> logger) : IJob
+public class SyncPeer : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        logger.LogInformation("SyncPeer starting...");
-
+        // logger.LogInformation("SyncPeer starting...");
+        Console.WriteLine($"SyncPeer starting...");
         var transferData = await WireguardHelpers.GetTransferData();
+        Console.WriteLine($"SyncPeer: {transferData}");
+        // logger.LogInformation(transferData.ToString());
 
-        logger.LogInformation(transferData.ToString());
-        
         if (transferData != null && transferData.Count > 0)
         {
             foreach (var transfer in transferData)
             {
-                logger.LogInformation(transfer.PeerPublicKey);
+                Console.WriteLine(transfer.PeerPublicKey);
+                // logger.LogInformation(transfer.PeerPublicKey);
             }
         }
-        
+
         await Task.CompletedTask;
     }
 }
