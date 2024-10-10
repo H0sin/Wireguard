@@ -36,10 +36,10 @@ RUN mkdir -p /usr/local/etc/v2ray
 RUN mkdir -p /usr/local/share/v2ray
 
 # Download and unzip V2Ray
-RUN cd /usr/local/share/v2ray && \
-    curl -L -o v2ray.zip https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip && \
-    unzip v2ray.zip && \
-    rm v2ray.zip
+#RUN cd /usr/local/share/v2ray && \
+#    curl -L -o v2ray.zip https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip && \
+#    unzip v2ray.zip && \
+#    rm v2ray.zip
 
 # Copy configuration
 COPY ["./Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
@@ -54,6 +54,18 @@ ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
     iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE && \
     iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
     iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
-    /usr/local/share/v2ray/v2ray run -config /usr/local/etc/v2ray/config.json & \
+    /etc/xray/xray run -config /usr/local/etc/v2ray/config.json & \
     dotnet Wireguard.Api.dll"]
 
+
+#ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
+ #    iptables -t nat -F && \
+ #    iptables -X && \
+ #    iptables -t nat -A PREROUTING -i wg0 -p tcp -j REDIRECT --to-ports 10808 && \
+ #    iptables -t nat -A PREROUTING -i wg0 -p udp -j REDIRECT --to-ports 10808 && \
+ #    echo 1 > /proc/sys/net/ipv4/ip_forward && \
+ #    iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE && \
+ #    iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
+ #    iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
+ #    /usr/local/share/v2ray/v2ray run -config /usr/local/etc/v2ray/config.json & \
+ #    dotnet Wireguard.Api.dll"]
