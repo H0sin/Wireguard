@@ -32,7 +32,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-RUN  dotnet Wireguard.Api.dll
+ENTRYPOINT ["dotnet", "Wireguard.Api.dll"]
+
 # # Create necessary directories
 # RUN mkdir -p /usr/local/etc/v2ray  
 # RUN mkdir -p /usr/local/share/v2ray
