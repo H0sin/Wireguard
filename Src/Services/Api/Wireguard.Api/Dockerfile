@@ -27,7 +27,7 @@ COPY --from=publish /app/publish .
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install -y iproute2 wireguard wireguard-tools && \
+    apt-get install -y iproute2 wireguard wireguard-tools curl unzip nano iptables wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
