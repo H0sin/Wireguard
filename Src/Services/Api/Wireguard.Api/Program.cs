@@ -2,6 +2,7 @@ using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Extensions;
 using Wireguard.Api.Filters;
 using Quartz;
+using Quartz.Impl;
 using Wireguard.Api.Jobs;
 using Wireguard.Api.Settings;
 
@@ -18,36 +19,24 @@ builder.Services.AddScoped<IPeerRepository, PeerRepository>();
 
 builder.Services.AddSingleton<ExceptionHandlerFilter>();
 
-builder.Services.AddQuartz(q =>
-{
-    q.UseMicrosoftDependencyInjectionJobFactory();
-    var jobSettings = builder.Configuration.GetSection("Quartz:Jobs").Get<List<JobSettings>>();
-    Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
-    if (jobSettings != null)
-        foreach (var settings in jobSettings)
-        {
-            Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
-            var jobType = Type.GetType(settings.JobType);
-            if (jobType == null)
-            {
-                throw new InvalidOperationException($"Job type '{settings.JobType}' could not be found.");
-            }
+StdSchedulerFactory factory = new StdSchedulerFactory();
+IScheduler scheduler = await factory.GetScheduler();
 
-            var jobKey = new JobKey(settings.JobName, settings.JobGroup);
+await scheduler.Start();
 
-            switch (settings.JobName)
-            {
-                case "SyncPeer":
-                    q.AddJob<SyncPeer>(opts => opts.WithIdentity(jobKey));
-                    break;
-            }
+IJobDetail job = JobBuilder.Create<SyncPeer>()
+    .WithIdentity("SyncPeer", "group1")
+    .Build();
 
-            q.AddTrigger(opts => opts
-                .ForJob(jobKey)
-                .WithIdentity(settings.TriggerName, settings.TriggerGroup)
-                .WithCronSchedule(settings.CronSchedule));
-        }
-});
+ITrigger trigger = TriggerBuilder.Create()
+    .WithIdentity("SyncPeerTrigger", "group1")
+    .StartNow()
+    .WithSimpleSchedule(x => x
+        .WithIntervalInSeconds(15)
+        .RepeatForever())
+    .Build();
+
+await scheduler.ScheduleJob(job, trigger);
 
 #region c o r s
 

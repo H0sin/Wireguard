@@ -3,28 +3,19 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer() : IJob
+public class SyncPeer : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
-        // logger.LogInformation("job started");
         string wgs = await WireguardHelpers.WgShow();
-        
-        // logger.LogInformation("job endded");
-        return;
+        await Task.CompletedTask;
     }
 
     private (double upload, double download) ParseWgShowOutput(string wgShowOutput)
     {
-        Console.WriteLine("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
         Console.WriteLine(wgShowOutput);
         double upload = 0;
         double download = 0;
-        
-        // logger.LogInformation("0plolllllllllllllllllllllllllllllllllllllllllllllllll");
-        //
-        // logger.LogInformation(wgShowOutput);
         
         string[] lines = wgShowOutput.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
