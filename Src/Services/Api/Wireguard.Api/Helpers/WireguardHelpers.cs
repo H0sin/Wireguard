@@ -179,7 +179,7 @@ public static class WireguardHelpers
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
-            Arguments = $"show",
+            Arguments = "show",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true,

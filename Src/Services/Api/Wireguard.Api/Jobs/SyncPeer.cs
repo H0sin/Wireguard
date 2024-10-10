@@ -3,7 +3,7 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer : IJob
+public class SyncPeer(ILogger<SyncPeer> logger) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
@@ -16,7 +16,11 @@ public class SyncPeer : IJob
         Console.WriteLine(wgShowOutput);
         double upload = 0;
         double download = 0;
-
+        
+        logger.LogInformation("0plolllllllllllllllllllllllllllllllllllllllllllllllll");
+        
+        logger.LogInformation(wgShowOutput);
+        
         string[] lines = wgShowOutput.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var line in lines)
