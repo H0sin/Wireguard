@@ -25,6 +25,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+RUN mkdir -p /etc/xray  
 RUN chmod +x /etc/xray
 
 # Install necessary packages
