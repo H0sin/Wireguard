@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
@@ -8,6 +9,73 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
+    public static List<WireGuardTransfer> GetTransferData()
+    {
+           var transferData = new List<WireGuardTransfer>();
+
+        try
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "wg",
+                Arguments = "show all transfer",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(processStartInfo);
+            if (process == null)
+                throw new Exception("Failed to start wg process.");
+
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+            
+            var lines = output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var parts = line.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 4)
+                {
+                    string iface = parts[0];
+                    string peer = parts[1];
+                    string received = parts[2];
+                    string sent = parts[3];
+                    
+                    long receivedBytes = ParseDataSize(received);
+                    long sentBytes = ParseDataSize(sent);
+
+                    transferData.Add(new WireGuardTransfer
+                    {
+                        Interface = iface,
+                        PeerPublicKey = peer,
+                        ReceivedBytes = receivedBytes,
+                        SentBytes = sentBytes
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+
+        return transferData;
+    }
+
+    private static long ParseDataSize(string data)
+    {
+        if (data == "0")
+            return 0;
+        
+        if (long.TryParse(data, out long bytes))
+        {
+            return bytes;
+        }
+
+        return 0;
+    }
+    
     public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface)
     {
         Console.WriteLine($"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}/32");

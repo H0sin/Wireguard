@@ -7,37 +7,22 @@ public class SyncPeer : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        string wgs = await WireguardHelpers.WgShow();
-        await Task.CompletedTask;
-    }
-
-    private (double upload, double download) ParseWgShowOutput(string wgShowOutput)
-    {
-        Console.WriteLine(wgShowOutput);
-        double upload = 0;
-        double download = 0;
-        
-        string[] lines = wgShowOutput.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var line in lines)
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        while (!cts.IsCancellationRequested)
         {
-            if (line.Contains("transfer:"))
+            try
             {
-                var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length > 4)
+                var transferData = WireguardHelpers.GetTransferData();
+
+                if (transferData != null && transferData.Count > 0)
                 {
-                    upload = ConvertToMegabytes(parts[4]);
-                    download = ConvertToMegabytes(parts[7]);
+                    Console.WriteLine(transferData);
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex + "An error occurred while processing transfer data.");
+            }
         }
-
-        return (upload, download);
-    }
-
-    private double ConvertToMegabytes(string size)
-    {
-        double value = double.Parse(size.Substring(0, size.Length - 3)); // Remove the last 3 characters (e.g. " MiB")
-        return size.EndsWith("MiB") ? value : value / 1024; // Convert to MB if not MiB
     }
 }
