@@ -27,32 +27,34 @@ COPY --from=publish /app/publish .
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install -y iproute2 wireguard wireguard-tools curl unzip nano iptables wget && \
+    apt-get install -y iproute2 wireguard wireguard-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create necessary directories
-RUN mkdir -p /usr/local/etc/v2ray  
-RUN mkdir -p /usr/local/share/v2ray
 
-RUN cd /usr/local/share/v2ray && \
-    wget https://github.com/XTLS/Xray-core/releases/download/v24.9.30/Xray-linux-64.zip && \
-    unzip Xray-linux-64.zip && \
-    rm Xray-linux-64.zip
+RUN  dotnet Wireguard.Api.dll
+# # Create necessary directories
+# RUN mkdir -p /usr/local/etc/v2ray  
+# RUN mkdir -p /usr/local/share/v2ray
 
-# Copy configuration
-COPY ["./Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
+# RUN cd /usr/local/share/v2ray && \
+#     wget https://github.com/XTLS/Xray-core/releases/download/v24.9.30/Xray-linux-64.zip && \
+#     unzip Xray-linux-64.zip && \
+#     rm Xray-linux-64.zip
 
-# Set entry point to run iptables commands and start the application
+# # Copy configuration
+# COPY ["./Services/Api/Wireguard.Api/config.json", "/usr/local/etc/v2ray/"]
 
-ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
-     iptables -t nat -F && \
-     iptables -X && \
-     iptables -t nat -A PREROUTING -i wg0 -p tcp -j REDIRECT --to-ports 10808 && \
-     iptables -t nat -A PREROUTING -i wg0 -p udp -j REDIRECT --to-ports 10808 && \
-     echo 1 > /proc/sys/net/ipv4/ip_forward && \
-     iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE && \
-     iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
-     iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
-     /usr/local/share/v2ray/xray run -config /usr/local/etc/v2ray/config.json & \
-     dotnet Wireguard.Api.dll"]
+# # Set entry point to run iptables commands and start the application
+
+# ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
+#      iptables -t nat -F && \
+#      iptables -X && \
+#      iptables -t nat -A PREROUTING -i wg0 -p tcp -j REDIRECT --to-ports 10808 && \
+#      iptables -t nat -A PREROUTING -i wg0 -p udp -j REDIRECT --to-ports 10808 && \
+#      echo 1 > /proc/sys/net/ipv4/ip_forward && \
+#      iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE && \
+#      iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
+#      iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
+#      /usr/local/share/v2ray/xray run -config /usr/local/etc/v2ray/config.json & \
+#      dotnet Wireguard.Api.dll"]
