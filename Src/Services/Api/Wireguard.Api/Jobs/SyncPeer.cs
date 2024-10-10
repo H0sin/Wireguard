@@ -10,14 +10,15 @@ public class SyncPeer : IJob
         string wgs = await WireguardHelpers.WgShow();
         return;
     }
-    
+
     private (double upload, double download) ParseWgShowOutput(string wgShowOutput)
     {
+        Console.WriteLine(wgShowOutput);
         double upload = 0;
         double download = 0;
 
         string[] lines = wgShowOutput.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-        
+
         foreach (var line in lines)
         {
             if (line.Contains("transfer:"))
@@ -28,7 +29,6 @@ public class SyncPeer : IJob
                     upload = ConvertToMegabytes(parts[4]);
                     download = ConvertToMegabytes(parts[7]);
                 }
-                
             }
         }
 
