@@ -120,6 +120,12 @@ namespace Wireguard.Api.Extensions
                                                   EndPoint VARCHAR(255),
                                                   CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                   UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                  TotalReceivedVolume BIGINT,
+                                                  DownloadVolume BIGINT,
+                                                  UploadVolume BIGINT,
+                                                  StartTime BIGINT,
+                                                  ExpireTime BIGINT,
+                                                  Status VARCHAR(20),
                                                   FOREIGN KEY (InterfaceId) REFERENCES Interface(Id) ON DELETE CASCADE
                                               );
                                               """;
