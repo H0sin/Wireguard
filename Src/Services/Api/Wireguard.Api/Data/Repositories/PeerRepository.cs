@@ -64,8 +64,25 @@ public class PeerRepository(
                                                           Mut,
                                                           EndpointAllowedIPs,
                                                           Dns,
-                                                          PersistentKeepalive
-                                                          ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,@PersistentKeepalive)
+                                                          PersistentKeepalive,
+                                                          OnHoldExpireDurection,
+                                                          Status,
+                                                          TotalVolume,
+                                                          ExpireTime
+                                                          ) Values (@InterfaceId,
+                                                                    @Name,
+                                                                    @PublicKey,
+                                                                    @PrivateKey,
+                                                                    @PresharedKey,
+                                                                    @AllowedIPs,
+                                                                    @Mut,
+                                                                    @EndpointAllowedIPs,
+                                                                    @Dns,
+                                                                    @PersistentKeepalive,
+                                                                    @OnHoldExpireDurection,
+                                                                    @Status,
+                                                                    @TotalVolume,
+                                                                    @ExpireTime)
                                      """;
 
                     int response = await connection.ExecuteAsync(command, new
@@ -79,7 +96,11 @@ public class PeerRepository(
                         Mut = peer.Mtu,
                         EndpointAllowedIPs = peer.EndpointAllowedIPs,
                         Dns = peer.Dns,
-                        PersistentKeepalive = peer.PersistentKeepalive
+                        PersistentKeepalive = peer.PersistentKeepalive,
+                        OnHoldExpireDurection = peer.OnHoldExpireDurection,
+                        Status = peer.Status,
+                        TotalVolume = peer.TotalVolume,
+                        ExpireTime = peer.ExpireTime
                     });
 
                     if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
@@ -122,18 +143,35 @@ public class PeerRepository(
                                                       Mut,
                                                       EndpointAllowedIPs,
                                                       Dns,
-                                                      PersistentKeepalive
-                                                      ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,@PersistentKeepalive)
+                                                      PersistentKeepalive,
+                                                      OnHoldExpireDurection,
+                                                      Status,
+                                                      TotalVolume,
+                                                      ExpireTime
+                                                      ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,
+                                                               @PersistentKeepalive,
+                                                               @OnHoldExpireDurection,
+                                                               @Status,
+                                                               @TotalVolume,
+                                                               @ExpireTime)
                                  """;
 
                 int response = await connection.ExecuteAsync(command, new
                 {
+                    interfaceId = @interface.Id,
                     peer.Name,
+                    PrivateKey = peer.PublicKey,
                     peer.PublicKey,
-                    peer.EndPoint,
                     peer.PresharedKey,
                     AllowedIPs = string.Join(",", peer.AllowedIPs),
-                    interfaceId = @interface.Id
+                    Mut = peer.Mtu,
+                    EndpointAllowedIPs = peer.EndpointAllowedIPs,
+                    Dns = peer.Dns,
+                    PersistentKeepalive = peer.PersistentKeepalive,
+                    OnHoldExpireDurection = peer.OnHoldExpireDurection,
+                    Status = peer.Status,
+                    TotalVolume = peer.TotalVolume,
+                    ExpireTime = peer.ExpireTime
                 });
 
                 if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))

@@ -23,8 +23,8 @@ services:
       RESHARPER_LOG_CONF: "/etc/opt/rider-debugger/backend-log.xml"
     image: "wireguard.api:dev"
     ports:
-    - "127.0.0.1:57002:57100"
-    - "127.0.0.1:57202:57300"
+    - "127.0.0.1:57000:57100"
+    - "127.0.0.1:57200:57300"
     volumes:
     - "C:\\Users\\hfara\\.nuget\\packages:/root/.nuget/packages"
     - "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api:/app:rw"
@@ -33,5 +33,5 @@ services:
       Linux64:/opt/rider-debugger"
     - "C:\\Program Files\\JetBrains\\JetBrains Rider 2024.2.3\\bin:/etc/opt/rider-debugger/backend-log.xml"
     - "C:\\Users\\hfara\\AppData\\Local\\JetBrains\\Rider2024.2\\log\\DebuggerWorker\\\
-      JetBrains.Debugger.Worker.2024_10_06_14_25_38:/var/opt/rider-debugger:rw"
+      JetBrains.Debugger.Worker.2024_10_12_20_47_21:/var/opt/rider-debugger:rw"
     working_dir: "/app"
