@@ -38,26 +38,29 @@ public static class WireguardHelpers
             var lines = output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
-                var parts = line.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 4)
+                if (!string.IsNullOrEmpty(line))
                 {
-                    string iface = parts[0];
-                    string peer = parts[1];
-                    string received = parts[2];
-                    string sent = parts[3];
-
-                    long receivedBytes = ParseDataSize(received);
-                    long sentBytes = ParseDataSize(sent);
-
-                    transferData.Add(new WireGuardTransfer
+                    var parts = line.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 4)
                     {
-                        Interface = iface,
-                        PeerPublicKey = peer,
-                        ReceivedBytes = receivedBytes,
-                        SentBytes = sentBytes
-                    });
+                        string iface = parts[0];
+                        string peer = parts[1];
+                        string received = parts[2];
+                        string sent = parts[3];
 
-                    Console.WriteLine(iface + ": " + peer + ": " + receivedBytes + "/" + sentBytes);
+                        long receivedBytes = ParseDataSize(received);
+                        long sentBytes = ParseDataSize(sent);
+
+                        transferData.Add(new WireGuardTransfer
+                        {
+                            Interface = iface,
+                            PeerPublicKey = peer,
+                            ReceivedBytes = receivedBytes,
+                            SentBytes = sentBytes
+                        });
+
+                        Console.WriteLine(iface + ": " + peer + ": " + receivedBytes + "/" + sentBytes);
+                    }   
                 }
             }
         }
