@@ -258,7 +258,7 @@ public class PeerRepository(
 
                       [Peer]
                       PublicKey = {@interface.PublicKey}
-                      AllowedIPs = {string.Join(", ", peer.AllowedIPs)}
+                      AllowedIPs = {peer.EndpointAllowedIPs}
                       Endpoint = {@interface.EndPoint}:{@interface.ListenPort}
                       PersistentKeepalive = {peer.PersistentKeepalive} 
 
