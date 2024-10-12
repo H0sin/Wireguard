@@ -19,25 +19,58 @@ builder.Services.AddScoped<IPeerRepository, PeerRepository>();
 
 builder.Services.AddSingleton<ExceptionHandlerFilter>();
 
-StdSchedulerFactory factory = new StdSchedulerFactory();
-IScheduler scheduler = await factory.GetScheduler();
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
 
-await scheduler.Start();
+    var jobSettings = builder.Configuration.GetSection("Quartz:Jobs").Get<List<JobSettings>>();
 
-IJobDetail job = JobBuilder.Create<SyncPeer>()
-    .WithIdentity("SyncPeer", "group1")
-    .Build();
+    if (jobSettings != null)
+        foreach (var settings in jobSettings)
+        {
+            var jobType = Type.GetType(settings.JobType);
+            if (jobType == null)
+            {
+                throw new InvalidOperationException($"Job type '{settings.JobType}' could not be found.");
+            }
 
-ITrigger trigger = TriggerBuilder.Create()
-    .WithIdentity("SyncPeerTrigger",
-        "group1")
-    .StartNow()
-    .WithSimpleSchedule(x => x
-        .WithIntervalInSeconds(15)
-        .RepeatForever())
-    .Build();
+            var jobKey = new JobKey(settings.JobName, settings.JobGroup);
 
-await scheduler.ScheduleJob(job, trigger);
+            switch (settings.JobName)
+            {
+                case "SyncPeer":
+                    q.AddJob<SyncPeer>(opts => opts.WithIdentity(jobKey));
+                    break;
+            }
+
+            q.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity(settings.TriggerName, settings.TriggerGroup)
+                .WithCronSchedule(settings.CronSchedule));
+        }
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+// StdSchedulerFactory factory = new StdSchedulerFactory();
+// IScheduler scheduler = await factory.GetScheduler();
+//
+// await scheduler.Start();
+//
+// IJobDetail job = JobBuilder.Create<SyncPeer>()
+//     .WithIdentity("SyncPeer", "group1")
+//     .Build();
+//
+// ITrigger trigger = TriggerBuilder.Create()
+//     .WithIdentity("SyncPeerTrigger",
+//         "group1")
+//     .StartNow()
+//     .WithSimpleSchedule(x => x
+//         .WithIntervalInSeconds(15)
+//         .RepeatForever())
+//     .Build();
+//
+// await scheduler.ScheduleJob(job, trigger);
 
 #region c o r s
 
