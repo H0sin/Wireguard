@@ -53,15 +53,12 @@ public static class WireguardHelpers
             if (process.ExitCode != 0)
             {
                 var errorOutput = errorBuilder.ToString();
-                throw new Exception($"فرآیند wg با کد خروجی {process.ExitCode} خاتمه یافت: {errorOutput}");
+                throw new Exception($"{process.ExitCode} {errorOutput}");
             }
 
             var output = outputBuilder.ToString();
-            // ثبت خروجی برای دیباگ
-            Console.WriteLine("خروجی wg:\n" + output);
 
             var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            // تعریف الگوی Regex برای تطبیق خطوط با چهار بخش
             var regex = new Regex(@"^(?<iface>\S+)\s+(?<peer>\S+)\s+(?<received>\d+)\s+(?<sent>\d+)$");
 
             foreach (var line in lines)
@@ -70,12 +67,9 @@ public static class WireguardHelpers
                 if (string.IsNullOrEmpty(trimmedLine))
                     continue;
 
-                Console.WriteLine($"در حال پردازش خط: {trimmedLine}");
-
                 var match = regex.Match(trimmedLine);
                 if (!match.Success)
                 {
-                    Console.WriteLine($"خط نادیده گرفته شد به دلیل عدم تطابق با الگوی مورد انتظار: {trimmedLine}");
                     continue;
                 }
 
@@ -90,16 +84,13 @@ public static class WireguardHelpers
                 if (!receivedParsed)
                 {
                     receivedBytes = 0;
-                    Console.WriteLine($"عدم موفقیت در پارس کردن تعداد بایت‌های دریافتی برای خط: {trimmedLine}");
                 }
 
                 if (!sentParsed)
                 {
                     sentBytes = 0;
-                    Console.WriteLine($"عدم موفقیت در پارس کردن تعداد بایت‌های ارسال شده برای خط: {trimmedLine}");
                 }
 
-                // **تغییر: حذف فیلتر مقادیر صفر**
                 transferData.Add(new WireGuardTransfer
                 {
                     Interface = iface,
@@ -107,44 +98,15 @@ public static class WireguardHelpers
                     ReceivedBytes = receivedBytes,
                     SentBytes = sentBytes
                 });
-
-                Console.WriteLine($"اضافه شد: {iface}: {peer}: {receivedBytes}/{sentBytes}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"خطا در GetTransferDataAsync: {ex.Message}");
-            // بازگشت یک لیست خالی به جای null برای جلوگیری از خطاهای مرجع خالی
+            Console.WriteLine(ex.Message);
             return new List<WireGuardTransfer>();
         }
 
-        // ثبت تعداد داده‌های افزوده شده برای دیباگ
-        Console.WriteLine($"تعداد داده‌های افزوده شده: {transferData.Count}");
-
-        // ثبت اطلاعات اولین عنصر در لیست اگر موجود باشد
-        if (transferData.Count > 0)
-        {
-            Console.WriteLine($"اولین اینترفیس: {transferData[0].Interface}");
-        }
-        else
-        {
-            Console.WriteLine("هیچ داده انتقالی موجود نیست.");
-        }
-
         return transferData;
-    }
-
-    private static long ParseDataSize(string data)
-    {
-        if (data == "0")
-            return 0;
-
-        if (long.TryParse(data, out long bytes))
-        {
-            return bytes;
-        }
-
-        return 0;
     }
 
     public static async Task<bool> CreatePeer(AddPeerDto peer, Interface @interface)

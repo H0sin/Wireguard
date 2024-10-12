@@ -17,8 +17,6 @@ public class SyncPeer : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        Console.WriteLine($"SyncPeer starting...");
-
         var transferData = await WireguardHelpers.GetTransferDataAsync();
 
         await using var connection =
@@ -41,9 +39,9 @@ public class SyncPeer : IJob
             try
             {
                 Console.WriteLine($"{transferData.Count} peer transfers from {transferData.Count} files.");
+                
                 foreach (var transfer in transferData)
                 {
-                    Console.WriteLine(transfer.PeerPublicKey);
                     await connection.ExecuteAsync(command, new
                     {
                         DownloadVolume = transfer.ReceivedBytes,

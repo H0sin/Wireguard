@@ -1,0 +1,85 @@
+﻿using System.Security.Cryptography.X509Certificates;
+using Dapper;
+using Npgsql;
+using Quartz;
+using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Data.Enums;
+
+namespace Wireguard.Api.Jobs;
+
+public class ActionPeer : IJob
+{
+    private readonly IConfiguration _configuration;
+
+    public ActionPeer(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public async Task Execute(IJobExecutionContext context)
+    {
+        await using var connection =
+            new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            var query = """
+                        SELECT * 
+                        FROM PEER
+                        WHERE (TotalReceivedVolume - TotalVolume) > 0 
+                        OR (ExpireTime < EXTRACT(EPOCH FROM NOW()) 
+                            AND (Status = 'Active' OR Status = 'Disabled' OR Status = 'OnHold'))
+                        """;
+
+            var command = """
+                          UPDATE PEER SET Status = @Status
+                          WHERE PublikKey = @PublikKey
+                          """;
+
+            IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction);
+
+            long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+            foreach (var peer in peers)
+            {
+                if (peer.Status == PeerStatus.OnHold.ToString() & peer.LastTotalReceivedVolume != 0)
+                {
+                    await connection.ExecuteAsync(command, new
+                    {
+                        Status = PeerStatus.Active.ToString(),
+                        PublicKey = peer.PublicKey
+                    });
+                }
+
+                if (peer.LastTotalReceivedVolume - peer.TotalVolume > 0)
+                {
+                    await connection.ExecuteAsync(command, new
+                    {
+                        Status = PeerStatus.Limited.ToString(),
+                        PublicKey = peer.PublicKey
+                    });
+                }
+
+                if (peer.OnHoldExpireDurection < currentEpochTime)
+                {
+                    await connection.ExecuteAsync(command, new
+                    {
+                        Status = PeerStatus.Expired.ToString(),
+                        PublicKey = peer.PublicKey
+                    });
+                }
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("thorw exception :" + e.Message);
+            await transaction.RollbackAsync();
+        }
+    }
+}
