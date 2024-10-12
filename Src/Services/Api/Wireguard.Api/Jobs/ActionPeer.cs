@@ -32,8 +32,7 @@ public class ActionPeer : IJob
         try
         {
             var query = """
-                        SELECT * 
-                        FROM PEER
+                        SELECT * FROM PEER
                         WHERE (
                             TotalReceivedVolume - COALESCE(TotalVolume, 0) > 0 
                             OR (
@@ -42,10 +41,10 @@ public class ActionPeer : IJob
                             )
                         );
                         """;
-
+            
             var command = """
                           UPDATE PEER SET Status = @Status
-                          WHERE PublikKey = @PublikKey
+                          WHERE PublicKey = @PublikKey
                           """;
     
             IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction);
