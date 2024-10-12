@@ -10,7 +10,7 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
-     public static async Task<List<WireGuardTransfer>> GetTransferDataAsync()
+    public static async Task<List<WireGuardTransfer>> GetTransferDataAsync()
     {
         var transferData = new List<WireGuardTransfer>();
 
@@ -61,37 +61,45 @@ public static class WireguardHelpers
             Console.WriteLine("خروجی wg:\n" + output);
 
             var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            // تعریف الگوی Regex برای تطبیق خطوط با چهار بخش
+            var regex = new Regex(@"^(?<iface>\S+)\s+(?<peer>\S+)\s+(?<received>\d+)\s+(?<sent>\d+)$");
+
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
                 if (string.IsNullOrEmpty(trimmedLine))
                     continue;
 
-                var parts = trimmedLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length < 4)
+                Console.WriteLine($"در حال پردازش خط: {trimmedLine}");
+
+                var match = regex.Match(trimmedLine);
+                if (!match.Success)
                 {
-                    // ثبت خطا یا ادامه
-                    Console.WriteLine($"خط نادیده گرفته شد به دلیل عدم وجود بخش‌های کافی: {trimmedLine}");
+                    Console.WriteLine($"خط نادیده گرفته شد به دلیل عدم تطابق با الگوی مورد انتظار: {trimmedLine}");
                     continue;
                 }
 
-                string iface = parts[0];
-                string peer = parts[1];
-                string received = parts[2];
-                string sent = parts[3];
+                string iface = match.Groups["iface"].Value;
+                string peer = match.Groups["peer"].Value;
+                string received = match.Groups["received"].Value;
+                string sent = match.Groups["sent"].Value;
 
-                if (!long.TryParse(received, out long receivedBytes))
+                bool receivedParsed = long.TryParse(received, out long receivedBytes);
+                bool sentParsed = long.TryParse(sent, out long sentBytes);
+
+                if (!receivedParsed)
                 {
                     receivedBytes = 0;
                     Console.WriteLine($"عدم موفقیت در پارس کردن تعداد بایت‌های دریافتی برای خط: {trimmedLine}");
                 }
 
-                if (!long.TryParse(sent, out long sentBytes))
+                if (!sentParsed)
                 {
                     sentBytes = 0;
                     Console.WriteLine($"عدم موفقیت در پارس کردن تعداد بایت‌های ارسال شده برای خط: {trimmedLine}");
                 }
 
+                // **تغییر: حذف فیلتر مقادیر صفر**
                 transferData.Add(new WireGuardTransfer
                 {
                     Interface = iface,
@@ -99,14 +107,19 @@ public static class WireguardHelpers
                     ReceivedBytes = receivedBytes,
                     SentBytes = sentBytes
                 });
+
+                Console.WriteLine($"اضافه شد: {iface}: {peer}: {receivedBytes}/{sentBytes}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"خطا در GetTransferDataAsync: {ex.Message}");
-            // بسته به نیاز، می‌توانید یک لیست خالی یا یک لیست با مقادیر قبلی را بازگردانید
+            // بازگشت یک لیست خالی به جای null برای جلوگیری از خطاهای مرجع خالی
             return new List<WireGuardTransfer>();
         }
+
+        // ثبت تعداد داده‌های افزوده شده برای دیباگ
+        Console.WriteLine($"تعداد داده‌های افزوده شده: {transferData.Count}");
 
         // ثبت اطلاعات اولین عنصر در لیست اگر موجود باشد
         if (transferData.Count > 0)
@@ -141,7 +154,8 @@ public static class WireguardHelpers
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
-            Arguments = $"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}",
+            Arguments =
+                $"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true,
