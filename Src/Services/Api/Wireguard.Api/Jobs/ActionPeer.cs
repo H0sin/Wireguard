@@ -34,9 +34,12 @@ public class ActionPeer : IJob
             var query = """
                         SELECT * 
                         FROM PEER
-                        WHERE (TotalReceivedVolume - COALESCE(TotalVolume,0) > 0 
-                        OR (ExpireTime < EXTRACT(EPOCH FROM NOW()) 
-                            AND (Status = 'Active' OR Status = 'Disabled' OR Status = 'OnHold'))
+                        WHERE (
+                            TotalReceivedVolume - COALESCE(TotalVolume, 0) > 0 
+                            OR (
+                                ExpireTime < EXTRACT(EPOCH FROM NOW()) 
+                                AND (Status = 'Active' OR Status = 'Disabled' OR Status = 'OnHold')
+                            )
                         """;
 
             var command = """
