@@ -1,9 +1,11 @@
-﻿using Quartz;
+﻿using Dapper;
+using Npgsql;
+using Quartz;
 using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer : IJob
+public class SyncPeer(IConfiguration configuration) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
@@ -11,16 +13,37 @@ public class SyncPeer : IJob
 
         var transferData = await WireguardHelpers.GetTransferData();
 
-        Console.WriteLine($"SyncPeer: {transferData}");
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
 
         if (transferData != null && transferData.Count > 0)
         {
+            string command = """
+                             UPDATE PEER SET 
+                                         DownloadVolume=@DownloadVolume,
+                                         UploadVolume=@UploadVolume,
+                                         TotalReceivedVolume=@TotalReceivedVolume
+                                         WHERE PublicKey = @PublicKey
+                             """;
+
             foreach (var transfer in transferData)
             {
                 Console.WriteLine(transfer.PeerPublicKey);
-                // logger.LogInformation(transfer.PeerPublicKey);
+                await connection.ExecuteAsync(command, new
+                {
+                    DownloadVolume = transfer.ReceivedBytes,
+                    UploadVolume = transfer.SentBytes,
+                    TotalReceivedVolume = transfer.ReceivedBytes + transfer.SentBytes
+                }, transaction);
             }
         }
+
+        await transaction.CommitAsync();
+        await connection.CloseAsync();
 
         await Task.CompletedTask;
     }
