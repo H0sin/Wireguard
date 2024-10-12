@@ -27,7 +27,7 @@ public class SyncPeer : IJob
         await connection.OpenAsync();
 
         var transaction = await connection.BeginTransactionAsync();
-
+        
         if (transferData != null && transferData.Count > 0)
         {
             string command = """
@@ -40,6 +40,7 @@ public class SyncPeer : IJob
 
             try
             {
+                Console.WriteLine($"{transferData.Count} peer transfers from {transferData.Count} files.");
                 foreach (var transfer in transferData)
                 {
                     Console.WriteLine(transfer.PeerPublicKey);
