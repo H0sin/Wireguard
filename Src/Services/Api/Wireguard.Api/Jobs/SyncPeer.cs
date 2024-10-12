@@ -8,12 +8,13 @@ namespace Wireguard.Api.Jobs;
 
 public class SyncPeer : IJob
 {
-    
     private readonly IConfiguration _configuration;
+
     public SyncPeer(IConfiguration configuration)
     {
         _configuration = configuration;
     }
+
     public async Task Execute(IJobExecutionContext context)
     {
         Console.WriteLine($"SyncPeer starting...");
@@ -37,20 +38,27 @@ public class SyncPeer : IJob
                                          WHERE PublicKey = @PublicKey
                              """;
 
-            foreach (var transfer in transferData)
+            try
             {
-                Console.WriteLine(transfer.PeerPublicKey);
-                await connection.ExecuteAsync(command, new
+                foreach (var transfer in transferData)
                 {
-                    DownloadVolume = transfer.ReceivedBytes,
-                    UploadVolume = transfer.SentBytes,
-                    TotalReceivedVolume = transfer.ReceivedBytes + transfer.SentBytes
-                }, transaction);
+                    Console.WriteLine(transfer.PeerPublicKey);
+                    await connection.ExecuteAsync(command, new
+                    {
+                        DownloadVolume = transfer.ReceivedBytes,
+                        UploadVolume = transfer.SentBytes,
+                        TotalReceivedVolume = transfer.ReceivedBytes + transfer.SentBytes
+                    }, transaction);
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await transaction.RollbackAsync();
             }
         }
-
-        await transaction.CommitAsync();
-        await connection.CloseAsync();
 
         await Task.CompletedTask;
     }
