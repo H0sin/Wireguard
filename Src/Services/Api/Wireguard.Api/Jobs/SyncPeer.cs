@@ -19,7 +19,7 @@ public class SyncPeer : IJob
     {
         Console.WriteLine($"SyncPeer starting...");
 
-        var transferData = await WireguardHelpers.GetTransferData();
+        var transferData = await WireguardHelpers.GetTransferDataAsync();
 
         await using var connection =
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));

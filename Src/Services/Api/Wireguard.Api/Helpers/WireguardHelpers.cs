@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Wireguard.Api.Data.Dtos;
@@ -9,7 +10,7 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
-    public static async Task<List<WireGuardTransfer>> GetTransferData()
+     public static async Task<List<WireGuardTransfer>> GetTransferDataAsync()
     {
         var transferData = new List<WireGuardTransfer>();
 
@@ -20,56 +21,103 @@ public static class WireguardHelpers
                 FileName = "wg",
                 Arguments = "show all transfer",
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
 
-            using var process = Process.Start(processStartInfo);
+            using var process = new Process { StartInfo = processStartInfo };
 
-            if (process == null)
-                throw new Exception("Failed to start wg process.");
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
 
-            string output = await process.StandardOutput.ReadToEndAsync();
+            process.OutputDataReceived += (sender, args) =>
+            {
+                if (!string.IsNullOrEmpty(args.Data))
+                    outputBuilder.AppendLine(args.Data);
+            };
+
+            process.ErrorDataReceived += (sender, args) =>
+            {
+                if (!string.IsNullOrEmpty(args.Data))
+                    errorBuilder.AppendLine(args.Data);
+            };
+
+            process.Start();
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             await process.WaitForExitAsync();
 
-            Console.WriteLine(output);
+            if (process.ExitCode != 0)
+            {
+                var errorOutput = errorBuilder.ToString();
+                throw new Exception($"فرآیند wg با کد خروجی {process.ExitCode} خاتمه یافت: {errorOutput}");
+            }
 
-            var lines = output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var output = outputBuilder.ToString();
+            // ثبت خروجی برای دیباگ
+            Console.WriteLine("خروجی wg:\n" + output);
+
+            var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
-                if (!string.IsNullOrEmpty(line))
+                var trimmedLine = line.Trim();
+                if (string.IsNullOrEmpty(trimmedLine))
+                    continue;
+
+                var parts = trimmedLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 4)
                 {
-                    var parts = line.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 4)
-                    {
-                        string iface = parts[0];
-                        string peer = parts[1];
-                        string received = parts[2];
-                        string sent = parts[3];
-
-                        long receivedBytes = ParseDataSize(received);
-                        long sentBytes = ParseDataSize(sent);
-
-                        transferData.Add(new WireGuardTransfer
-                        {
-                            Interface = iface,
-                            PeerPublicKey = peer,
-                            ReceivedBytes = receivedBytes,
-                            SentBytes = sentBytes
-                        });
-
-                        Console.WriteLine(iface + ": " + peer + ": " + receivedBytes + "/" + sentBytes);
-                    }   
+                    // ثبت خطا یا ادامه
+                    Console.WriteLine($"خط نادیده گرفته شد به دلیل عدم وجود بخش‌های کافی: {trimmedLine}");
+                    continue;
                 }
+
+                string iface = parts[0];
+                string peer = parts[1];
+                string received = parts[2];
+                string sent = parts[3];
+
+                if (!long.TryParse(received, out long receivedBytes))
+                {
+                    receivedBytes = 0;
+                    Console.WriteLine($"عدم موفقیت در پارس کردن تعداد بایت‌های دریافتی برای خط: {trimmedLine}");
+                }
+
+                if (!long.TryParse(sent, out long sentBytes))
+                {
+                    sentBytes = 0;
+                    Console.WriteLine($"عدم موفقیت در پارس کردن تعداد بایت‌های ارسال شده برای خط: {trimmedLine}");
+                }
+
+                transferData.Add(new WireGuardTransfer
+                {
+                    Interface = iface,
+                    PeerPublicKey = peer,
+                    ReceivedBytes = receivedBytes,
+                    SentBytes = sentBytes
+                });
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return null;
+            Console.WriteLine($"خطا در GetTransferDataAsync: {ex.Message}");
+            // بسته به نیاز، می‌توانید یک لیست خالی یا یک لیست با مقادیر قبلی را بازگردانید
+            return new List<WireGuardTransfer>();
         }
-        Console.WriteLine("interface : " + transferData[0].Interface);
+
+        // ثبت اطلاعات اولین عنصر در لیست اگر موجود باشد
+        if (transferData.Count > 0)
+        {
+            Console.WriteLine($"اولین اینترفیس: {transferData[0].Interface}");
+        }
+        else
+        {
+            Console.WriteLine("هیچ داده انتقالی موجود نیست.");
+        }
+
         return transferData;
     }
 

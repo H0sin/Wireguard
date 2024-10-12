@@ -56,8 +56,8 @@ ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
       iptables -t nat -A PREROUTING -i wg0 -p tcp -j REDIRECT --to-ports 10808 && \
       iptables -t nat -A PREROUTING -i wg0 -p udp -j REDIRECT --to-ports 10808 && \
       echo 1 > /proc/sys/net/ipv4/ip_forward && \
-      iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE && \
-      iptables -A FORWARD -i wg0 -o ens192 -j ACCEPT && \
-      iptables -A FORWARD -i ens192 -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT && \
+      iptables -t nat -A POSTROUTING -j MASQUERADE && \
       /usr/local/share/v2ray/xray run -config /usr/local/etc/v2ray/config.json & \
       dotnet Wireguard.Api.dll"]
+      
+      
