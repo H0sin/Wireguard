@@ -144,7 +144,7 @@ namespace Wireguard.Api.Extensions
 
                         var columnExists = (bool)command.ExecuteScalar();
 
-                        if (!columnExists)
+                        if (columnExists)
                         {
                             command.CommandText = "ALTER TABLE Peer ADD COLUMN TotalVolume BIGINT;";
                             command.ExecuteNonQuery();
