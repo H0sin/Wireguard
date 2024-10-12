@@ -60,6 +60,10 @@ public class SyncPeer : IJob
                 await transaction.RollbackAsync();
             }
         }
+        else
+        {
+            Console.WriteLine("no data found");
+        }
 
         await Task.CompletedTask;
     }

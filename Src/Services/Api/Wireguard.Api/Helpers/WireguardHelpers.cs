@@ -12,7 +12,7 @@ public static class WireguardHelpers
     public static async Task<List<WireGuardTransfer>> GetTransferData()
     {
         var transferData = new List<WireGuardTransfer>();
-        
+
         try
         {
             var processStartInfo = new ProcessStartInfo
@@ -25,16 +25,16 @@ public static class WireguardHelpers
             };
 
             using var process = Process.Start(processStartInfo);
-            
+
             if (process == null)
                 throw new Exception("Failed to start wg process.");
 
             string output = await process.StandardOutput.ReadToEndAsync();
-        
+
             await process.WaitForExitAsync();
-            
+
             Console.WriteLine(output);
-            
+
             var lines = output.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
@@ -48,7 +48,7 @@ public static class WireguardHelpers
 
                     long receivedBytes = ParseDataSize(received);
                     long sentBytes = ParseDataSize(sent);
-                    
+
                     transferData.Add(new WireGuardTransfer
                     {
                         Interface = iface,
@@ -56,6 +56,8 @@ public static class WireguardHelpers
                         ReceivedBytes = receivedBytes,
                         SentBytes = sentBytes
                     });
+
+                    Console.WriteLine(iface + ": " + peer + ": " + receivedBytes + "/" + sentBytes);
                 }
             }
         }
