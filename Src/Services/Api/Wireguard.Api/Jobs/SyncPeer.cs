@@ -7,11 +7,11 @@ public class SyncPeer : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        // logger.LogInformation("SyncPeer starting...");
         Console.WriteLine($"SyncPeer starting...");
+
         var transferData = await WireguardHelpers.GetTransferData();
+
         Console.WriteLine($"SyncPeer: {transferData}");
-        // logger.LogInformation(transferData.ToString());
 
         if (transferData != null && transferData.Count > 0)
         {

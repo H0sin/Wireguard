@@ -32,6 +32,8 @@ public class Peer : EntityBase
 
     public long ExpireTime { get; set; }
 
+    public long TotalVolume  { get; set; }
+
     public string Status { get; set; } = PeerStatus.OnHold.ToString();
 
     public long OnHoldExpireDurection { get; set; }

@@ -125,6 +125,7 @@ namespace Wireguard.Api.Extensions
                                                   UploadVolume BIGINT,
                                                   StartTime BIGINT,
                                                   ExpireTime BIGINT,
+                                                  TotalVolume BIGINT,
                                                   Status VARCHAR(20),
                                                   FOREIGN KEY (InterfaceId) REFERENCES Interface(Id) ON DELETE CASCADE
                                               );
@@ -133,6 +134,21 @@ namespace Wireguard.Api.Extensions
                     }
                     else
                     {
+                        command.CommandText = """
+                                              SELECT EXISTS (
+                                                  SELECT 1 
+                                                  FROM information_schema.columns 
+                                                  WHERE table_name = 'peer' 
+                                                  AND column_name = 'TotalVolume'
+                                              """;
+
+                        var columnExists = (bool)command.ExecuteScalar();
+
+                        if (!columnExists)
+                        {
+                            command.CommandText = "ALTER TABLE Peer ADD COLUMN TotalVolume BIGINT;";
+                            command.ExecuteNonQuery();
+                        }
                     }
 
                     logger.LogInformation("Migration has been completed!");
