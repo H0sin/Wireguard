@@ -47,7 +47,8 @@ public class SyncPeer : IJob
                     {
                         DownloadVolume = transfer.ReceivedBytes,
                         UploadVolume = transfer.SentBytes,
-                        TotalReceivedVolume = transfer.ReceivedBytes + transfer.SentBytes
+                        TotalReceivedVolume = transfer.ReceivedBytes + transfer.SentBytes,
+                        PublicKey = transfer.PeerPublicKey
                     }, transaction);
                 }
 
