@@ -44,7 +44,7 @@ public class ActionPeer : IJob
             
             var command = """
                           UPDATE PEER SET Status = @Status
-                          WHERE PublicKey = @PublikKey
+                          WHERE PublicKey = @PublicKey
                           """;
     
             IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction);
