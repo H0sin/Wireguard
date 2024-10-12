@@ -1,23 +1,29 @@
-﻿using Dapper;
+﻿using System.Net;
+using Dapper;
 using Npgsql;
 using Quartz;
 using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer(IServiceScopeFactory serviceScopeFactory) : IJob
+public class SyncPeer : IJob
 {
+    
+    private readonly IConfiguration _configuration;
+    public SyncPeer(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
     public async Task Execute(IJobExecutionContext context)
     {
-        await using var scope = serviceScopeFactory.CreateAsyncScope();
-        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+   
         
         Console.WriteLine($"SyncPeer starting...");
 
         var transferData = await WireguardHelpers.GetTransferData();
 
         await using var connection =
-            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         await connection.OpenAsync();
 
