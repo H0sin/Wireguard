@@ -10,14 +10,18 @@ namespace Wireguard.Api.Jobs;
 public class ActionPeer : IJob
 {
     private readonly IConfiguration _configuration;
-
-    public ActionPeer(IConfiguration configuration)
+    private readonly ILogger<ActionPeer> _logger;
+    public ActionPeer(IConfiguration configuration,ILogger<ActionPeer> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task Execute(IJobExecutionContext context)
     {
+        
+        _logger.LogInformation("actionPeer executing");
+        
         await using var connection =
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
@@ -39,9 +43,11 @@ public class ActionPeer : IJob
                           UPDATE PEER SET Status = @Status
                           WHERE PublikKey = @PublikKey
                           """;
-
+    
             IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction);
-
+            
+            _logger.LogInformation("peer count" + peers.Count());
+            
             long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             foreach (var peer in peers)
