@@ -56,7 +56,7 @@ public class SyncPeer : IJob
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine("thorw exception :" + e.Message);
                 await transaction.RollbackAsync();
             }
         }
