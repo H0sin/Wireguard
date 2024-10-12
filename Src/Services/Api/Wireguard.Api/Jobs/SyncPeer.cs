@@ -5,10 +5,13 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
-public class SyncPeer(IConfiguration configuration) : IJob
+public class SyncPeer(IServiceScopeFactory serviceScopeFactory) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        await using var scope = serviceScopeFactory.CreateAsyncScope();
+        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+        
         Console.WriteLine($"SyncPeer starting...");
 
         var transferData = await WireguardHelpers.GetTransferData();

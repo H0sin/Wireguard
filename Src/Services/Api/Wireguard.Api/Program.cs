@@ -29,7 +29,8 @@ IJobDetail job = JobBuilder.Create<SyncPeer>()
     .Build();
 
 ITrigger trigger = TriggerBuilder.Create()
-    .WithIdentity("SyncPeerTrigger", "group1")
+    .WithIdentity("SyncPeerTrigger",
+        "group1")
     .StartNow()
     .WithSimpleSchedule(x => x
         .WithIntervalInSeconds(15)
