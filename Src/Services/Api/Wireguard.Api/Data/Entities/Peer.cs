@@ -24,15 +24,21 @@ public class Peer : EntityBase
 
     public long TotalReceivedVolume { get; set; }
 
+    public long LastTotalReceivedVolume { get; set; }
+
     public long DownloadVolume { get; set; }
 
+    public long LastDownloadVolume { get; set; }
+
     public long UploadVolume { get; set; }
+
+    public long LastUploadVolume { get; set; }
 
     public long StartTime { get; set; }
 
     public long ExpireTime { get; set; }
 
-    public long TotalVolume  { get; set; }
+    public long TotalVolume { get; set; }
 
     public string Status { get; set; } = PeerStatus.OnHold.ToString();
 
