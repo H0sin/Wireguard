@@ -66,7 +66,7 @@ public static class WireguardHelpers
             Console.WriteLine(ex.Message);
             return null;
         }
-
+        Console.WriteLine("interface : " + transferData[0].Interface);
         return transferData;
     }
 
