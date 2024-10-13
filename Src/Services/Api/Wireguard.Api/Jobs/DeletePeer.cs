@@ -3,6 +3,7 @@ using Npgsql;
 using Quartz;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
@@ -40,12 +41,12 @@ public class DeletePeer : IJob
                                 WHERE P.OnHoldExpireDurection < EXTRACT(EPOCH FROM NOW()) OR P.Status IN ('Expired', 'Limited','Disabled')
                         """;
 
-            var @interfaces = await connection.QueryAsync<PeerDto>(query, transaction);
+            var peers = await connection.QueryAsync<PeerDto>(query, transaction);
 
-            foreach (var i in @interfaces)
+            foreach (var peer in peers)
             {
-                _logger.LogInformation("peer public key is {i.Status} , {i.InterfaceName} , {i.PublicKey}", i.Status,
-                    i.InterfaceName, i.PublicKey);
+                await WireguardHelpers.RemovePeer(peer.InterfaceName, peer.PublicKey);
+                await WireguardHelpers.Save(peer.InterfaceName);
             }
         }
         catch (Exception e)

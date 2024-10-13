@@ -10,6 +10,58 @@ namespace Wireguard.Api.Helpers;
 
 public static class WireguardHelpers
 {
+    public static async Task RemovePeer(string @interface, string publicKey)
+    {
+        try
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "wg",
+                Arguments = $"set {@interface} peer {publicKey} remove",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = new Process { StartInfo = processStartInfo };
+
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+
+            process.OutputDataReceived += (sender, args) =>
+            {
+                if (!string.IsNullOrEmpty(args.Data))
+                    outputBuilder.AppendLine(args.Data);
+            };
+
+            process.ErrorDataReceived += (sender, args) =>
+            {
+                if (!string.IsNullOrEmpty(args.Data))
+                    errorBuilder.AppendLine(args.Data);
+            };
+
+            process.Start();
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            if (process.ExitCode != 0)
+            {
+                var errorOutput = errorBuilder.ToString();
+                throw new Exception($"{process.ExitCode} {errorOutput}");
+            }
+
+            var output = outputBuilder.ToString();
+
+            Console.WriteLine(output);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
     public static async Task<List<WireGuardTransfer>> GetTransferDataAsync()
     {
         var transferData = new List<WireGuardTransfer>();
