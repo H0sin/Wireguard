@@ -24,15 +24,9 @@ public class Peer : EntityBase
 
     public long TotalReceivedVolume { get; set; }
 
-    public long LastTotalReceivedVolume { get; set; }
-
     public long DownloadVolume { get; set; }
 
-    public long LastDownloadVolume { get; set; }
-
     public long UploadVolume { get; set; }
-
-    public long LastUploadVolume { get; set; }
 
     public long StartTime { get; set; }
 

@@ -2,6 +2,7 @@
 using Dapper;
 using Npgsql;
 using Quartz;
+using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
@@ -25,28 +26,48 @@ public class SyncPeer : IJob
         await connection.OpenAsync();
 
         var transaction = await connection.BeginTransactionAsync();
-        
+
         if (transferData != null && transferData.Count > 0)
         {
             string command = """
-                             UPDATE PEER SET 
-                                         DownloadVolume=@DownloadVolume,
-                                         UploadVolume=@UploadVolume,
-                                         TotalReceivedVolume=@TotalReceivedVolume
-                                         WHERE PublicKey = @PublicKey
+                                 WITH peer_data AS (
+                                     SELECT 
+                                         DownloadVolume,
+                                         UploadVolume
+                                     FROM PEER 
+                                     WHERE PublicKey = @PublicKey
+                                 )
+                                 UPDATE PEER
+                                 SET 
+                                     DownloadVolume = CASE 
+                                                             WHEN @ReceivedBytes < peer_data.DownloadVolume 
+                                                             THEN @ReceivedBytes + peer_data.DownloadVolume 
+                                                             ELSE @ReceivedBytes 
+                                                          END,
+                                     UploadVolume = CASE 
+                                                           WHEN @SentBytes < peer_data.UploadVolume 
+                                                           THEN @SentBytes + peer_data.UploadVolume 
+                                                           ELSE @SentBytes 
+                                                        END,
+                                     TotalReceivedVolume = CASE 
+                                                                  WHEN (@ReceivedBytes + @SentBytes) < (peer_data.DownloadVolume + peer_data.UploadVolume)
+                                                                  THEN (@ReceivedBytes + @SentBytes + peer_data.DownloadVolume + peer_data.UploadVolume)
+                                                                  ELSE (@ReceivedBytes + @SentBytes)
+                                                               END
+                                 FROM peer_data
+                                 WHERE PEER.PublicKey = @PublicKey;
                              """;
-
             try
             {
                 Console.WriteLine($"{transferData.Count} peer transfers from {transferData.Count} files.");
-                
+
                 foreach (var transfer in transferData)
                 {
+                    
                     await connection.ExecuteAsync(command, new
                     {
-                        DownloadVolume = transfer.ReceivedBytes,
-                        UploadVolume = transfer.SentBytes,
-                        TotalReceivedVolume = transfer.ReceivedBytes + transfer.SentBytes,
+                        ReceivedBytes = transfer.ReceivedBytes,
+                        SentBytes = transfer.SentBytes,
                         PublicKey = transfer.PeerPublicKey
                     }, transaction);
                 }

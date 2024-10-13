@@ -11,7 +11,8 @@ public class ActionPeer : IJob
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<ActionPeer> _logger;
-    public ActionPeer(IConfiguration configuration,ILogger<ActionPeer> logger)
+
+    public ActionPeer(IConfiguration configuration, ILogger<ActionPeer> logger)
     {
         _configuration = configuration;
         _logger = logger;
@@ -19,9 +20,8 @@ public class ActionPeer : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        
         _logger.LogInformation("actionPeer executing");
-        
+
         await using var connection =
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
@@ -36,26 +36,26 @@ public class ActionPeer : IJob
                         WHERE (
                             TotalReceivedVolume - COALESCE(TotalVolume, 0) > 0 
                             OR (
-                                ExpireTime < EXTRACT(EPOCH FROM NOW()) 
+                                ExpireTime < EXTRACT(EPOCH FROM NOW())
                                 AND Status IN ('Active', 'Disabled', 'OnHold')
                             )
                         );
                         """;
-            
+
             var command = """
                           UPDATE PEER SET Status = @Status
                           WHERE PublicKey = @PublicKey
                           """;
-    
+
             IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction);
-            
+
             _logger.LogInformation("peer count" + peers.Count());
-            
+
             long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             foreach (var peer in peers)
             {
-                if (peer.Status == PeerStatus.OnHold.ToString() & peer.LastTotalReceivedVolume != 0)
+                if (peer.Status == PeerStatus.OnHold.ToString() & peer.TotalReceivedVolume != 0)
                 {
                     await connection.ExecuteAsync(command, new
                     {
@@ -64,7 +64,7 @@ public class ActionPeer : IJob
                     });
                 }
 
-                if (peer.LastTotalReceivedVolume - peer.TotalVolume > 0)
+                if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
                 {
                     await connection.ExecuteAsync(command, new
                     {
