@@ -55,8 +55,10 @@ public class ActionPeer : IJob
 
             foreach (var peer in peers)
             {
-                if (peer.Status == PeerStatus.OnHold.ToString() & peer.TotalReceivedVolume != 0)
+                if (peer.Status == PeerStatus.OnHold.ToString().ToLower() & peer.TotalReceivedVolume != 0)
                 {
+                    _logger.LogInformation($"peer by public key {peer.PublicKey} actived");
+                    
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.Active.ToString(),
@@ -66,6 +68,8 @@ public class ActionPeer : IJob
 
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
                 {
+                    _logger.LogInformation($"peer by public key {peer.PublicKey} limited");
+                    
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.Limited.ToString(),
@@ -75,6 +79,8 @@ public class ActionPeer : IJob
 
                 if (peer.OnHoldExpireDurection < currentEpochTime)
                 {
+                    _logger.LogInformation($"peer by public key {peer.PublicKey} expired");
+                    
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.Expired.ToString(),
