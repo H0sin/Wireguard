@@ -71,19 +71,19 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         }
     }
 
-    public async Task<bool> OutOfReachIpAddressAsync(List<int> ids,NpgsqlConnection connection,
+    public async Task<bool> OutOfReachIpAddressAsync(List<int> ids, NpgsqlConnection connection,
         NpgsqlTransaction transaction)
     {
         try
         {
             foreach (var id in ids)
             {
-                await connection.ExecuteAsync("UPDATE IpAddress SET Available = false WHERE Id = @Id",new
+                await connection.ExecuteAsync("UPDATE IpAddress SET Available = false WHERE Id = @Id", new
                 {
                     Id = id
                 });
             }
-            
+
             return true;
         }
         catch (Exception e)
@@ -108,6 +108,7 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         var ip = IPAddress.Parse(startIp);
         var ipBytes = ip.GetAddressBytes();
 
+        Console.WriteLine($"Start: {startIp}, SubnetMask: {subnetMask} , {ip} , {ipBytes}");
 
         for (int i = (ipBytes[3] + 1); i <= 255; ++i)
         {
