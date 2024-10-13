@@ -50,6 +50,8 @@ services:
       - /root/Wireguard/Src/Services/Api/Wireguard.Api/Imperat/rc.local:/etc/rc.local
     network_mode: host
     privileged: true
+    sysctls:
+      net.ipv4.ip_forward: 1
     cap_add:
       - NET_ADMIN
       - NET_RAW

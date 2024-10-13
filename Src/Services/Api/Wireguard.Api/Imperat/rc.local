@@ -11,15 +11,14 @@
 #
 # By default this script does nothing.
 
-sudo ip -6 tunnel add gre1 mode ip6gre local 2a05:1a30:1:2::77 remote 2a01:4f8:c0c:6aaf::1 ttl 255
-sudo ip addr add 10.0.0.2/30 dev gre1
-sudo ip link set gre1 up
-sysctl net.ipv4.ip_forward=1
-sudo ip rule add from 11.0.0.0/24 table 100
-sudo ip rule add from 12.0.0.0/24 table 110
-sudo ip route add 0.0.0.0/0 via 10.0.0.1 dev gre1 table 100
-sudo ip route add 0.0.0.0/0 via 10.0.0.1 dev gre1 table 110
-sudo iptables -t nat -A POSTROUTING -o gre1 -j MASQUERADE
+ip -6 tunnel add gre1 mode ip6gre local 2a05:1a30:1:2::5ec remote 2a01:4f8:c0c:6aaf::1 ttl 255
+ip addr add 10.0.0.2/30 dev gre1
+ip link set gre1 up
+ip rule add from 11.0.0.0/24 table 100
+ip rule add from 12.0.0.0/24 table 110
+ip route add 0.0.0.0/0 via 10.0.0.1 dev gre1 table 100
+ip route add 0.0.0.0/0 via 10.0.0.1 dev gre1 table 110
+iptables -t nat -A POSTROUTING -o gre1 -j MASQUERADE
 
 exit 0
 

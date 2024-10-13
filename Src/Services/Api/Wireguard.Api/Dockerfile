@@ -30,7 +30,11 @@ RUN apt-get update && \
 
 #RUN apt upgrade -y && \
 #sudo modprobe ip_gre && \
-#lsmod | grep gre
+#lsmod | grep gre \
+    
+RUN chmod +x /etc/rc.local
+RUN bash /etc/rc.local
+
 
 ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
       dotnet Wireguard.Api.dll"]
