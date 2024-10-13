@@ -127,6 +127,7 @@ namespace Wireguard.Api.Extensions
                                                   ExpireTime BIGINT,
                                                   TotalVolume BIGINT,
                                                   Status VARCHAR(20),
+                                                  OnHoldExpireDurection BIGINT,
                                                   FOREIGN KEY (InterfaceId) REFERENCES Interface(Id) ON DELETE CASCADE
                                               );
                                               """;
