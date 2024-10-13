@@ -3,9 +3,9 @@
 [Flags]
 public enum PeerStatus : byte
 {
-    Active,
-    Disabled,
-    Expired,
-    OnHold,
-    Limited
+    active,
+    disabled,
+    expired,
+    onhold,
+    limited
 }

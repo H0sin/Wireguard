@@ -34,7 +34,7 @@ public class Peer : EntityBase
 
     public long TotalVolume { get; set; }
 
-    public string Status { get; set; } = PeerStatus.OnHold.ToString();
+    public string Status { get; set; } = PeerStatus.onhold.ToString();
 
     public long OnHoldExpireDurection { get; set; }
 }

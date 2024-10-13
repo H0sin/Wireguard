@@ -63,7 +63,6 @@ public class SyncPeer : IJob
 
                 foreach (var transfer in transferData)
                 {
-                    
                     await connection.ExecuteAsync(command, new
                     {
                         ReceivedBytes = transfer.ReceivedBytes,

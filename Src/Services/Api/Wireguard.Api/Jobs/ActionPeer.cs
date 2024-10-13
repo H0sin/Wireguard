@@ -37,7 +37,7 @@ public class ActionPeer : IJob
                             TotalReceivedVolume - COALESCE(TotalVolume, 0) > 0 
                             OR (
                                 ExpireTime < EXTRACT(EPOCH FROM NOW())
-                                AND Status IN ('Active', 'Disabled', 'OnHold')
+                                AND Status IN ('active', 'disabled', 'onhold')
                             )
                         );
                         """;
@@ -55,13 +55,13 @@ public class ActionPeer : IJob
 
             foreach (var peer in peers)
             {
-                if (peer.Status == PeerStatus.OnHold.ToString().ToLower() & peer.TotalReceivedVolume != 0)
+                if (peer.Status == PeerStatus.onhold.ToString() & peer.TotalReceivedVolume != 0)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} actived");
                     
                     await connection.ExecuteAsync(command, new
                     {
-                        Status = PeerStatus.Active.ToString(),
+                        Status = PeerStatus.active.ToString(),
                         PublicKey = peer.PublicKey
                     });
                 }
@@ -72,7 +72,7 @@ public class ActionPeer : IJob
                     
                     await connection.ExecuteAsync(command, new
                     {
-                        Status = PeerStatus.Limited.ToString(),
+                        Status = PeerStatus.limited.ToString(),
                         PublicKey = peer.PublicKey
                     });
                 }
@@ -83,7 +83,7 @@ public class ActionPeer : IJob
                     
                     await connection.ExecuteAsync(command, new
                     {
-                        Status = PeerStatus.Expired.ToString(),
+                        Status = PeerStatus.expired.ToString(),
                         PublicKey = peer.PublicKey
                     });
                 }

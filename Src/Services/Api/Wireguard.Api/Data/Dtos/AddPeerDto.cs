@@ -20,7 +20,7 @@ public class AddPeerDto
 
     public long TotalVolume { get; set; } = 0;
     
-    public string? Status { get; set; } = PeerStatus.OnHold.ToString();
+    public string? Status { get; set; } = PeerStatus.onhold.ToString();
 
     public long OnHoldExpireDurection { get; set; }
 }
