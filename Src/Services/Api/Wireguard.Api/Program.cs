@@ -45,6 +45,10 @@ builder.Services.AddQuartz(q =>
                 case "ActionPeer":
                     q.AddJob<ActionPeer>(opts => opts.WithIdentity(jobKey));
                     break;
+                
+                case "DeletePeer":
+                    q.AddJob<DeletePeer>(opts => opts.WithIdentity(jobKey));
+                    break;
             }
 
             q.AddTrigger(opts => opts
