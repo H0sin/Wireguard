@@ -60,7 +60,7 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
                 new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
             var ipAddresses =
-                await connection.QueryAsync<IpAddress>("SELECT * FROM IpAddress Where InterfaceId = @InterfaceId");
+                await connection.QueryAsync<IpAddress>("SELECT * FROM IpAddress Where InterfaceId = @InterfaceId",new {InterfaceId = interfaceId});
 
             return ipAddresses.ToList();
         }
