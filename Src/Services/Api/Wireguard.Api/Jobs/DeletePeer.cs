@@ -32,9 +32,9 @@ public class DeletePeer : IJob
         {
             var query = """
                                 SELECT 
-                                    I.Name AS InterfaceName
-                                    P.PublicKey
-                                    P.Status
+                                    I.Name AS InterfaceName,
+                                    P.PublicKey,
+                                    P.Statuss
                                     FROM Interface I
                                          JOIN Peer P ON I.Id = P.PeerId
                                 WHERE P.OnHoldExpireDurection < EXTRACT(EPOCH FROM NOW()) OR P.Status IN ('Expired', 'Limited','Disabled')
