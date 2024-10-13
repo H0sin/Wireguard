@@ -34,7 +34,7 @@ public class DeletePeer : IJob
                                 SELECT 
                                     I.Name AS InterfaceName,
                                     P.PublicKey,
-                                    P.Statuss
+                                    P.Status
                                     FROM Interface I
                                          JOIN Peer P ON I.Id = P.InterfaceId
                                 WHERE P.OnHoldExpireDurection < EXTRACT(EPOCH FROM NOW()) OR P.Status IN ('Expired', 'Limited','Disabled')
