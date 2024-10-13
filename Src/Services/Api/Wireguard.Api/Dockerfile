@@ -11,6 +11,7 @@ WORKDIR /src
 COPY ["Services/Api/Wireguard.Api/Wireguard.Api.csproj", "Services/Api/Wireguard.Api/"]
 RUN dotnet restore "./Services/Api/Wireguard.Api/Wireguard.Api.csproj"
 COPY . .
+
 WORKDIR "/src/Services/Api/Wireguard.Api"
 RUN dotnet build "./Wireguard.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
     
@@ -23,9 +24,9 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 RUN apt-get update && \
-    apt-get install -y iproute2 wireguard wireguard-tools iptables && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y iproute2 wireguard wireguard-tools iptables
+#    apt-get clean && \
+#    rm -rf /var/lib/apt/lists/*
 
 #RUN apt upgrade -y && \
 #sudo modprobe ip_gre && \
