@@ -65,21 +65,12 @@ public class ActionPeer : IJob
                         PublicKey = peer.PublicKey
                     });
 
-                    await connection.ExecuteAsync(command, new
+                    await connection.ExecuteAsync("UPDATE", new
                     {
-
-                    });
-                    
-                }else if (peer.TotalReceivedVolume == 0 &
-                          peer.OnHoldExpireDurection < currentEpochTime)
-                {
-                    await connection.ExecuteAsync(command, new
-                    {
-                        Status = PeerStatus.expired.ToString(),
-                        PublicKey = peer.PublicKey
+                        ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
                     });
                 }
-                
+
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} limited");
@@ -91,7 +82,7 @@ public class ActionPeer : IJob
                     });
                 }
 
-                if (peer.OnHoldExpireDurection < currentEpochTime)
+                if (peer.ExpireTime < currentEpochTime)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} expired");
 
