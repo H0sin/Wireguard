@@ -26,10 +26,10 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         string query = $"""
-                           SELECT * FROM Interface I
-                                    LEFT JOIN Peer P ON P.InterfaceId = I.Id 
-                                    WHERE Name = @Name
-                           """;
+                        SELECT * FROM Interface I
+                                 LEFT JOIN Peer P ON P.InterfaceId = I.Id 
+                                 WHERE Name = @Name
+                        """;
 
         var interfaces =
             await connection.QueryAsync<Interface>(query, new { Name = name });
@@ -43,8 +43,8 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         var @interface =
-            await connection.QueryFirstOrDefaultAsync<Interface>("SELECT * FROM Interface WHERE Name = @name",
-                new { name });
+            await connection.QueryFirstOrDefaultAsync<Interface>("SELECT * FROM Interface WHERE Name = @Name",
+                new { Name = name });
 
         return @interface;
     }
