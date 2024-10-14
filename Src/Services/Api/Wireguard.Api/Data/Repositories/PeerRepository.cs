@@ -325,21 +325,7 @@ public class PeerRepository(
                 $"interface is not active please befor active interface by name {@interface.Name}");
 
         string status = "active";
-
-        switch (getPeer.Status)
-        {
-            case "limited":
-                if (getPeer.TotalReceivedVolume < peer.TotalVolume)
-                    await WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
-                break;
-            case "expired":
-                if(getPeer.ExpireTime < peer.ExpireTime)
-                    WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
-                break;
-            case "onhold":
-                break;
-        }
-
+        
         var command = """
                         UPDATE PEER SET
                            EndPoint = @EndPoint,
@@ -368,6 +354,20 @@ public class PeerRepository(
 
         if (result is 0) throw new ApplicationException("peer not found");
 
+        switch (getPeer.Status)
+        {
+            case "limited":
+                if (getPeer.TotalReceivedVolume < peer.TotalVolume)
+                    await WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
+                break;
+            case "expired":
+                if(getPeer.ExpireTime < peer.ExpireTime)
+                    WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
+                break;
+            case "onhold":
+                break;
+        }
+        
         return await GetPeerAsyncByName(name);
     }
 
