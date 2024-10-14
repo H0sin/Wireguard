@@ -8,7 +8,6 @@ public class Peer : EntityBase
     public int InterfaceId { get; set; }
 
     public string? Name { get; set; }
-
     public string? PublicKey { get; set; }
     public string? PrivateKey { get; set; }
 

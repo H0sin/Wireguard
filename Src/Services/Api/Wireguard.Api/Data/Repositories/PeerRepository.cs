@@ -268,7 +268,7 @@ public class PeerRepository(
         };
     }
 
-    public async Task<string> GeneratePeerContentConfig(string name)
+    public async Task<string> GeneratePeerContentConfigAsync(string name)
     {
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
@@ -305,5 +305,84 @@ public class PeerRepository(
         }, new { Name = name });
 
         return content.FirstOrDefault();
+    }
+
+    public async Task<Peer?> UpdatePeerAsync(UpdatePeerDto peer, string name)
+    {
+        var getPeer = await GetPeerAsyncByName(name);
+        if (getPeer is null) throw new ApplicationException("peer not found");
+
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var @interface = await connection.QueryFirstOrDefaultAsync<Interface>("SELECT * FROM INTERFACE WHERE Id = @Id",
+            new { Id = getPeer.InterfaceId });
+
+        if (@interface.Status != "active")
+            throw new ApplicationException(
+                $"interface is not active please befor active interface by name {@interface.Name}");
+
+        string status = "active";
+
+        switch (getPeer.Status)
+        {
+            case "limited":
+                if (getPeer.TotalReceivedVolume < peer.TotalVolume)
+                    await WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
+                break;
+            case "expired":
+                if(getPeer.ExpireTime < peer.ExpireTime)
+                    WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
+                break;
+            case "onhold":
+                break;
+        }
+
+        var command = """
+                        UPDATE PEER SET
+                           EndPoint = @EndPoint,
+                           Dns = @Dns,
+                           Mtu = @Mtu,
+                           PersistentKeepalive = @PersistentKeepalive,
+                           EndpointAllowedIPs = @EndpointAllowedIPs,
+                           ExpireTime = @ExpireTime,
+                           TotalVolume = @TotalVolume,
+                           Status = @Status
+                           WHERE Name = @Name             
+                      """;
+
+        var result = await connection.ExecuteAsync(command, new
+        {
+            EndPoint = peer.EndPoint,
+            Dns = peer.Dns,
+            Mtu = peer.Mtu,
+            PersistentKeepalive = peer.PersistentKeepalive,
+            EndpointAllowedIPs = peer.EndpointAllowedIPs,
+            ExpireTime = peer.ExpireTime,
+            TotalVolume = peer.TotalVolume,
+            Status = "active",
+            Name = name
+        });
+
+        if (result is 0) throw new ApplicationException("peer not found");
+
+        return await GetPeerAsyncByName(name);
+    }
+
+    public async Task<Peer?> GetPeerAsyncByName(string name)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var query = """
+                    SELECT * FROM PEER P
+                    WHERE P.Name = @Name
+                    """;
+        return await connection
+            .QuerySingleOrDefaultAsync<Peer>(query, new { Name = name });
     }
 }

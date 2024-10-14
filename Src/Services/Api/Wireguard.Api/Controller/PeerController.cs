@@ -37,7 +37,15 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ApiResult<string>> Get(string name)
     {
-        var config = await peerRepository.GeneratePeerContentConfig(name);
+        var config = await peerRepository.GeneratePeerContentConfigAsync(name);
         return Ok(config);
+    }
+
+    [HttpPut("{name}")]
+    [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult<Peer>> Put(string name, [FromBody] UpdatePeerDto peer)
+    {
+        return Ok(await peerRepository.UpdatePeerAsync(peer, name));
     }
 }

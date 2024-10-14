@@ -1,4 +1,5 @@
-﻿using Wireguard.Api.Data.Enums;
+﻿using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Data.Enums;
 
 namespace Wireguard.Api.Data.Dtos;
 
@@ -19,8 +20,25 @@ public class AddPeerDto
     public long ExpireTime { get; set; } = 0;
 
     public long TotalVolume { get; set; } = 0;
-    
+
     public string? Status { get; set; } = PeerStatus.onhold.ToString();
 
     public long OnHoldExpireDurection { get; set; }
+
+    public AddPeerDto()
+    {
+    }
+
+    public AddPeerDto(Peer peer)
+    {
+        AllowedIPs = peer.AllowedIPs.Split(",").ToList();
+        Name = peer.Name;
+        PublicKey = peer.PublicKey;
+        PresharedKey = peer.PresharedKey;
+        EndpointAllowedIPs = peer.EndpointAllowedIPs;
+        ExpireTime = peer.ExpireTime;
+        TotalVolume = peer.TotalVolume;
+        Status = peer.Status;
+        OnHoldExpireDurection = peer.OnHoldExpireDurection;
+    }
 }

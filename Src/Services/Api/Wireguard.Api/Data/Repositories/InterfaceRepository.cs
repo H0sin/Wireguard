@@ -20,21 +20,29 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
         return interfaces.ToList();
     }
 
-    public async Task<ICollection<Interface>> GetAsync(string name)
+    public async Task<InterfaceDetailDto> GetAsync(string name)
     {
         await using var connection = new NpgsqlConnection
             (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         string query = $"""
-                        SELECT * FROM Interface I
-                                 LEFT JOIN Peer P ON P.InterfaceId = I.Id 
+                        SELECT 
+                            I.Name,
+                            I.Type,
+                            I.Port,
+                            I.PublicKey,
+                            I.Status,
+                            Sum(P.totalreceivedvolume),
+                            SUM(P.totalvolume)
+                            FROM Interface I
+                            JOIN Peer P ON P.InterfaceId = I.Id 
                                  WHERE I.Name = @Name
                         """;
 
-        var interfaces =
-            await connection.QueryAsync<Interface>(query, new { Name = name });
+        var @interface =
+            await connection.QuerySingleOrDefaultAsync<InterfaceDetailDto>(query, new { Name = name });
 
-        return interfaces.ToList();
+        return @interface;
     }
 
     public async Task<Interface?> GetInterfaceByNameAsync(string name)
