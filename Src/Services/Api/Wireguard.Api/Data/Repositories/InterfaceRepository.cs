@@ -28,7 +28,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
         string query = $"""
                         SELECT 
                             I.Name,
-                            I.Port,
+                            I.ListenPort,
                             I.PublicKey,
                             I.Status,
                             Sum(P.totalreceivedvolume) as TotoalDataUsed,
