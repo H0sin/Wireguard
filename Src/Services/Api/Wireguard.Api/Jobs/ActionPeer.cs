@@ -37,7 +37,7 @@ public class ActionPeer : IJob
                             TotalReceivedVolume - COALESCE(TotalVolume, 0) > 0 
                             OR (
                                 ExpireTime < EXTRACT(EPOCH FROM NOW())
-                                AND Status IN ('active', 'disabled', 'onhold'
+                                AND Status IN ('active', 'disabled', 'onhold')
                             )
                         )
                         """;
