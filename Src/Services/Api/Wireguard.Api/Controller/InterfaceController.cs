@@ -19,9 +19,9 @@ public class InterfaceController(
     : ControllerBase
 {
     [HttpGet("{name}")]
-    [ProducesResponseType(typeof(ApiResult<List<Interface>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResult<InterfaceDetailDto>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult<List<Interface>>> Get(string name)
+    public async Task<ApiResult<InterfaceDetailDto>> Get(string name)
     {
         if (await interfaceRepository.GetInterfaceByNameAsync(name) is null)
             throw new Exception($"Interface with name {name} not found");
