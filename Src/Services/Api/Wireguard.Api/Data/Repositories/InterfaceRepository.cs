@@ -31,8 +31,8 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                             I.Port,
                             I.PublicKey,
                             I.Status,
-                            Sum(P.totalreceivedvolume),
-                            SUM(P.totalvolume)
+                            Sum(P.totalreceivedvolume) as TotoalDataUsed,
+                            SUM(P.totalvolume) as TotalData
                             FROM Interface I
                             JOIN Peer P ON P.InterfaceId = I.Id 
                                  WHERE I.Name = @Name
