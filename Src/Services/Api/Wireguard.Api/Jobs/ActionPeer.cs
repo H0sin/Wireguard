@@ -58,7 +58,7 @@ public class ActionPeer : IJob
                 if (peer.Status == PeerStatus.onhold.ToString() & peer.TotalReceivedVolume != 0)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} actived");
-                    
+
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.active.ToString(),
@@ -69,7 +69,7 @@ public class ActionPeer : IJob
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} limited");
-                    
+
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.limited.ToString(),
@@ -80,7 +80,7 @@ public class ActionPeer : IJob
                 if (peer.OnHoldExpireDurection < currentEpochTime)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} expired");
-                    
+
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.expired.ToString(),

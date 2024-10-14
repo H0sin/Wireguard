@@ -140,7 +140,7 @@ public class PeerRepository(
                                                       PrivateKey,
                                                       PresharedKey,
                                                       AllowedIPs,
-                                                      Mut,
+                                                      Mut,0
                                                       EndpointAllowedIPs,
                                                       Dns,
                                                       PersistentKeepalive,

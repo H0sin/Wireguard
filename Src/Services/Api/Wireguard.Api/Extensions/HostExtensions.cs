@@ -121,11 +121,14 @@ namespace Wireguard.Api.Extensions
                                                   CreateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                   UpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                   TotalReceivedVolume BIGINT,
+                                                  LastTotalReceivedVolume BIGINT,
                                                   DownloadVolume BIGINT,
                                                   UploadVolume BIGINT,
                                                   StartTime BIGINT,
                                                   ExpireTime BIGINT,
                                                   TotalVolume BIGINT,
+                                                  LastDownloadVolume BIGINT,
+                                                  LastUploadVolume BIGINT,
                                                   Status VARCHAR(20),
                                                   OnHoldExpireDurection BIGINT,
                                                   FOREIGN KEY (InterfaceId) REFERENCES Interface(Id) ON DELETE CASCADE
@@ -142,6 +145,7 @@ namespace Wireguard.Api.Extensions
                                                   WHERE table_name = 'peer' 
                                                   AND column_name = 'TotalVolume')
                                               """;
+                        
 
                         var columnExists = (bool)command.ExecuteScalar();
 

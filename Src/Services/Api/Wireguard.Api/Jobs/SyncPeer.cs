@@ -32,27 +32,34 @@ public class SyncPeer : IJob
             string command = """
                                  WITH peer_data AS (
                                      SELECT 
+                                         LastDownloadVolume,
+                                         LastUploadVolume,
+                                         LastTotalReceivedVolume,
                                          DownloadVolume,
-                                         UploadVolume
+                                         UploadVolume,
+                                         TotalReceivedVolume
                                      FROM PEER 
                                      WHERE PublicKey = @PublicKey
                                  )
                                  UPDATE PEER
-                                 SET 
+                                 SET
+                                     LastDownloadVolume = @ReceivedBytes,
+                                     LastUploadVolume = @SentBytes,
+                                     LastTotalReceivedVolume = @SentBytes + @ReceivedBytes                                    
                                      DownloadVolume = CASE 
-                                                             WHEN @ReceivedBytes < peer_data.DownloadVolume 
-                                                             THEN @ReceivedBytes + peer_data.DownloadVolume 
-                                                             ELSE @ReceivedBytes 
+                                                             WHEN @ReceivedBytes => peer_data.LastDownloadVolume 
+                                                             THEN (@ReceivedBytes - peer_data.LastDownloadVolume) + peer_data.DownloadVolume 
+                                                             ELSE @ReceivedBytes + peer_data.DownloadVolume
                                                           END,
                                      UploadVolume = CASE 
-                                                           WHEN @SentBytes < peer_data.UploadVolume 
-                                                           THEN @SentBytes + peer_data.UploadVolume 
-                                                           ELSE @SentBytes 
+                                                           WHEN @SentBytes => peer_data.LastUploadVolume 
+                                                           THEN (@SentBytes - peer_data.LastUploadVolume) + peer_data.UploadVolume 
+                                                           ELSE @SentBytes + peer_data.UploadVolume
                                                         END,
                                      TotalReceivedVolume = CASE 
-                                                                  WHEN (@ReceivedBytes + @SentBytes) < (peer_data.DownloadVolume + peer_data.UploadVolume)
-                                                                  THEN (@ReceivedBytes + @SentBytes + peer_data.DownloadVolume + peer_data.UploadVolume)
-                                                                  ELSE (@ReceivedBytes + @SentBytes)
+                                                                  WHEN (@ReceivedBytes + @SentBytes) > LastTotalReceivedVolume
+                                                                  THEN ((@ReceivedBytes + @SentBytes) - LastTotalReceivedVolume) + peer_data.TotalReceivedVolume 
+                                                                  ELSE (@ReceivedBytes + @SentBytes) + peer_data.TotalReceivedVolume
                                                                END
                                  FROM peer_data
                                  WHERE PEER.PublicKey = @PublicKey;
@@ -67,7 +74,7 @@ public class SyncPeer : IJob
                     {
                         ReceivedBytes = transfer.ReceivedBytes,
                         SentBytes = transfer.SentBytes,
-                        PublicKey = transfer.PeerPublicKey
+                        PublicKey = transfer.PeerPublicKey,
                     }, transaction);
                 }
 

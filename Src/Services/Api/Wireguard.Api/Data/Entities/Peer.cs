@@ -21,7 +21,6 @@ public class Peer : EntityBase
     public string? Dns { get; set; }
     public int? Mtu { get; set; } = 1420;
     public int? PersistentKeepalive { get; set; } = 21;
-
     public long TotalReceivedVolume { get; set; }
 
     public long DownloadVolume { get; set; }
@@ -31,10 +30,10 @@ public class Peer : EntityBase
     public long StartTime { get; set; }
 
     public long ExpireTime { get; set; }
-
     public long TotalVolume { get; set; }
-
     public string Status { get; set; } = PeerStatus.onhold.ToString();
-
-    public long OnHoldExpireDurection { get; set; }
+    public long OnHoldExpireDurection { get; set; } = 0;
+    public long LastTotalReceivedVolume { get; set; } = 0;
+    public long LastDownloadVolume { get; set; } = 0;
+    public long LastUploadVolume { get; set; } = 0;
 }
