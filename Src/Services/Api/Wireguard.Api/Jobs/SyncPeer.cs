@@ -47,17 +47,17 @@ public class SyncPeer : IJob
                                      LastUploadVolume = @SentBytes,
                                      LastTotalReceivedVolume = @SentBytes + @ReceivedBytes,                          
                                      DownloadVolume = CASE 
-                                                             WHEN @ReceivedBytes => peer_data.LastDownloadVolume 
+                                                             WHEN @ReceivedBytes >= peer_data.LastDownloadVolume 
                                                              THEN (@ReceivedBytes - peer_data.LastDownloadVolume) + peer_data.DownloadVolume 
                                                              ELSE @ReceivedBytes + peer_data.DownloadVolume
                                                           END,
                                      UploadVolume = CASE 
-                                                           WHEN @SentBytes => peer_data.LastUploadVolume 
+                                                           WHEN @SentBytes >= peer_data.LastUploadVolume 
                                                            THEN (@SentBytes - peer_data.LastUploadVolume) + peer_data.UploadVolume 
                                                            ELSE @SentBytes + peer_data.UploadVolume
                                                         END,
                                      TotalReceivedVolume = CASE 
-                                                                  WHEN (@ReceivedBytes + @SentBytes) > LastTotalReceivedVolume
+                                                                  WHEN (@ReceivedBytes + @SentBytes) >= LastTotalReceivedVolume
                                                                   THEN ((@ReceivedBytes + @SentBytes) - LastTotalReceivedVolume) + peer_data.TotalReceivedVolume 
                                                                   ELSE (@ReceivedBytes + @SentBytes) + peer_data.TotalReceivedVolume
                                                                END
