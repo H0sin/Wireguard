@@ -57,8 +57,8 @@ public class SyncPeer : IJob
                                                            ELSE @SentBytes + peer_data.UploadVolume
                                                         END,
                                      TotalReceivedVolume = CASE 
-                                                                  WHEN (@ReceivedBytes + @SentBytes) >= LastTotalReceivedVolume
-                                                                  THEN ((@ReceivedBytes + @SentBytes) - LastTotalReceivedVolume) + peer_data.TotalReceivedVolume 
+                                                                  WHEN (@ReceivedBytes + @SentBytes) >= peer_data.LastTotalReceivedVolume 
+                                                                  THEN ((@ReceivedBytes + @SentBytes) - peer_data.LastTotalReceivedVolume) + peer_data.TotalReceivedVolume 
                                                                   ELSE (@ReceivedBytes + @SentBytes) + peer_data.TotalReceivedVolume
                                                                END
                                  FROM peer_data
