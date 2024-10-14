@@ -5,6 +5,7 @@ namespace Wireguard.Api.Data.Repositories;
 
 public interface IPeerRepository
 {
+    // Task ReasetPeer();
     Task<bool> InsertAsync(AddPeerDto peer, string interfaceName, CancellationToken cancellationToken = default);
     Task<FilterPeerDto> FilterPeerAsync(FilterPeerDto filter, CancellationToken cancellationToken = default);
     Task<string> GeneratePeerContentConfigAsync(string name);

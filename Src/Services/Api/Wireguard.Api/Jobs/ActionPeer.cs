@@ -39,7 +39,7 @@ public class ActionPeer : IJob
                                 ExpireTime < EXTRACT(EPOCH FROM NOW())
                                 AND Status IN ('active', 'disabled', 'onhold'
                             )
-                        );
+                        )
                         """;
 
             var command = """
@@ -64,8 +64,22 @@ public class ActionPeer : IJob
                         Status = PeerStatus.active.ToString(),
                         PublicKey = peer.PublicKey
                     });
-                }
 
+                    await connection.ExecuteAsync(command, new
+                    {
+
+                    });
+                    
+                }else if (peer.TotalReceivedVolume == 0 &
+                          peer.OnHoldExpireDurection < currentEpochTime)
+                {
+                    await connection.ExecuteAsync(command, new
+                    {
+                        Status = PeerStatus.expired.ToString(),
+                        PublicKey = peer.PublicKey
+                    });
+                }
+                
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} limited");
