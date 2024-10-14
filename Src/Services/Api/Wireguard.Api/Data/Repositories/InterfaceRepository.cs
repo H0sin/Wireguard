@@ -28,7 +28,6 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
         string query = $"""
                         SELECT 
                             I.Name,
-                            I.Type,
                             I.Port,
                             I.PublicKey,
                             I.Status,
