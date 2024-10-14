@@ -27,7 +27,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
 
         string query = $"""
                         SELECT 
-                            I.Name,
+                            I.Name AS Name,
                             I.ListenPort,
                             I.PublicKey,
                             I.Status,
@@ -36,6 +36,8 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                             FROM Interface I
                             JOIN Peer P ON P.InterfaceId = I.Id 
                                  WHERE I.Name = @Name
+                                 GROUP BY I.Name, I.ListenPort, I.PublicKey, I.Status
+                                 
                         """;
 
         var @interface =
