@@ -86,7 +86,7 @@ public class ActionPeer : IJob
                     });
                 }
 
-                if (peer.ExpireTime < currentEpochTime & peer.Status == "active")
+                if (peer.ExpireTime > currentEpochTime & peer.Status == "active")
                 {
                     _logger.LogInformation(
                         $"peer by public key {peer.PublicKey} expired , expire time = {peer.ExpireTime} , current time = {currentEpochTime}");
