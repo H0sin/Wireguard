@@ -75,7 +75,7 @@ public class ActionPeer : IJob
                         });
                 }
 
-                if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
+                if (peer.TotalReceivedVolume - peer.TotalVolume > 0 & peer.Status == "active")
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} limited");
 
@@ -86,7 +86,7 @@ public class ActionPeer : IJob
                     });
                 }
 
-                if (peer.ExpireTime > currentEpochTime & peer.Status == "active")
+                if (peer.ExpireTime > currentEpochTime & peer.Status != "onhold")
                 {
                     _logger.LogInformation(
                         $"peer by public key {peer.PublicKey} expired , expire time = {peer.ExpireTime} , current time = {currentEpochTime}");
