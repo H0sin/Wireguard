@@ -59,16 +59,20 @@ public class ActionPeer : IJob
                 {
                     _logger.LogInformation($"peer by public key {peer.PublicKey} actived");
 
+                    peer.Status = PeerStatus.active.ToString();
+
                     await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.active.ToString(),
                         PublicKey = peer.PublicKey
                     });
 
-                    await connection.ExecuteAsync("UPDATE", new
-                    {
-                        ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
-                    });
+                    await connection.ExecuteAsync(
+                        "UPDATE Peer SET ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey", new
+                        {
+                            ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
+                            PublicKey = peer.PublicKey
+                        });
                 }
 
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0)
