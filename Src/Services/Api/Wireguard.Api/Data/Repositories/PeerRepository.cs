@@ -133,6 +133,8 @@ public class PeerRepository(
 
                 if (exist > 0) throw new ApplicationException("peer by name is exist");
 
+                KeyPair keyPair = KeyGeneratorHelper.GenerateKeys();
+
                 string command = """
                                     INSERT INTO PEER (InterfaceId,
                                                       Name,
@@ -156,14 +158,17 @@ public class PeerRepository(
                                                                @ExpireTime)
                                  """;
 
+
                 int response = await connection.ExecuteAsync(command, new
                 {
                     interfaceId = @interface.Id,
-                    peer.Name,
-                    PrivateKey = peer.PublicKey,
-                    peer.PublicKey,
-                    peer.PresharedKey,
-                    AllowedIPs = string.Join(",", peer.AllowedIPs),
+                    Name = peer.Name,
+                    PrivateKey = peer.PublicKey ?? keyPair.PrivateKey,
+                    PublicKey = peer.PublicKey ?? keyPair.PublicKey,
+                    PresharedKey = peer.PresharedKey,
+                    AllowedIPs = peer.AllowedIPs.Count == 0
+                        ? ipAddresses.FirstOrDefault().Ip
+                        : string.Join(",", peer.AllowedIPs),
                     Mtu = peer.Mtu,
                     EndpointAllowedIPs = peer.EndpointAllowedIPs,
                     Dns = peer.Dns,
@@ -219,7 +224,7 @@ public class PeerRepository(
         var peers = await connection.QueryAsync<Peer, Interface, Peer>(
             sql,
             (peer, @interface) =>
-            { 
+            {
                 peer.InterfaceId = @interface.Id;
                 return peer;
             },
@@ -290,7 +295,7 @@ public class PeerRepository(
                 _ => $"""
                       [Interface]
                       PrivateKey = {peer.PrivateKey}
-                      Address = {peer.AllowedIPs}
+                      Address = {peer.AllowedIPs} 
                       MTU = {peer.Mtu}
                       DNS = {peer.Dns}
 
@@ -325,7 +330,7 @@ public class PeerRepository(
                 $"interface is not active please befor active interface by name {@interface.Name}");
 
         string status = "active";
-        
+
         var command = """
                         UPDATE PEER SET
                            EndPoint = @EndPoint,
@@ -361,13 +366,13 @@ public class PeerRepository(
                     await WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
                 break;
             case "expired":
-                if(getPeer.ExpireTime < peer.ExpireTime)
+                if (getPeer.ExpireTime < peer.ExpireTime)
                     WireguardHelpers.CreatePeer(new AddPeerDto(getPeer), @interface);
                 break;
             case "onhold":
                 break;
         }
-        
+
         return await GetPeerAsyncByName(name);
     }
 
