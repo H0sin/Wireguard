@@ -51,7 +51,7 @@ public class ActionPeer : IJob
 
             _logger.LogInformation("peer count" + peers.Count());
 
-            long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             foreach (var peer in peers)
             {
@@ -88,7 +88,8 @@ public class ActionPeer : IJob
 
                 if (peer.ExpireTime < currentEpochTime & peer.Status == "active")
                 {
-                    _logger.LogInformation($"peer by public key {peer.PublicKey} expired");
+                    _logger.LogInformation(
+                        $"peer by public key {peer.PublicKey} expired , expire time = {peer.ExpireTime} , current time = {currentEpochTime}");
 
                     await connection.ExecuteAsync(command, new
                     {

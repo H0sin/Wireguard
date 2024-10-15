@@ -61,7 +61,7 @@ public class PeerRepository(
                                                           PrivateKey,
                                                           PresharedKey,
                                                           AllowedIPs,
-                                                          Mut,
+                                                          Mtu,
                                                           EndpointAllowedIPs,
                                                           Dns,
                                                           PersistentKeepalive,
@@ -75,7 +75,7 @@ public class PeerRepository(
                                                                     @PrivateKey,
                                                                     @PresharedKey,
                                                                     @AllowedIPs,
-                                                                    @Mut,
+                                                                    @Mtu,
                                                                     @EndpointAllowedIPs,
                                                                     @Dns,
                                                                     @PersistentKeepalive,
@@ -93,7 +93,7 @@ public class PeerRepository(
                         keyPair.PrivateKey,
                         keyPair.PresharedKey,
                         AllowedIPs = string.Join(",", peer.AllowedIPs),
-                        Mut = peer.Mtu,
+                        Mtu = peer.Mtu,
                         EndpointAllowedIPs = peer.EndpointAllowedIPs,
                         Dns = peer.Dns,
                         PersistentKeepalive = peer.PersistentKeepalive,
@@ -140,7 +140,7 @@ public class PeerRepository(
                                                       PrivateKey,
                                                       PresharedKey,
                                                       AllowedIPs,
-                                                      Mut,0
+                                                      Mtu,
                                                       EndpointAllowedIPs,
                                                       Dns,
                                                       PersistentKeepalive,
@@ -148,7 +148,7 @@ public class PeerRepository(
                                                       Status,
                                                       TotalVolume,
                                                       ExpireTime
-                                                      ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mut,@EndpointAllowedIPs,@Dns,
+                                                      ) Values (@InterfaceId,@Name,@PublicKey,@PrivateKey,@PresharedKey,@AllowedIPs,@Mtu,@EndpointAllowedIPs,@Dns,
                                                                @PersistentKeepalive,
                                                                @OnHoldExpireDurection,
                                                                @Status,
@@ -164,7 +164,7 @@ public class PeerRepository(
                     peer.PublicKey,
                     peer.PresharedKey,
                     AllowedIPs = string.Join(",", peer.AllowedIPs),
-                    Mut = peer.Mtu,
+                    Mtu = peer.Mtu,
                     EndpointAllowedIPs = peer.EndpointAllowedIPs,
                     Dns = peer.Dns,
                     PersistentKeepalive = peer.PersistentKeepalive,
@@ -219,7 +219,7 @@ public class PeerRepository(
         var peers = await connection.QueryAsync<Peer, Interface, Peer>(
             sql,
             (peer, @interface) =>
-            {
+            { 
                 peer.InterfaceId = @interface.Id;
                 return peer;
             },

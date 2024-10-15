@@ -113,7 +113,7 @@ namespace Wireguard.Api.Extensions
                                                   PresharedKey VARCHAR(255),
                                                   EndpointAllowedIPs VARCHAR(255),
                                                   Dns VARCHAR(255),
-                                                  Mut INT,
+                                                  Mtu INT,
                                                   PersistentKeepalive INT,
                                                   PrivateKey VARCHAR(255),
                                                   AllowedIPs VARCHAR(700),
@@ -145,7 +145,7 @@ namespace Wireguard.Api.Extensions
                                                   WHERE table_name = 'peer' 
                                                   AND column_name = 'TotalVolume')
                                               """;
-                        
+
 
                         var columnExists = (bool)command.ExecuteScalar();
 
