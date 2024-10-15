@@ -38,7 +38,7 @@ public class DeletePeer : IJob
                                     P.Status
                                     FROM Interface I
                                          JOIN Peer P ON I.Id = P.InterfaceId
-                                WHERE P.OnHoldExpireDurection < EXTRACT(EPOCH FROM NOW()) OR P.Status IN ('expired', 'limited','disabled')
+                                WHERE P.Status IN ('expired', 'limited','disabled')
                         """;
 
             var peers = await connection.QueryAsync<PeerDto>(query, transaction);
