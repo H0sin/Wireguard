@@ -184,8 +184,6 @@ public class PeerRepository(
                 if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
                     throw new ApplicationException("failed to create peer");
 
-                await transaction.CommitAsync(cancellationToken);
-
                 var ids = peer.AllowedIPs.FirstOrDefault();
                 
                 await ipAddressRepository.OutOfReachIpAddressAsync(new List<int>() { availableIp.Id }, connection,
