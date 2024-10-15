@@ -161,13 +161,14 @@ public class PeerRepository(
                 var availableIp = ipAddresses.FirstOrDefault(x => x.Available);
                 
                 peer.AllowedIPs = peer.AllowedIPs.Count == 0 ? new List<string>{ availableIp.Ip } : peer.AllowedIPs;
+                peer.PublicKey ??= keyPair.PublicKey;
                 
                 int response = await connection.ExecuteAsync(command, new
                 {
                     interfaceId = @interface.Id,
                     Name = peer.Name,
-                    PrivateKey = peer.PublicKey ?? keyPair.PrivateKey,
-                    PublicKey = peer.PublicKey ?? keyPair.PublicKey,
+                    PrivateKey = keyPair.PrivateKey,
+                    PublicKey = peer.PublicKey,
                     PresharedKey = peer.PresharedKey,
                     AllowedIPs = string.Join(", ", peer.AllowedIPs),
                     Mtu = peer.Mtu,

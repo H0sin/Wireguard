@@ -165,6 +165,7 @@ public static class WireguardHelpers
     {
         Console.WriteLine(
             $"set {@interface.Name} peer {peer.PublicKey} allowed-ips {string.Join(",", peer.AllowedIPs)}/32");
+        
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "wg",
