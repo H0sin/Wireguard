@@ -98,7 +98,6 @@ public class ActionPeer : IJob
                     });
                 }
             }
-
             await transaction.CommitAsync();
         }
         catch (Exception e)
