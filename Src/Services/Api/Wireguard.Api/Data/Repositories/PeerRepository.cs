@@ -160,7 +160,7 @@ public class PeerRepository(
 
                 var availableIp = ipAddresses.FirstOrDefault(x => x.Available);
                 
-                var ip = peer.AllowedIPs.Count == 0 ? new List<string>{ availableIp.Ip } : peer.AllowedIPs;
+                peer.AllowedIPs = peer.AllowedIPs.Count == 0 ? new List<string>{ availableIp.Ip } : peer.AllowedIPs;
                 
                 int response = await connection.ExecuteAsync(command, new
                 {
@@ -169,7 +169,7 @@ public class PeerRepository(
                     PrivateKey = peer.PublicKey ?? keyPair.PrivateKey,
                     PublicKey = peer.PublicKey ?? keyPair.PublicKey,
                     PresharedKey = peer.PresharedKey,
-                    AllowedIPs = string.Join(", ", ip),
+                    AllowedIPs = string.Join(", ", peer.AllowedIPs),
                     Mtu = peer.Mtu,
                     EndpointAllowedIPs = peer.EndpointAllowedIPs,
                     Dns = peer.Dns,
@@ -179,7 +179,7 @@ public class PeerRepository(
                     TotalVolume = peer.TotalVolume,
                     ExpireTime = peer.ExpireTime
                 });
-
+                
                 if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
                     throw new ApplicationException("failed to create peer");
 
