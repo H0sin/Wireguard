@@ -124,7 +124,7 @@ public class IpRangeUtility
         var ips = new List<string>();
 
         // Prevent generating extremely large lists
-        if (NumberOfIps > 1000000)
+        if (NumberOfIps > 1000000000000)
             throw new InvalidOperationException("The IP range is too large to generate.");
 
         for (uint ip = StartIp; ip <= EndIp; ip++)
