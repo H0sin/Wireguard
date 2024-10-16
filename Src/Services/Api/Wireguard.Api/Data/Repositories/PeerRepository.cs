@@ -401,7 +401,7 @@ public class PeerRepository(
     }
 
 
-    public async Task<Peer?> ReastPeerAsync(ReastPeerDto peer, string name)
+    public async Task<Peer?> ResetPeerAsync(ReastPeerDto peer, string name)
     {
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));

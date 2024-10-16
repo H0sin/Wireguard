@@ -49,12 +49,12 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         return Ok(await peerRepository.UpdatePeerAsync(peer, name));
     }
 
-    [HttpPost("Reast/{name}")]
+    [HttpPost("Reset/{name}")]
     [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult<Peer>> ReastVolume(string name, [FromBody] ReastPeerDto peer)
+    public async Task<ApiResult<Peer>> ResetVolume(string name, [FromBody] ReastPeerDto peer)
     {
-        return Ok(await peerRepository.ReastPeerAsync(peer, name));
+        return Ok(await peerRepository.ResetPeerAsync(peer, name));
     }
     
     [HttpPost("Disabled/{name}")]
