@@ -94,7 +94,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                              VALUES (@Name,@Status,@Address,@EndPoint,@SaveConfig,@PreUp,@PostUp,@PreDown,@PostDown,@ListenPort,@PrivateKey,@IpAddress,@PublicKey)
                              RETURNING Id;
                              """;
-            
+
             var id = await connection.ExecuteScalarAsync<int>(command, entity);
 
             bool checkout = await ipAddressRepository.AddIpAddressAsync(entity.IpAddress, id, connection, transaction);
@@ -112,6 +112,7 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
         }
         catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             await transaction.RollbackAsync();
             return false;
         }
