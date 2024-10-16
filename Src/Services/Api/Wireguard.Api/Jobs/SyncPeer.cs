@@ -46,12 +46,12 @@ public class SyncPeer : IJob
                                      LastDownloadVolume = @ReceivedBytes,
                                      LastUploadVolume = @SentBytes,
                                      LastTotalReceivedVolume = @SentBytes + @ReceivedBytes,                          
-                                     DownloadVolume = CASE 
+                                     UploadVolume = CASE 
                                                              WHEN @ReceivedBytes >= peer_data.LastDownloadVolume 
                                                              THEN (@ReceivedBytes - peer_data.LastDownloadVolume) + peer_data.DownloadVolume 
                                                              ELSE @ReceivedBytes + peer_data.DownloadVolume
                                                           END,
-                                     UploadVolume = CASE 
+                                     DownloadVolume = CASE 
                                                            WHEN @SentBytes >= peer_data.LastUploadVolume 
                                                            THEN (@SentBytes - peer_data.LastUploadVolume) + peer_data.UploadVolume 
                                                            ELSE @SentBytes + peer_data.UploadVolume
