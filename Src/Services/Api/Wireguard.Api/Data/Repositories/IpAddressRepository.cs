@@ -28,12 +28,13 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentNullException(nameof(ipAddress), "IP Range cannot be null or empty");
 
-        var (startIp, subnetMask) = ParseIpRange(ipAddress);
-        var ipAddresses = GetIpRange(startIp, subnetMask);
+        IpRangeUtility ipRange = new IpRangeUtility(ipAddress);
+
+        List<string> allIps = ipRange.GetAllIps();
 
         try
         {
-            foreach (var ip in ipAddresses)
+            foreach (var ip in allIps)
             {
                 string insertCommand = """
                                        INSERT INTO IpAddress (Ip, Available,InterfaceId) 
@@ -60,7 +61,8 @@ public class IpAddressRepository(IConfiguration configuration) : IIpAddressRepos
                 new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
             var ipAddresses =
-                await connection.QueryAsync<IpAddress>("SELECT * FROM IpAddress Where InterfaceId = @InterfaceId",new {InterfaceId = interfaceId});
+                await connection.QueryAsync<IpAddress>("SELECT * FROM IpAddress Where InterfaceId = @InterfaceId",
+                    new { InterfaceId = interfaceId });
 
             return ipAddresses.ToList();
         }
