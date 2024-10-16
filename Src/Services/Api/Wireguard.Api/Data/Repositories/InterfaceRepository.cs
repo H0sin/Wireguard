@@ -31,13 +31,12 @@ public class InterfaceRepository(IConfiguration configuration, IIpAddressReposit
                             I.ListenPort,
                             I.PublicKey,
                             I.Status,
-                            Sum(P.totalreceivedvolume) as TotoalDataUsed,
-                            SUM(P.totalvolume) as TotalData
+                            COALESCE(Sum(P.totalreceivedvolume), 0) as TotoalDataUsed,
+                            COALESCE(SUM(P.totalvolume), 0) as TotalData
                             FROM Interface I
-                            JOIN Peer P ON P.InterfaceId = I.Id 
+                            LEFT JOIN Peer P ON P.InterfaceId = I.Id 
                                  WHERE I.Name = @Name
                                  GROUP BY I.Name, I.ListenPort, I.PublicKey, I.Status
-                                 
                         """;
 
         var @interface =
