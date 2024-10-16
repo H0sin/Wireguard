@@ -67,6 +67,9 @@ public class ActionPeer : IJob
                         PublicKey = peer.PublicKey
                     });
 
+                    peer.ExpireTime =
+                        currentEpochTime + peer.OnHoldExpireDurection;
+                    
                     await connection.ExecuteAsync(
                         "UPDATE Peer SET StartTime = @StartTime, ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey",
                         new
