@@ -3,6 +3,7 @@ using Dapper;
 using Npgsql;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Data.Enums;
 using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Data.Repositories;
@@ -399,6 +400,7 @@ public class PeerRepository(
             .QuerySingleOrDefaultAsync<Peer>(query, new { Name = name });
     }
 
+
     public async Task<Peer?> ReastPeerAsync(ReastPeerDto peer, string name)
     {
         await using var connection =
@@ -411,6 +413,8 @@ public class PeerRepository(
         try
         {
             Peer? getPeer = await GetPeerByNameAsync(name);
+
+            if (getPeer is null) throw new ApplicationException("peer not found");
 
             getPeer.ExpireTime = peer.ExpireTime;
             getPeer.TotalVolume = peer.TotalValue;
@@ -448,7 +452,91 @@ public class PeerRepository(
 
             var newpeer = new AddPeerDto(getPeer);
 
-            if (!await WireguardHelpers.CreatePeer(newpeer, @interface)) throw new Exception("failed to create peer");
+            if (getPeer.Status != "active")
+                if (!await WireguardHelpers.CreatePeer(newpeer, @interface))
+                    throw new Exception("failed to create peer");
+
+            await transaction.CommitAsync();
+
+            return getPeer;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw e;
+        }
+    }
+
+    public async Task<Peer?> DisabledPeerAsync(string name)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            Peer? getPeer = await GetPeerByNameAsync(name);
+
+            if (getPeer is null) throw new ApplicationException("peer not found");
+
+            if (getPeer.Status == PeerStatus.active.ToString())
+            {
+                var query = await connection.QuerySingleOrDefaultAsync(
+                    "UPDATE FROM PEER SET Status = 'disabled' WHERE Name = @Name", new { Name = name });
+
+                var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
+                    "SELECT * FROM INTERFACE WHERE Id = @Id",
+                    new { Id = getPeer.InterfaceId });
+
+                var newpeer = new AddPeerDto(getPeer);
+
+                await WireguardHelpers.RemovePeer(@interface.Name, getPeer.PublicKey);
+                await WireguardHelpers.Save(@interface.Name);
+            }
+
+            await transaction.CommitAsync();
+
+            return getPeer;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw e;
+        }
+    }
+
+    public async Task<Peer?> ActivePeerAsync(string name)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            Peer? getPeer = await GetPeerByNameAsync(name);
+
+            if (getPeer is null) throw new ApplicationException("peer not found");
+
+            if (getPeer.Status == PeerStatus.disabled.ToString())
+            {
+                var query = await connection.QuerySingleOrDefaultAsync(
+                    "UPDATE FROM PEER SET Status = 'active' WHERE Name = @Name", new { Name = name });
+
+                var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
+                    "SELECT * FROM INTERFACE WHERE Id = @Id",
+                    new { Id = getPeer.InterfaceId });
+
+                var newpeer = new AddPeerDto(getPeer);
+
+                await WireguardHelpers.RemovePeer(@interface.Name, getPeer.PublicKey);
+                await WireguardHelpers.Save(@interface.Name);
+            }
 
             await transaction.CommitAsync();
 

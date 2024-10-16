@@ -9,7 +9,9 @@ public interface IPeerRepository
     Task<bool> InsertAsync(AddPeerDto peer, string interfaceName, CancellationToken cancellationToken = default);
     Task<FilterPeerDto> FilterPeerAsync(FilterPeerDto filter, CancellationToken cancellationToken = default);
     Task<string> GeneratePeerContentConfigAsync(string name);
-    Task<Peer?> UpdatePeerAsync(UpdatePeerDto peer,string name);
+    Task<Peer?> UpdatePeerAsync(UpdatePeerDto peer, string name);
     Task<Peer?> GetPeerByNameAsync(string name);
     Task<Peer?> ReastPeerAsync(ReastPeerDto peer, string name);
+    Task<Peer?> DisabledPeerAsync(string name);
+    Task<Peer?> ActivePeerAsync(string name);
 }

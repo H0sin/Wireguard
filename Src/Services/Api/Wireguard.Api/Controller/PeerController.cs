@@ -49,12 +49,28 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         return Ok(await peerRepository.UpdatePeerAsync(peer, name));
     }
 
-    [HttpPut("Reast/{name}")]
+    [HttpPost("Reast/{name}")]
     [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
     public async Task<ApiResult<Peer>> ReastVolume(string name, [FromBody] ReastPeerDto peer)
     {
         return Ok(await peerRepository.ReastPeerAsync(peer, name));
+    }
+    
+    [HttpPost("Disabled/{name}")]
+    [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult<Peer>> Disabled(string name)
+    {
+        return Ok(await peerRepository.DisabledPeerAsync(name));
+    }
+    
+    [HttpPost("Active/{name}")]
+    [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult<Peer>> Active(string name)
+    {
+        return Ok(await peerRepository.ActivePeerAsync(name));
     }
 
     [HttpGet("{peername}")]
