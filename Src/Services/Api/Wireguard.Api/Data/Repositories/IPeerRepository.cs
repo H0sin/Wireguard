@@ -10,5 +10,5 @@ public interface IPeerRepository
     Task<FilterPeerDto> FilterPeerAsync(FilterPeerDto filter, CancellationToken cancellationToken = default);
     Task<string> GeneratePeerContentConfigAsync(string name);
     Task<Peer?> UpdatePeerAsync(UpdatePeerDto peer,string name);
-    Task<Peer?> GetPeerAsyncByName(string name);
+    Task<Peer?> GetPeerByNameAsync(string name);
 }

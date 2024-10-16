@@ -321,7 +321,7 @@ public class PeerRepository(
 
     public async Task<Peer?> UpdatePeerAsync(UpdatePeerDto peer, string name)
     {
-        var getPeer = await GetPeerAsyncByName(name);
+        var getPeer = await GetPeerByNameAsync(name);
         if (getPeer is null) throw new ApplicationException("peer not found");
 
         await using var connection =
@@ -380,10 +380,10 @@ public class PeerRepository(
                 break;
         }
 
-        return await GetPeerAsyncByName(name);
+        return await GetPeerByNameAsync(name);
     }
 
-    public async Task<Peer?> GetPeerAsyncByName(string name)
+    public async Task<Peer?> GetPeerByNameAsync(string name)
     {
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
@@ -394,6 +394,7 @@ public class PeerRepository(
                     SELECT * FROM PEER P
                     WHERE P.Name = @Name
                     """;
+        
         return await connection
             .QuerySingleOrDefaultAsync<Peer>(query, new { Name = name });
     }

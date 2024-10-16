@@ -48,4 +48,12 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     {
         return Ok(await peerRepository.UpdatePeerAsync(peer, name));
     }
+
+    [HttpGet("{peername}")]
+    [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult<Peer>> GetPeerByName(string peername)
+    {
+        return Ok(await peerRepository.GetPeerByNameAsync(peername));
+    }
 }
