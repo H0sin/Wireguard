@@ -71,7 +71,7 @@ public class ActionPeer : IJob
                         "UPDATE Peer SET StartTime = @StartTime, ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey",
                         new
                         {
-                            ExpireTime = (currentEpochTime + (peer.OnHoldExpireDurection * 1000)),
+                            ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
                             PublicKey = peer.PublicKey,
                             StartTime = currentEpochTime
                         });
