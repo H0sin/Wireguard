@@ -53,8 +53,10 @@ public class IpRangeUtility
         if (!int.TryParse(parts[1], out int prefixLength))
             throw new FormatException("Invalid prefix length.");
 
-        if (PrefixLength < 0 || PrefixLength > 32)
+        if (prefixLength < 0 || prefixLength > 32)
             throw new ArgumentOutOfRangeException("Prefix length must be between 0 and 32.");
+
+        PrefixLength = prefixLength; // Ensure PrefixLength is set correctly
 
         uint ipInt = IpToUInt(ip);
         uint mask = PrefixLength == 0 ? 0 : 0xFFFFFFFF << (32 - PrefixLength);
@@ -124,13 +126,14 @@ public class IpRangeUtility
         var ips = new List<string>();
 
         // Prevent generating extremely large lists
-        if (NumberOfIps > 1000000000000)
+        if (NumberOfIps > 1000000)
             throw new InvalidOperationException("The IP range is too large to generate.");
 
         for (uint ip = StartIp; ip <= EndIp; ip++)
         {
             ips.Add(UIntToIp(ip).ToString());
         }
+
         return ips;
     }
 }
