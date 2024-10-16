@@ -49,7 +49,7 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         return Ok(await peerRepository.UpdatePeerAsync(peer, name));
     }
 
-    [HttpPut("{name}")]
+    [HttpPut("Reast/{name}")]
     [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
     public async Task<ApiResult<Peer>> ReastVolume(string name, [FromBody] ReastPeerDto peer)
