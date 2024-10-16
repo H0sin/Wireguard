@@ -159,10 +159,10 @@ public class PeerRepository(
                                  """;
 
                 var availableIp = ipAddresses.FirstOrDefault(x => x.Available);
-                
-                peer.AllowedIPs = peer.AllowedIPs.Count == 0 ? new List<string>{ availableIp.Ip } : peer.AllowedIPs;
+
+                peer.AllowedIPs = peer.AllowedIPs.Count == 0 ? new List<string> { availableIp.Ip } : peer.AllowedIPs;
                 peer.PublicKey ??= keyPair.PublicKey;
-                
+
                 int response = await connection.ExecuteAsync(command, new
                 {
                     interfaceId = @interface.Id,
@@ -180,12 +180,12 @@ public class PeerRepository(
                     TotalVolume = peer.TotalVolume,
                     ExpireTime = peer.ExpireTime
                 });
-                
+
                 if (response > 0 && !await WireguardHelpers.CreatePeer(peer, @interface))
                     throw new ApplicationException("failed to create peer");
 
                 var ids = peer.AllowedIPs.FirstOrDefault();
-                
+
                 await ipAddressRepository.OutOfReachIpAddressAsync(new List<int>() { availableIp.Id }, connection,
                     transaction);
 
@@ -394,8 +394,70 @@ public class PeerRepository(
                     SELECT * FROM PEER P
                     WHERE P.Name = @Name
                     """;
-        
+
         return await connection
             .QuerySingleOrDefaultAsync<Peer>(query, new { Name = name });
+    }
+
+    public async Task<Peer?> ReastPeerAsync(ReastPeerDto peer, string name)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            Peer? getPeer = await GetPeerByNameAsync(name);
+
+            getPeer.ExpireTime = peer.ExpireTime;
+            getPeer.TotalVolume = peer.TotalValue;
+            getPeer.TotalReceivedVolume = 0;
+            getPeer.DownloadVolume = 0;
+            getPeer.UploadVolume = 0;
+            getPeer.LastTotalReceivedVolume = 0;
+            getPeer.LastDownloadVolume = 0;
+            getPeer.LastUploadVolume = 0;
+
+            var command = """
+                          UPDATE PEER SET 
+                            TotalReceivedVolume = 0,
+                            DownloadVolume = 0,
+                            UploadVolume = 0,
+                            ExpireTime = @ExpireTime,
+                            TotalVolume = @TotalVolume,
+                            LastTotalReceivedVolume = 0,
+                            LastDownloadVolume = 0,
+                            LastUploadVolume = 0,
+                            Status = 'active'
+                          WHERE Name = @Name
+                          """;
+
+            await connection.QuerySingleOrDefaultAsync(command, new
+            {
+                ExpireTime = peer.ExpireTime,
+                TotalVolume = peer.TotalValue,
+                Name = name
+            });
+
+            var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
+                "SELECT * FROM INTERFACE WHERE Id = @Id",
+                new { Id = getPeer.InterfaceId });
+
+            var newpeer = new AddPeerDto(getPeer);
+
+            if (!await WireguardHelpers.CreatePeer(newpeer, @interface)) throw new Exception("failed to create peer");
+
+            await transaction.CommitAsync();
+
+            return getPeer;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw e;
+        }
     }
 }

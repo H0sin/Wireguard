@@ -11,4 +11,5 @@ public interface IPeerRepository
     Task<string> GeneratePeerContentConfigAsync(string name);
     Task<Peer?> UpdatePeerAsync(UpdatePeerDto peer,string name);
     Task<Peer?> GetPeerByNameAsync(string name);
+    Task<Peer?> ReastPeerAsync(ReastPeerDto peer, string name);
 }
