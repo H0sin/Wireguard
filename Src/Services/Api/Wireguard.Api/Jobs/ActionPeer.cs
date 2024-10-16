@@ -88,7 +88,7 @@ public class ActionPeer : IJob
                     });
                 }
 
-                if (peer.ExpireTime > currentEpochTime & peer.Status != "onhold")
+                if (peer.ExpireTime < currentEpochTime & peer.Status != "onhold")
                 {
                     _logger.LogInformation(
                         $"peer by public key {peer.PublicKey} expired , expire time = {peer.ExpireTime} , current time = {currentEpochTime}");
