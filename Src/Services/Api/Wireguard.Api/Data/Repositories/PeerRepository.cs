@@ -401,7 +401,7 @@ public class PeerRepository(
     }
 
 
-    public async Task<Peer?> ResetPeerAsync(ReastPeerDto peer, string name)
+    public async Task<Peer?> ResetPeerAsync(ResetPeerDto peer, string name)
     {
         await using var connection =
             new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
@@ -417,7 +417,7 @@ public class PeerRepository(
             if (getPeer is null) throw new ApplicationException("peer not found");
 
             getPeer.ExpireTime = peer.ExpireTime;
-            getPeer.TotalVolume = peer.TotalValue;
+            getPeer.TotalVolume = peer.TotalVolume;
             getPeer.TotalReceivedVolume = 0;
             getPeer.DownloadVolume = 0;
             getPeer.UploadVolume = 0;
@@ -442,7 +442,7 @@ public class PeerRepository(
             await connection.QuerySingleOrDefaultAsync(command, new
             {
                 ExpireTime = peer.ExpireTime,
-                TotalVolume = peer.TotalValue,
+                currentEpochTime = peer.TotalVolume,
                 Name = name
             });
 

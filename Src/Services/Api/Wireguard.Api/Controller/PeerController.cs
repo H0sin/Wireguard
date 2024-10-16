@@ -52,7 +52,7 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     [HttpPost("Reset/{name}")]
     [ProducesResponseType(typeof(ApiResult<Peer>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
-    public async Task<ApiResult<Peer>> ResetVolume(string name, [FromBody] ReastPeerDto peer)
+    public async Task<ApiResult<Peer>> ResetVolume(string name, [FromBody] ResetPeerDto peer)
     {
         return Ok(await peerRepository.ResetPeerAsync(peer, name));
     }
