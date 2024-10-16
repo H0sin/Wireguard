@@ -124,7 +124,7 @@ namespace Wireguard.Api.Extensions
                                                   LastTotalReceivedVolume BIGINT DEFAULT 0,
                                                   DownloadVolume BIGINT DEFAULT 0,
                                                   UploadVolume BIGINT DEFAULT 0,
-                                                  StartTime BIGINT DEFAULT EXTRACT(EPOCH FROM NOW()),
+                                                  StartTime BIGINT 0,
                                                   ExpireTime BIGINT,
                                                   TotalVolume BIGINT DEFAULT 0,
                                                   LastDownloadVolume BIGINT DEFAULT 0,

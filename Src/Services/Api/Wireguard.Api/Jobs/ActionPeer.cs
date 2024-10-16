@@ -68,10 +68,12 @@ public class ActionPeer : IJob
                     });
 
                     await connection.ExecuteAsync(
-                        "UPDATE Peer SET ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey", new
+                        "UPDATE Peer SET StartTime = @StartTime, ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey",
+                        new
                         {
                             ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
-                            PublicKey = peer.PublicKey
+                            PublicKey = peer.PublicKey,
+                            StartTime = currentEpochTime
                         });
                 }
 
@@ -98,6 +100,7 @@ public class ActionPeer : IJob
                     });
                 }
             }
+
             await transaction.CommitAsync();
         }
         catch (Exception e)
