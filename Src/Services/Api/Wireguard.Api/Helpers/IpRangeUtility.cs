@@ -129,7 +129,7 @@ public class IpRangeUtility
         if (NumberOfIps > 1000000)
             throw new InvalidOperationException("The IP range is too large to generate.");
 
-        for (uint ip = StartIp; ip <= EndIp; ip++)
+        for (uint ip = StartIp + 2; ip <= EndIp; ip++)
         {
             ips.Add(UIntToIp(ip).ToString());
         }
