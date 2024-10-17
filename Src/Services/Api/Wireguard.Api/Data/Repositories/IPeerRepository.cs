@@ -14,4 +14,5 @@ public interface IPeerRepository
     Task<Peer?> ResetPeerAsync(ResetPeerDto peer, string name);
     Task<Peer?> DisabledPeerAsync(string name);
     Task<Peer?> ActivePeerAsync(string name);
+    Task DeletePeerAsync(string name);
 }

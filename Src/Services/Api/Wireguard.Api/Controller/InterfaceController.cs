@@ -8,6 +8,9 @@ using Wireguard.Api.Filters;
 
 namespace Wireguard.Api.Controller;
 
+/// <summary>
+/// Controller for managing interfaces in the Wireguard API.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 [ApiResultFilter]
@@ -18,6 +21,11 @@ public class InterfaceController(
     IConfiguration configuration)
     : ControllerBase
 {
+    /// <summary>
+    /// Retrieves the details of a specific interface by name.
+    /// </summary>
+    /// <param name="name">The name of the interface.</param>
+    /// <returns>An ApiResult containing the InterfaceDetailDto object.</returns>
     [HttpGet("{name}")]
     [ProducesResponseType(typeof(ApiResult<InterfaceDetailDto>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
@@ -29,6 +37,10 @@ public class InterfaceController(
         return Ok(await interfaceRepository.GetAsync(name));
     }
 
+    /// <summary>
+    /// Retrieves a list of all interfaces.
+    /// </summary>
+    /// <returns>An ApiResult containing a list of Interface objects.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResult<List<Interface>>), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
@@ -37,6 +49,12 @@ public class InterfaceController(
         return Ok(await interfaceRepository.GetAllAsync());
     }
 
+    /// <summary>
+    /// Adds a new interface.
+    /// </summary>
+    /// <param name="interface">The interface data to add.</param>
+    /// <returns>An ApiResult indicating the success of the operation.</returns>
+    /// <exception cref="ApplicationException">Thrown when the interface could not be added.</exception>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,6 +66,13 @@ public class InterfaceController(
         return Ok();
     }
 
+    /// <summary>
+    /// Changes the status of a specific interface.
+    /// </summary>
+    /// <param name="name">The name of the interface.</param>
+    /// <param name="status">The new status of the interface.</param>
+    /// <returns>An ApiResult indicating the success of the operation.</returns>
+    /// <exception cref="ApplicationException">Thrown when the status could not be changed.</exception>
     [HttpPut(Name = "ChangeStatus")]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -59,6 +84,12 @@ public class InterfaceController(
         return Ok();
     }
 
+    /// <summary>
+    /// Deletes a specific interface by name.
+    /// </summary>
+    /// <param name="name">The name of the interface to delete.</param>
+    /// <returns>An ApiResult indicating the success of the operation.</returns>
+    /// <exception cref="ApplicationException">Thrown when the interface could not be deleted.</exception>
     [HttpDelete("{name}")]
     public async Task<ApiResult> Delete(string name)
     {

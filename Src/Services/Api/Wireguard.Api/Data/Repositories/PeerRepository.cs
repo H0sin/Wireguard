@@ -409,7 +409,7 @@ public class PeerRepository(
         await connection.OpenAsync();
 
         var transaction = await connection.BeginTransactionAsync();
-        
+
         try
         {
             Peer? getPeer = await GetPeerByNameAsync(name);
@@ -438,7 +438,7 @@ public class PeerRepository(
                             Status = 'active'
                           WHERE Name = @Name
                           """;
-            
+
             await connection.QuerySingleOrDefaultAsync(command, new
             {
                 ExpireTime = peer.ExpireTime,
@@ -446,7 +446,9 @@ public class PeerRepository(
                 Name = name
             });
 
-            var @interface = await connection.QuerySingleOrDefaultAsync<Interface>("SELECT * FROM INTERFACE WHERE Id = @Id", new { Id = getPeer.InterfaceId });
+            var @interface =
+                await connection.QuerySingleOrDefaultAsync<Interface>("SELECT * FROM INTERFACE WHERE Id = @Id",
+                    new { Id = getPeer.InterfaceId });
 
             await WireguardHelpers.RemovePeer(@interface.Name, getPeer.PublicKey);
             await WireguardHelpers.Save(@interface.Name);
@@ -541,6 +543,55 @@ public class PeerRepository(
             await transaction.CommitAsync();
 
             return getPeer;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw e;
+        }
+    }
+
+    public async Task DeletePeerAsync(string name)
+    {
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            Peer? getPeer = await GetPeerByNameAsync(name);
+
+            if (getPeer is null) throw new ApplicationException("peer not found");
+
+            #region ip availabel
+
+            List<string> ipAddresses = getPeer.AllowedIPs.Split(',').ToList();
+
+
+            foreach (var ipAddress in ipAddresses)
+            {
+                await connection.ExecuteAsync("UPDATE IPADDRESS SET Available = true WHERE Ip = @Ip",
+                    new { Ip = ipAddress });
+            }
+
+            // getPeer.AllowedIPs = "1.2.3.4/24";
+
+            #endregion
+
+            var query = await connection.QuerySingleOrDefaultAsync(
+                "DELETE FROM PEER WHERE Name = @Name", new { Name = name });
+
+            var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
+                "SELECT * FROM INTERFACE WHERE Id = @Id",
+                new { Id = getPeer.InterfaceId });
+
+            await WireguardHelpers.RemovePeer(@interface.Name, getPeer.PublicKey);
+            await WireguardHelpers.Save(@interface.Name);
+
+            await transaction.CommitAsync();
         }
         catch (Exception e)
         {
