@@ -549,8 +549,8 @@ public class PeerRepository(
                     new { Id = getPeer.InterfaceId });
 
                 var newpeer = new AddPeerDto(getPeer);
-                
-                await WireguardHelpers.CreatePeer(newpeer, @interface);
+                if (!await WireguardHelpers.CreatePeer(newpeer, @interface))
+                    throw new Exception("failed to create peer");
             }
 
             await transaction.CommitAsync();
