@@ -484,7 +484,7 @@ public class PeerRepository(
 
             if (getPeer is null) throw new ApplicationException("peer not found");
 
-            if (getPeer.Status == PeerStatus.active.ToString())
+            if (getPeer.Status != PeerStatus.disabled.ToString())
             {
                 var query = await connection.QuerySingleOrDefaultAsync(
                     "UPDATE FROM PEER SET Status = 'disabled' WHERE Name = @Name", new { Name = name });
@@ -525,19 +525,32 @@ public class PeerRepository(
 
             if (getPeer is null) throw new ApplicationException("peer not found");
 
-            if (getPeer.Status == PeerStatus.disabled.ToString())
+            if (getPeer.Status != PeerStatus.active.ToString())
             {
                 var query = await connection.QuerySingleOrDefaultAsync(
                     "UPDATE FROM PEER SET Status = 'active' WHERE Name = @Name", new { Name = name });
+
+                if (getPeer.Status == PeerStatus.onhold.ToString())
+                {
+                    long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                    await connection.ExecuteAsync(
+                        "UPDATE Peer SET StartTime = @StartTime, ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey",
+                        new
+                        {
+                            ExpireTime = currentEpochTime + getPeer.OnHoldExpireDurection,
+                            PublicKey = getPeer.PublicKey,
+                            StartTime = currentEpochTime
+                        });
+                }
 
                 var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
                     "SELECT * FROM INTERFACE WHERE Id = @Id",
                     new { Id = getPeer.InterfaceId });
 
                 var newpeer = new AddPeerDto(getPeer);
-
-                await WireguardHelpers.RemovePeer(@interface.Name, getPeer.PublicKey);
-                await WireguardHelpers.Save(@interface.Name);
+                
+                await WireguardHelpers.CreatePeer(newpeer, @interface);
             }
 
             await transaction.CommitAsync();
