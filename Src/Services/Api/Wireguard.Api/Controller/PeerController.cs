@@ -133,7 +133,7 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     /// </summary>
     /// <param name="name">The name of the peer to delete.</param>
     /// <returns>An ApiResult indicating the success of the operation.</returns>
-    [HttpDelete]
+    [HttpDelete("{name}")]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
     public async Task<ApiResult> Delete(string name)
