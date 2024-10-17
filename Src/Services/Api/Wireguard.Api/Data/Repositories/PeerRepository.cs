@@ -487,7 +487,7 @@ public class PeerRepository(
             if (getPeer.Status != PeerStatus.disabled.ToString())
             {
                 var query = await connection.QuerySingleOrDefaultAsync(
-                    "UPDATE FROM PEER SET Status = 'disabled' WHERE Name = @Name", new { Name = name });
+                    "UPDATE PEER SET Status = 'disabled' WHERE Name = @Name", new { Name = name });
 
                 var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
                     "SELECT * FROM INTERFACE WHERE Id = @Id",
@@ -528,7 +528,7 @@ public class PeerRepository(
             if (getPeer.Status != PeerStatus.active.ToString())
             {
                 var query = await connection.QuerySingleOrDefaultAsync(
-                    "UPDATE FROM PEER SET Status = 'active' WHERE Name = @Name", new { Name = name });
+                    "UPDATE PEER SET Status = 'active' WHERE Name = @Name", new { Name = name });
 
                 if (getPeer.Status == PeerStatus.onhold.ToString())
                 {
