@@ -409,7 +409,7 @@ public class PeerRepository(
         await connection.OpenAsync();
 
         var transaction = await connection.BeginTransactionAsync();
-
+        
         try
         {
             Peer? getPeer = await GetPeerByNameAsync(name);
@@ -438,23 +438,23 @@ public class PeerRepository(
                             Status = 'active'
                           WHERE Name = @Name
                           """;
-
+            
             await connection.QuerySingleOrDefaultAsync(command, new
             {
                 ExpireTime = peer.ExpireTime,
-                currentEpochTime = peer.TotalVolume,
+                TotalVolume = peer.TotalVolume,
                 Name = name
             });
 
-            var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
-                "SELECT * FROM INTERFACE WHERE Id = @Id",
-                new { Id = getPeer.InterfaceId });
+            var @interface = await connection.QuerySingleOrDefaultAsync<Interface>("SELECT * FROM INTERFACE WHERE Id = @Id", new { Id = getPeer.InterfaceId });
+
+            await WireguardHelpers.RemovePeer(@interface.Name, getPeer.PublicKey);
+            await WireguardHelpers.Save(@interface.Name);
 
             var newpeer = new AddPeerDto(getPeer);
 
-            if (getPeer.Status != "active")
-                if (!await WireguardHelpers.CreatePeer(newpeer, @interface))
-                    throw new Exception("failed to create peer");
+            if (!await WireguardHelpers.CreatePeer(newpeer, @interface))
+                throw new Exception("failed to create peer");
 
             await transaction.CommitAsync();
 
