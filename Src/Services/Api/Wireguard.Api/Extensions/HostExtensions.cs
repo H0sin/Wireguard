@@ -1,4 +1,8 @@
-﻿using Npgsql;
+﻿using Dapper;
+using Npgsql;
+using Wireguard.Api.Data.Entities;
+using Wireguard.Api.Data.Enums;
+using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Extensions
 {
@@ -23,7 +27,7 @@ namespace Wireguard.Api.Extensions
                         new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
                     connection.Open();
-
+                    
                     using var command = new NpgsqlCommand
                     {
                         Connection = connection
@@ -32,6 +36,7 @@ namespace Wireguard.Api.Extensions
                     // Check if 'Interface' table exists
                     command.CommandText =
                         "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'interface')";
+                    
                     var interfaceExists = (bool)command.ExecuteScalar();
 
                     if (!interfaceExists)
@@ -157,6 +162,19 @@ namespace Wireguard.Api.Extensions
                     }
 
                     logger.LogInformation("Migration has been completed!");
+                    
+                    
+                    logger.LogInformation("on interfaces started");
+                    
+                    var interfaces = connection.Query<Interface>("SELECT * FROM INTERFACE");
+
+                    foreach (var @interface in interfaces)
+                    {
+                        WireguardHelpers.StatusWireguard(InterfaceStatus.active, @interface.Name);
+                        logger.LogInformation($"interface {@interface.Name} Oned");
+                    }
+                    
+                    logger.LogInformation("on interfaces ended");
                 }
                 catch (NpgsqlException ex)
                 {

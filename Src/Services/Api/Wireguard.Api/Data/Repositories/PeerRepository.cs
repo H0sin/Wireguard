@@ -486,7 +486,7 @@ public class PeerRepository(
 
             if (getPeer.Status != PeerStatus.disabled.ToString())
             {
-                var query = await connection.QuerySingleOrDefaultAsync(
+                var query = await connection.ExecuteAsync(
                     "UPDATE PEER SET Status = 'disabled' WHERE Name = @Name", new { Name = name });
 
                 var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
