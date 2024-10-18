@@ -20,4 +20,6 @@ public class Interface : EntityBase
     public string Status { get; set; } = "active";
     public ICollection<Peer>? Peers { get; set; }
     public ICollection<IpAddress>? IpAddresses { get; set; }
+    public double UploadPercent { get; set; } = 1.0;
+    public double DownloadPercent { get; set; } = 1.0;
 }

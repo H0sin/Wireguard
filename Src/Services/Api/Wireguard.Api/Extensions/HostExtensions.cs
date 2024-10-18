@@ -27,7 +27,7 @@ namespace Wireguard.Api.Extensions
                         new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
                     connection.Open();
-                    
+
                     using var command = new NpgsqlCommand
                     {
                         Connection = connection
@@ -36,7 +36,7 @@ namespace Wireguard.Api.Extensions
                     // Check if 'Interface' table exists
                     command.CommandText =
                         "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'interface')";
-                    
+
                     var interfaceExists = (bool)command.ExecuteScalar();
 
                     if (!interfaceExists)
@@ -69,9 +69,12 @@ namespace Wireguard.Api.Extensions
                         // Modify 'Interface' table if it exists
                         command.CommandText = """
                                               ALTER TABLE Interface
-                                              ADD COLUMN IF NOT EXISTS NewColumn VARCHAR(100) DEFAULT 'NewValue'
+                                              ADD COLUMN IF NOT EXISTS UploadPercent Double DEFAULT '1.0',
+                                              ADD COLUMN IF NOT EXISTS DownloadPercent Double DEFAULT '1.0'
                                               """;
+
                         command.ExecuteNonQuery();
+                        
                     }
 
                     // Check if 'IpAddress' table exists
@@ -162,10 +165,10 @@ namespace Wireguard.Api.Extensions
                     }
 
                     logger.LogInformation("Migration has been completed!");
-                    
-                    
+
+
                     logger.LogInformation("on interfaces started");
-                    
+
                     var interfaces = connection.Query<Interface>("SELECT * FROM INTERFACE");
 
                     foreach (var @interface in interfaces)
@@ -173,7 +176,7 @@ namespace Wireguard.Api.Extensions
                         WireguardHelpers.StatusWireguard(InterfaceStatus.active, @interface.Name);
                         logger.LogInformation($"interface {@interface.Name} Oned");
                     }
-                    
+
                     logger.LogInformation("on interfaces ended");
                 }
                 catch (NpgsqlException ex)

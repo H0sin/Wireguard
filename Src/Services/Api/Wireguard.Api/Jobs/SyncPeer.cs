@@ -30,39 +30,42 @@ public class SyncPeer : IJob
         if (transferData != null && transferData.Count > 0)
         {
             string command = """
-                                 WITH peer_data AS (
-                                     SELECT 
-                                         LastDownloadVolume,
-                                         LastUploadVolume,
-                                         LastTotalReceivedVolume,
-                                         DownloadVolume,
-                                         UploadVolume,
-                                         TotalReceivedVolume
-                                     FROM PEER 
-                                     WHERE PublicKey = @PublicKey
-                                 )
-                                 UPDATE PEER
-                                 SET
-                                     LastDownloadVolume = @ReceivedBytes,
-                                     LastUploadVolume = @SentBytes,
-                                     LastTotalReceivedVolume = @SentBytes + @ReceivedBytes,                          
-                                     UploadVolume = CASE 
-                                                             WHEN @ReceivedBytes >= peer_data.LastDownloadVolume 
-                                                             THEN (@ReceivedBytes - peer_data.LastDownloadVolume) + peer_data.DownloadVolume 
-                                                             ELSE @ReceivedBytes + peer_data.DownloadVolume
-                                                          END,
-                                     DownloadVolume = CASE 
-                                                           WHEN @SentBytes >= peer_data.LastUploadVolume 
-                                                           THEN (@SentBytes - peer_data.LastUploadVolume) + peer_data.UploadVolume 
-                                                           ELSE @SentBytes + peer_data.UploadVolume
-                                                        END,
-                                     TotalReceivedVolume = CASE 
-                                                                  WHEN (@ReceivedBytes + @SentBytes) >= peer_data.LastTotalReceivedVolume 
-                                                                  THEN ((@ReceivedBytes + @SentBytes) - peer_data.LastTotalReceivedVolume) + peer_data.TotalReceivedVolume 
-                                                                  ELSE (@ReceivedBytes + @SentBytes) + peer_data.TotalReceivedVolume
-                                                               END
-                                 FROM peer_data
-                                 WHERE PEER.PublicKey = @PublicKey;
+                             WITH peer_data AS (
+                                 SELECT 
+                                     p.LastDownloadVolume,
+                                     p.LastUploadVolume,
+                                     p.LastTotalReceivedVolume,
+                                     p.DownloadVolume,
+                                     p.UploadVolume,
+                                     p.TotalReceivedVolume,
+                                     i.UploadPercent,
+                                     i.DownloadPercent
+                                 FROM PEER p
+                                 JOIN Interface i ON p.InterfaceId = i.Id
+                                 WHERE p.PublicKey = @PublicKey
+                             )
+                             UPDATE PEER
+                             SET
+                                 LastDownloadVolume = @ReceivedBytes,
+                                 LastUploadVolume = @SentBytes,
+                                 LastTotalReceivedVolume = @SentBytes + @ReceivedBytes,                          
+                                 UploadVolume = CASE 
+                                                    WHEN @ReceivedBytes >= peer_data.LastDownloadVolume 
+                                                    THEN ROUND((@ReceivedBytes - peer_data.LastDownloadVolume) * peer_data.DownloadPercent) + peer_data.DownloadVolume 
+                                                    ELSE ROUND(@ReceivedBytes * peer_data.DownloadPercent) + peer_data.DownloadVolume
+                                                END,
+                                 DownloadVolume = CASE 
+                                                     WHEN @SentBytes >= peer_data.LastUploadVolume 
+                                                     THEN ROUND((@SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent) + peer_data.UploadVolume 
+                                                     ELSE ROUND(@SentBytes * peer_data.UploadPercent) + peer_data.UploadVolume
+                                                 END,
+                                 TotalReceivedVolume = CASE 
+                                                          WHEN (@ReceivedBytes + @SentBytes) >= peer_data.LastTotalReceivedVolume 
+                                                          THEN ROUND(((@ReceivedBytes + @SentBytes) - peer_data.LastTotalReceivedVolume) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume 
+                                                          ELSE ROUND((@ReceivedBytes + @SentBytes) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume
+                                                       END
+                             FROM peer_data
+                             WHERE PEER.PublicKey = @PublicKey;
                              """;
             try
             {

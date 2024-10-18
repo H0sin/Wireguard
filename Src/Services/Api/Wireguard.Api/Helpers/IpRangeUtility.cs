@@ -76,6 +76,7 @@ public class IpRangeUtility
         var bytes = ip.GetAddressBytes();
         if (BitConverter.IsLittleEndian)
             Array.Reverse(bytes);
+        
         return BitConverter.ToUInt32(bytes, 0);
     }
 
