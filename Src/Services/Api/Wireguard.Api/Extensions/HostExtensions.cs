@@ -69,8 +69,8 @@ namespace Wireguard.Api.Extensions
                         // Modify 'Interface' table if it exists
                         command.CommandText = """
                                               ALTER TABLE Interface
-                                              ADD COLUMN IF NOT EXISTS UploadPercent Double DEFAULT '1.0',
-                                              ADD COLUMN IF NOT EXISTS DownloadPercent Double DEFAULT '1.0'
+                                              ADD COLUMN IF NOT EXISTS UploadPercent double precision DEFAULT '1.0',
+                                              ADD COLUMN IF NOT EXISTS DownloadPercent double precision DEFAULT '1.0'
                                               """;
 
                         command.ExecuteNonQuery();
