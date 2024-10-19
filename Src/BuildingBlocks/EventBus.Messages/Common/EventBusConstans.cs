@@ -2,5 +2,6 @@
 
 public class EventBusConstans
 {
-    public const string JobStartedQueue = "syncdatause-queue";
+    public const string SyncPeerQueue = "syncpeer-queue";
+    public const string ActionPeerQueue = "actionpeer-queue";
 }

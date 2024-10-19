@@ -4,14 +4,14 @@
     "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {}
   },
   "projects": {
-    "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {
+    "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
-        "projectName": "Wireguard.Api",
-        "projectPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
+        "projectUniqueName": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
+        "projectName": "EventBus.Messages",
+        "projectPath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
         "packagesPath": "C:\\Users\\hfara\\.nuget\\packages\\",
-        "outputPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\obj\\",
+        "outputPath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hfara\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -45,6 +45,71 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
+        "projectName": "Wireguard.Api",
+        "projectPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
+        "packagesPath": "C:\\Users\\hfara\\.nuget\\packages\\",
+        "outputPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\hfara\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj": {
+                "projectPath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "AutoMapper": {
               "target": "Package",
@@ -53,6 +118,10 @@
             "Dapper": {
               "target": "Package",
               "version": "[2.1.35, )"
+            },
+            "MassTransit.RabbitMQ": {
+              "target": "Package",
+              "version": "[8.3.1-develop.2084, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",

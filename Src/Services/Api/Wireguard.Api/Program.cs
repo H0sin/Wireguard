@@ -1,8 +1,11 @@
+using EventBus.Messages.Common;
+using MassTransit;
 using Wireguard.Api.Data.Repositories;
 using Wireguard.Api.Extensions;
 using Wireguard.Api.Filters;
 using Quartz;
 using Quartz.Impl;
+using Wireguard.Api.Consumer;
 using Wireguard.Api.Jobs;
 using Wireguard.Api.Settings;
 
@@ -18,6 +21,31 @@ builder.Services.AddScoped<IIpAddressRepository, IpAddressRepository>();
 builder.Services.AddScoped<IPeerRepository, PeerRepository>();
 
 builder.Services.AddSingleton<ExceptionHandlerFilter>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<ActionPeerConsumer>();
+    x.AddConsumer<SyncPeerConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetValue<string>("EventBusSettings:HostAddress"));
+        
+        cfg.ReceiveEndpoint(EventBusConstans.ActionPeerQueue, e =>
+        {
+            e.ConfigureConsumer<ActionPeerConsumer>(context);
+            e.PrefetchCount = 1;
+        });
+
+        cfg.ReceiveEndpoint(EventBusConstans.SyncPeerQueue, e =>
+        {
+            e.ConfigureConsumer<SyncPeerConsumer>(context);
+            e.PrefetchCount = 1;
+        });
+    });
+});
+
+builder.Services.AddMassTransitHostedService();
 
 builder.Services.AddQuartz(q =>
 {
@@ -45,7 +73,7 @@ builder.Services.AddQuartz(q =>
                 case "ActionPeer":
                     q.AddJob<ActionPeer>(opts => opts.WithIdentity(jobKey));
                     break;
-                
+
                 case "DeletePeer":
                     q.AddJob<DeletePeer>(opts => opts.WithIdentity(jobKey));
                     break;
@@ -59,26 +87,6 @@ builder.Services.AddQuartz(q =>
 });
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-
-// StdSchedulerFactory factory = new StdSchedulerFactory();
-// IScheduler scheduler = await factory.GetScheduler();
-//
-// await scheduler.Start();
-//
-// IJobDetail job = JobBuilder.Create<SyncPeer>()
-//     .WithIdentity("SyncPeer", "group1")
-//     .Build();
-//
-// ITrigger trigger = TriggerBuilder.Create()
-//     .WithIdentity("SyncPeerTrigger",
-//         "group1")
-//     .StartNow()
-//     .WithSimpleSchedule(x => x
-//         .WithIntervalInSeconds(15)
-//         .RepeatForever())
-//     .Build();
-//
-// await scheduler.ScheduleJob(job, trigger);
 
 #region c o r s
 
