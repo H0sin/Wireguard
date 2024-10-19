@@ -26,6 +26,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ActionPeerConsumer>();
     x.AddConsumer<SyncPeerConsumer>();
+    x.AddConsumer<DeletePeerConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -34,7 +35,7 @@ builder.Services.AddMassTransit(x =>
             x.Username(builder.Configuration.GetValue<string>("RabbitMQ:Username"));
             x.Password(builder.Configuration.GetValue<string>("RabbitMQ:Password"));
         });
-        
+
         cfg.ReceiveEndpoint(EventBusConstans.ActionPeerQueue, e =>
         {
             e.ConfigureConsumer<ActionPeerConsumer>(context);
@@ -44,6 +45,12 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint(EventBusConstans.SyncPeerQueue, e =>
         {
             e.ConfigureConsumer<SyncPeerConsumer>(context);
+            e.PrefetchCount = 1;
+        });
+
+        cfg.ReceiveEndpoint(EventBusConstans.DeletePeerQueue, e =>
+        {
+            e.ConfigureConsumer<DeletePeerConsumer>(context);
             e.PrefetchCount = 1;
         });
     });
