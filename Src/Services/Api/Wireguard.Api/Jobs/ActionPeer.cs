@@ -10,7 +10,6 @@ namespace Wireguard.Api.Jobs;
 public class ActionPeer : IJob
 {
     private readonly IConfiguration _configuration;
-    private readonly ILogger<ActionPeer> _logger;
 
     public ActionPeer(IConfiguration configuration)
     {
@@ -19,7 +18,6 @@ public class ActionPeer : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        _logger.LogInformation("actionPeer executing");
 
         await using var connection =
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
