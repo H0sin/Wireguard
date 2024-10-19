@@ -83,7 +83,7 @@ public class SyncPeer : IJob
                     tasks.Add(updateTask);
                 }
 
-                await Task.WhenAny(tasks);
+                await Task.WhenAll(tasks);
             }
             catch (Exception e)
             {

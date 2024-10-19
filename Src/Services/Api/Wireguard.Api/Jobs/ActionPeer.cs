@@ -92,7 +92,7 @@ public class ActionPeer : IJob
                 }
             }
 
-            await Task.WhenAny(tasks);
+            await Task.WhenAll(tasks);
         }
         catch (Exception e)
         {
