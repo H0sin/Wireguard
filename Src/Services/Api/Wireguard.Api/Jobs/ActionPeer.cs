@@ -7,6 +7,8 @@ using Wireguard.Api.Data.Enums;
 
 namespace Wireguard.Api.Jobs;
 
+
+[DisallowConcurrentExecution]
 public class ActionPeer : IJob
 {
     private readonly IConfiguration _configuration;

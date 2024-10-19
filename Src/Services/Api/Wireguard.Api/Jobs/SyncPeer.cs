@@ -7,6 +7,7 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Jobs;
 
+[DisallowConcurrentExecution]
 public class SyncPeer : IJob
 {
     private readonly IConfiguration _configuration;
