@@ -30,7 +30,7 @@ services:
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: wireguard
-      RABBITMQ_DEFAULT_PASS: hossein@!#*!
+      RABBITMQ_DEFAULT_PASS: hossein
     network_mode: host
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
