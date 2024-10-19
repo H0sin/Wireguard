@@ -31,6 +31,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: wireguard
       RABBITMQ_DEFAULT_PASS: hossein
+    restart: always
     network_mode: host
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq

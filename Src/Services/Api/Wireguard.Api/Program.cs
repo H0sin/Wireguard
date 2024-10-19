@@ -29,7 +29,11 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(builder.Configuration.GetValue<string>("EventBusSettings:HostAddress"));
+        cfg.Host(builder.Configuration.GetValue<string>("RabbitMQ:Host"), x =>
+        {
+            x.Username(builder.Configuration.GetValue<string>("RabbitMQ:Username"));
+            x.Password(builder.Configuration.GetValue<string>("RabbitMQ:Password"));
+        });
         
         cfg.ReceiveEndpoint(EventBusConstans.ActionPeerQueue, e =>
         {
