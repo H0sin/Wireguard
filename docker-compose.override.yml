@@ -45,6 +45,7 @@ services:
       - "8000:8000"
     depends_on:
       - wireguarddb
+      - rabbitmq
     volumes:
       - /root/backup/wireguard/interfaces:/etc/wireguard/
       - /root/Wireguard/Src/Services/Api/Wireguard.Api/Imperat/rc.local:/etc/rc.local
