@@ -20,7 +20,6 @@
           "Quartz": "3.13.0",
           "Quartz.Extensions.DependencyInjection": "3.13.0",
           "Quartz.Extensions.Hosting": "3.11.0",
-          "RabbitMQ.Client": "7.0.0-rc.11",
           "Swashbuckle.AspNetCore": "6.4.0",
           "Swashbuckle.AspNetCore.Annotations": "6.8.0"
         },
@@ -74,7 +73,7 @@
       "MassTransit.RabbitMQ/8.3.1-develop.2084": {
         "dependencies": {
           "MassTransit": "8.3.1-develop.2084",
-          "RabbitMQ.Client": "7.0.0-rc.11"
+          "RabbitMQ.Client": "6.8.1"
         },
         "runtime": {
           "lib/net8.0/MassTransit.RabbitMqTransport.dll": {
@@ -215,14 +214,15 @@
           }
         }
       },
-      "RabbitMQ.Client/7.0.0-rc.11": {
+      "RabbitMQ.Client/6.8.1": {
         "dependencies": {
-          "System.IO.Pipelines": "6.0.0"
+          "System.Memory": "4.5.5",
+          "System.Threading.Channels": "7.0.0"
         },
         "runtime": {
-          "lib/net6.0/RabbitMQ.Client.dll": {
-            "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.0.0"
+          "lib/netstandard2.0/RabbitMQ.Client.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.8.1.0"
           }
         }
       },
@@ -276,7 +276,8 @@
         }
       },
       "System.Diagnostics.DiagnosticSource/8.0.0": {},
-      "System.IO.Pipelines/6.0.0": {},
+      "System.Memory/4.5.5": {},
+      "System.Threading.Channels/7.0.0": {},
       "EventBus.Messages/1.0.0": {
         "runtime": {
           "EventBus.Messages.dll": {
@@ -468,12 +469,12 @@
       "path": "quartz.extensions.hosting/3.11.0",
       "hashPath": "quartz.extensions.hosting.3.11.0.nupkg.sha512"
     },
-    "RabbitMQ.Client/7.0.0-rc.11": {
+    "RabbitMQ.Client/6.8.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-C4HmgVHqtlWc2ds0x4tY0GV3SXscWhZo2cMNTU9JlwppVEmxxeF2h/6RQ+4vLVWd4GznYsjSG8A0VE5rxdq3SA==",
-      "path": "rabbitmq.client/7.0.0-rc.11",
-      "hashPath": "rabbitmq.client.7.0.0-rc.11.nupkg.sha512"
+      "sha512": "sha512-jNsmGgmCNw2S/NzskeN2ijtGywtH4Sk/G6jWUTD5sY9SrC27Xz6BsLIiB8hdsfjeyWCa4j4GvCIGkpE8wrjU1Q==",
+      "path": "rabbitmq.client/6.8.1",
+      "hashPath": "rabbitmq.client.6.8.1.nupkg.sha512"
     },
     "Swashbuckle.AspNetCore/6.4.0": {
       "type": "package",
@@ -517,12 +518,19 @@
       "path": "system.diagnostics.diagnosticsource/8.0.0",
       "hashPath": "system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512"
     },
-    "System.IO.Pipelines/6.0.0": {
+    "System.Memory/4.5.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mXX66shZ4xLlI3vNLaJ0lt8OIZdmXTvIqXRdQX5HLVGSkLhINLsVhyZuX2UdRFnOGkqnwmMUs40pIIQ7mna4+A==",
-      "path": "system.io.pipelines/6.0.0",
-      "hashPath": "system.io.pipelines.6.0.0.nupkg.sha512"
+      "sha512": "sha512-XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "path": "system.memory/4.5.5",
+      "hashPath": "system.memory.4.5.5.nupkg.sha512"
+    },
+    "System.Threading.Channels/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA==",
+      "path": "system.threading.channels/7.0.0",
+      "hashPath": "system.threading.channels.7.0.0.nupkg.sha512"
     },
     "EventBus.Messages/1.0.0": {
       "type": "project",
