@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "URoPWUU+FZI=",
+  "dgSpecHash": "ahiAo30ZQLo=",
   "success": true,
   "projectFilePath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
   "expectedPackageFiles": [
@@ -29,14 +29,15 @@
     "C:\\Users\\hfara\\.nuget\\packages\\quartz\\3.13.0\\quartz.3.13.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\quartz.extensions.dependencyinjection\\3.13.0\\quartz.extensions.dependencyinjection.3.13.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\quartz.extensions.hosting\\3.11.0\\quartz.extensions.hosting.3.11.0.nupkg.sha512",
-    "C:\\Users\\hfara\\.nuget\\packages\\rabbitmq.client\\7.0.0-rc.11\\rabbitmq.client.7.0.0-rc.11.nupkg.sha512",
+    "C:\\Users\\hfara\\.nuget\\packages\\rabbitmq.client\\6.8.1\\rabbitmq.client.6.8.1.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\swashbuckle.aspnetcore.annotations\\6.8.0\\swashbuckle.aspnetcore.annotations.6.8.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.8.0\\swashbuckle.aspnetcore.swagger.6.8.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.8.0\\swashbuckle.aspnetcore.swaggergen.6.8.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512",
     "C:\\Users\\hfara\\.nuget\\packages\\system.diagnostics.diagnosticsource\\8.0.0\\system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512",
-    "C:\\Users\\hfara\\.nuget\\packages\\system.io.pipelines\\6.0.0\\system.io.pipelines.6.0.0.nupkg.sha512"
+    "C:\\Users\\hfara\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\hfara\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512"
   ],
   "logs": []
 }

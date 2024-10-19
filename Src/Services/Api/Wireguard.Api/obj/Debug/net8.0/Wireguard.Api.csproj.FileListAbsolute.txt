@@ -43,3 +43,8 @@ D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\RabbitMQ.
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\config.json
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Quartz.Extensions.DependencyInjection.dll
 D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\Quartz.Extensions.Hosting.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\MassTransit.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\MassTransit.Abstractions.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\MassTransit.RabbitMqTransport.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\EventBus.Messages.dll
+D:\Wireguard\Wireguard\Src\Services\Api\Wireguard.Api\bin\Debug\net8.0\EventBus.Messages.pdb

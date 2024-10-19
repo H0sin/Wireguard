@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Wireguard.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5eb58705da448c4917455c3f597521c2637aeaed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fdcd3b35a088e422eeb8a2a0867cc9b5d25d4f0f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Wireguard.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Wireguard.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
