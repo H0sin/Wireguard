@@ -25,7 +25,7 @@ public class SyncPeer : IJob
 
         await connection.OpenAsync();
 
-        var transaction = await connection.BeginTransactionAsync();
+        List<Task> tasks = new List<Task>();
 
         if (transferData != null && transferData.Count > 0)
         {
@@ -73,20 +73,21 @@ public class SyncPeer : IJob
 
                 foreach (var transfer in transferData)
                 {
-                    await connection.ExecuteAsync(command, new
+                    var updateTask = connection.ExecuteAsync(command, new
                     {
                         ReceivedBytes = transfer.ReceivedBytes,
                         SentBytes = transfer.SentBytes,
                         PublicKey = transfer.PeerPublicKey,
-                    }, transaction);
+                    });
+
+                    tasks.Add(updateTask);
                 }
 
-                await transaction.CommitAsync();
+                await Task.WhenAny(tasks);
             }
             catch (Exception e)
             {
                 Console.WriteLine("thorw exception :" + e.Message);
-                await transaction.RollbackAsync();
             }
         }
         else

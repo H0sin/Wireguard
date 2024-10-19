@@ -12,10 +12,9 @@ public class ActionPeer : IJob
     private readonly IConfiguration _configuration;
     private readonly ILogger<ActionPeer> _logger;
 
-    public ActionPeer(IConfiguration configuration, ILogger<ActionPeer> logger)
+    public ActionPeer(IConfiguration configuration)
     {
         _configuration = configuration;
-        _logger = logger;
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -26,9 +25,7 @@ public class ActionPeer : IJob
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         await connection.OpenAsync();
-
-        var transaction = await connection.BeginTransactionAsync();
-
+        
         try
         {
             var query = """
@@ -47,69 +44,61 @@ public class ActionPeer : IJob
                           WHERE PublicKey = @PublicKey
                           """;
 
-            IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction);
-
-            _logger.LogInformation("peer count" + peers.Count());
+            IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query);
 
             long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
+            List<Task> tasks = new List<Task>();
+            
             foreach (var peer in peers)
             {
                 if (peer.Status == PeerStatus.onhold.ToString() & peer.TotalReceivedVolume != 0)
                 {
-                    _logger.LogInformation($"peer by public key {peer.PublicKey} actived");
-
                     peer.Status = PeerStatus.active.ToString();
 
-                    await connection.ExecuteAsync(command, new
+                    tasks.Add(connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.active.ToString(),
                         PublicKey = peer.PublicKey
-                    });
+                    }));
 
                     peer.ExpireTime =
                         currentEpochTime + peer.OnHoldExpireDurection;
                     
-                    await connection.ExecuteAsync(
+                    tasks.Add(connection.ExecuteAsync(
                         "UPDATE Peer SET StartTime = @StartTime, ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey",
                         new
                         {
                             ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
                             PublicKey = peer.PublicKey,
                             StartTime = currentEpochTime
-                        });
+                        }));
                 }
 
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0 & peer.Status == "active")
                 {
-                    _logger.LogInformation($"peer by public key {peer.PublicKey} limited");
-
-                    await connection.ExecuteAsync(command, new
+                    tasks.Add(connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.limited.ToString(),
                         PublicKey = peer.PublicKey
-                    });
+                    }));
                 }
 
                 if (peer.ExpireTime < currentEpochTime & peer.Status != "onhold")
                 {
-                    _logger.LogInformation(
-                        $"peer by public key {peer.PublicKey} expired , expire time = {peer.ExpireTime} , current time = {currentEpochTime}");
-
-                    await connection.ExecuteAsync(command, new
+                    tasks.Add(connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.expired.ToString(),
                         PublicKey = peer.PublicKey
-                    });
+                    }));
                 }
             }
 
-            await transaction.CommitAsync();
+            await Task.WhenAny(tasks);
         }
         catch (Exception e)
         {
             Console.WriteLine("thorw exception :" + e.Message);
-            await transaction.RollbackAsync();
         }
     }
 }

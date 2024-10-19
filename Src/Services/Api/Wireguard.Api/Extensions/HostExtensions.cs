@@ -75,6 +75,7 @@ namespace Wireguard.Api.Extensions
 
                         command.ExecuteNonQuery();
                         
+                        
                     }
 
                     // Check if 'IpAddress' table exists
