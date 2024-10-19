@@ -10,7 +10,7 @@ namespace Wireguard.Api.Jobs;
 public class ActionPeer : IJob
 {
     private readonly IConfiguration _configuration;
-
+    
     public ActionPeer(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -45,8 +45,6 @@ public class ActionPeer : IJob
             IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query);
 
             long currentEpochTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-            List<Task> tasks = new List<Task>();
             
             foreach (var peer in peers)
             {
@@ -54,45 +52,43 @@ public class ActionPeer : IJob
                 {
                     peer.Status = PeerStatus.active.ToString();
 
-                    tasks.Add(connection.ExecuteAsync(command, new
+                    await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.active.ToString(),
                         PublicKey = peer.PublicKey
-                    }));
+                    });
 
                     peer.ExpireTime =
                         currentEpochTime + peer.OnHoldExpireDurection;
                     
-                    tasks.Add(connection.ExecuteAsync(
+                    await connection.ExecuteAsync(
                         "UPDATE Peer SET StartTime = @StartTime, ExpireTime = @ExpireTime WHERE PublicKey = @PublicKey",
                         new
                         {
                             ExpireTime = currentEpochTime + peer.OnHoldExpireDurection,
                             PublicKey = peer.PublicKey,
                             StartTime = currentEpochTime
-                        }));
+                        });
                 }
 
                 if (peer.TotalReceivedVolume - peer.TotalVolume > 0 & peer.Status == "active")
                 {
-                    tasks.Add(connection.ExecuteAsync(command, new
+                    await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.limited.ToString(),
                         PublicKey = peer.PublicKey
-                    }));
+                    });
                 }
 
                 if (peer.ExpireTime < currentEpochTime & peer.Status != "onhold")
                 {
-                    tasks.Add(connection.ExecuteAsync(command, new
+                    await connection.ExecuteAsync(command, new
                     {
                         Status = PeerStatus.expired.ToString(),
                         PublicKey = peer.PublicKey
-                    }));
+                    });
                 }
             }
-
-            await Task.WhenAll(tasks);
         }
         catch (Exception e)
         {

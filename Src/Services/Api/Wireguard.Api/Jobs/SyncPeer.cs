@@ -24,9 +24,7 @@ public class SyncPeer : IJob
             new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
         await connection.OpenAsync();
-
-        List<Task> tasks = new List<Task>();
-
+        
         if (transferData != null && transferData.Count > 0)
         {
             string command = """
@@ -73,17 +71,13 @@ public class SyncPeer : IJob
 
                 foreach (var transfer in transferData)
                 {
-                    var updateTask = connection.ExecuteAsync(command, new
+                    await connection.ExecuteAsync(command, new
                     {
                         ReceivedBytes = transfer.ReceivedBytes,
                         SentBytes = transfer.SentBytes,
                         PublicKey = transfer.PeerPublicKey,
                     });
-
-                    tasks.Add(updateTask);
                 }
-
-                await Task.WhenAll(tasks);
             }
             catch (Exception e)
             {
