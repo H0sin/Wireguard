@@ -142,7 +142,7 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         return Ok();
     }
     
-    [HttpPost("{name}")]
+    [HttpPost("{FixedActive/@interfacename}")]
     [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
     public async Task<ApiResult> FixedActive(string @interfacename)
