@@ -63,6 +63,7 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
                         t.PublicKey,
                         p.Status,
                         p.ExpireTime,
+                        p.TotalVolume,
                         p.OnHoldExpireDurection,
                         i.Name AS InterfaceName
                     FROM PEER p
