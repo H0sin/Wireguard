@@ -24,9 +24,9 @@ builder.Services.AddSingleton<ExceptionHandlerFilter>();
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<ActionPeerConsumer>();
+    // x.AddConsumer<ActionPeerConsumer>();
     x.AddConsumer<SyncPeerConsumer>();
-    x.AddConsumer<DeletePeerConsumer>();
+    // x.AddConsumer<DeletePeerConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -36,11 +36,11 @@ builder.Services.AddMassTransit(x =>
             x.Password(builder.Configuration.GetValue<string>("RabbitMQ:Password"));
         });
 
-        cfg.ReceiveEndpoint(EventBusConstans.ActionPeerQueue, e =>
-        {
-            e.ConfigureConsumer<ActionPeerConsumer>(context);
-            e.PrefetchCount = 1;
-        });
+        // cfg.ReceiveEndpoint(EventBusConstans.ActionPeerQueue, e =>
+        // {
+        //     e.ConfigureConsumer<ActionPeerConsumer>(context);
+        //     e.PrefetchCount = 1;
+        // });
 
         cfg.ReceiveEndpoint(EventBusConstans.SyncPeerQueue, e =>
         {
@@ -48,11 +48,11 @@ builder.Services.AddMassTransit(x =>
             e.PrefetchCount = 1;
         });
 
-        cfg.ReceiveEndpoint(EventBusConstans.DeletePeerQueue, e =>
-        {
-            e.ConfigureConsumer<DeletePeerConsumer>(context);
-            e.PrefetchCount = 1;
-        });
+        // cfg.ReceiveEndpoint(EventBusConstans.DeletePeerQueue, e =>
+        // {
+        //     e.ConfigureConsumer<DeletePeerConsumer>(context);
+        //     e.PrefetchCount = 1;
+        // });
     });
 });
 
@@ -81,13 +81,13 @@ builder.Services.AddQuartz(q =>
                     q.AddJob<SyncPeer>(opts => opts.WithIdentity(jobKey));
                     break;
 
-                case "ActionPeer":
-                    q.AddJob<ActionPeer>(opts => opts.WithIdentity(jobKey));
-                    break;
-
-                case "DeletePeer":
-                    q.AddJob<DeletePeer>(opts => opts.WithIdentity(jobKey));
-                    break;
+                // case "ActionPeer":
+                //     q.AddJob<ActionPeer>(opts => opts.WithIdentity(jobKey));
+                //     break;
+                //
+                // case "DeletePeer":
+                //     q.AddJob<DeletePeer>(opts => opts.WithIdentity(jobKey));
+                //     break;
             }
 
             q.AddTrigger(opts => opts
