@@ -101,13 +101,7 @@ public static class WireguardHelpers
             process.BeginErrorReadLine();
 
             await process.WaitForExitAsync();
-
-            if (process.ExitCode != 0)
-            {
-                var errorOutput = errorBuilder.ToString();
-                throw new Exception($"{process.ExitCode} {errorOutput}");
-            }
-
+            
             var output = outputBuilder.ToString();
 
             var lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
@@ -154,7 +148,6 @@ public static class WireguardHelpers
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
             return new List<WireGuardTransfer>();
         }
 

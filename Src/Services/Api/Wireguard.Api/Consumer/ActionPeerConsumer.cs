@@ -75,6 +75,7 @@ public class ActionPeerConsumer(IConfiguration configuration, ILogger<ActionPeer
             if (updateCommands.Length > 0)
             {
                 await connection.ExecuteAsync(updateCommands.ToString(), transaction: transaction);
+                await connection.CloseAsync();
                 logger.LogInformation("Batch update executed successfully.");
             }
 

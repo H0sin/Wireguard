@@ -7,7 +7,8 @@ using Wireguard.Api.Helpers;
 
 namespace Wireguard.Api.Consumer;
 
-public class DeletePeerConsumer(IConfiguration configuration,ILogger<DeletePeerConsumer> logger) : IConsumer<DeletePeerEvent>
+public class DeletePeerConsumer(IConfiguration configuration, ILogger<DeletePeerConsumer> logger)
+    : IConsumer<DeletePeerEvent>
 {
     public async Task Consume(ConsumeContext<DeletePeerEvent> context)
     {
@@ -39,6 +40,8 @@ public class DeletePeerConsumer(IConfiguration configuration,ILogger<DeletePeerC
                 await WireguardHelpers.RemovePeer(peer.InterfaceName, peer.PublicKey);
                 await WireguardHelpers.Save(peer.InterfaceName);
             }
+
+            await connection.CloseAsync();
         }
         catch (Exception e)
         {
