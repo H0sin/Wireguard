@@ -23,17 +23,19 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
         {
             // Create a temporary table to hold the data
             string createTempTableQuery = """
-                CREATE TEMP TABLE TempPeerData (
-                    PublicKey VARCHAR PRIMARY KEY,
-                    ReceivedBytes BIGINT,
-                    SentBytes BIGINT
-                );
-                """;
+                                          CREATE TEMP TABLE TempPeerData (
+                                              PublicKey VARCHAR PRIMARY KEY,
+                                              ReceivedBytes BIGINT,
+                                              SentBytes BIGINT
+                                          );
+                                          """;
 
             await connection.ExecuteAsync(createTempTableQuery);
 
             // Insert data into the temporary table
-            using (var importer = connection.BeginBinaryImport("COPY TempPeerData (PublicKey, ReceivedBytes, SentBytes) FROM STDIN (FORMAT BINARY)"))
+            using (var importer =
+                   connection.BeginBinaryImport(
+                       "COPY TempPeerData (PublicKey, ReceivedBytes, SentBytes) FROM STDIN (FORMAT BINARY)"))
             {
                 foreach (var transfer in transferData)
                 {
@@ -48,62 +50,66 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
 
             // Update the PEER table using the data from the temporary table
             string updateQuery = """
-                WITH peer_data AS (
-                    SELECT 
-                        p.LastDownloadVolume,
-                        p.LastUploadVolume,
-                        p.LastTotalReceivedVolume,
-                        p.DownloadVolume,
-                        p.UploadVolume,
-                        p.TotalReceivedVolume,
-                        i.UploadPercent,
-                        i.DownloadPercent,
-                        t.ReceivedBytes,
-                        t.SentBytes,
-                        t.PublicKey,
-                        p.Status,
-                        p.ExpireTime,
-                        p.TotalVolume,
-                        p.OnHoldExpireDurection,
-                        i.Name AS InterfaceName
-                    FROM PEER p
-                    JOIN Interface i ON p.InterfaceId = i.Id
-                    JOIN TempPeerData t ON p.PublicKey = t.PublicKey
-                )
-                UPDATE PEER
-                SET
-                    LastDownloadVolume = peer_data.ReceivedBytes,
-                    LastUploadVolume = peer_data.SentBytes,
-                    LastTotalReceivedVolume = peer_data.SentBytes + peer_data.ReceivedBytes,                          
-                    UploadVolume = CASE 
-                        WHEN peer_data.ReceivedBytes >= peer_data.LastDownloadVolume 
-                        THEN ROUND((peer_data.ReceivedBytes - peer_data.LastDownloadVolume) * peer_data.DownloadPercent) + peer_data.DownloadVolume 
-                        ELSE ROUND(peer_data.ReceivedBytes * peer_data.DownloadPercent) + peer_data.DownloadVolume
-                    END,
-                    DownloadVolume = CASE 
-                        WHEN peer_data.SentBytes >= peer_data.LastUploadVolume 
-                        THEN ROUND((peer_data.SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent) + peer_data.UploadVolume 
-                        ELSE ROUND(peer_data.SentBytes * peer_data.UploadPercent) + peer_data.UploadVolume
-                    END,
-                    TotalReceivedVolume = CASE 
-                        WHEN (peer_data.ReceivedBytes + peer_data.SentBytes) >= peer_data.LastTotalReceivedVolume 
-                        THEN ROUND(((peer_data.ReceivedBytes + peer_data.SentBytes) - peer_data.LastTotalReceivedVolume) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume 
-                        ELSE ROUND((peer_data.ReceivedBytes + peer_data.SentBytes) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume
-                    END,
-                    Status = CASE
-                        WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN 'active'
-                        WHEN peer_data.TotalReceivedVolume - peer_data.TotalVolume > 0 AND peer_data.Status = 'active' THEN 'limited'
-                        WHEN peer_data.ExpireTime < EXTRACT(EPOCH FROM NOW()) AND peer_data.Status != 'onhold' THEN 'expired'
-                        ELSE peer_data.Status
-                    END,
-                    ExpireTime = CASE
-                        WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN EXTRACT(EPOCH FROM NOW()) * 1000 + peer_data.OnHoldExpireDurection
-                        ELSE peer_data.ExpireTime
-                    END
-                FROM peer_data
-                WHERE PEER.PublicKey = peer_data.PublicKey
-                RETURNING peer_data.InterfaceName, PEER.PublicKey, PEER.Status;
-                """;
+                                 WITH peer_data AS (
+                                     SELECT 
+                                         p.LastDownloadVolume,
+                                         p.LastUploadVolume,
+                                         p.LastTotalReceivedVolume,
+                                         p.DownloadVolume,
+                                         p.UploadVolume,
+                                         p.TotalReceivedVolume,
+                                         i.UploadPercent,
+                                         i.DownloadPercent,
+                                         t.ReceivedBytes,
+                                         t.SentBytes,
+                                         t.PublicKey,
+                                         p.Status,
+                                         p.ExpireTime,
+                                         p.TotalVolume,
+                                         p.OnHoldExpireDurection,
+                                         i.Name AS InterfaceName
+                                     FROM PEER p
+                                     JOIN Interface i ON p.InterfaceId = i.Id
+                                     JOIN TempPeerData t ON p.PublicKey = t.PublicKey
+                                 )
+                                 UPDATE PEER
+                                 SET
+                                     LastDownloadVolume = peer_data.ReceivedBytes,
+                                     LastUploadVolume = peer_data.SentBytes,
+                                     LastTotalReceivedVolume = peer_data.SentBytes + peer_data.ReceivedBytes,                          
+                                     UploadVolume = CASE 
+                                         WHEN peer_data.ReceivedBytes >= peer_data.LastDownloadVolume 
+                                         THEN ROUND((peer_data.ReceivedBytes - peer_data.LastDownloadVolume) * peer_data.DownloadPercent) + peer_data.DownloadVolume 
+                                         ELSE ROUND(peer_data.ReceivedBytes * peer_data.DownloadPercent) + peer_data.DownloadVolume
+                                     END,
+                                     DownloadVolume = CASE 
+                                         WHEN peer_data.SentBytes >= peer_data.LastUploadVolume 
+                                         THEN ROUND((peer_data.SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent) + peer_data.UploadVolume 
+                                         ELSE ROUND(peer_data.SentBytes * peer_data.UploadPercent) + peer_data.UploadVolume
+                                     END,
+                                     TotalReceivedVolume = CASE 
+                                         WHEN (peer_data.ReceivedBytes + peer_data.SentBytes) >= peer_data.LastTotalReceivedVolume 
+                                         THEN ROUND(((peer_data.ReceivedBytes + peer_data.SentBytes) - peer_data.LastTotalReceivedVolume) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume 
+                                         ELSE ROUND((peer_data.ReceivedBytes + peer_data.SentBytes) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume
+                                     END,
+                                     Status = CASE
+                                         WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN 'active'
+                                         WHEN peer_data.TotalReceivedVolume - peer_data.TotalVolume > 0 AND peer_data.Status = 'active' THEN 'limited'
+                                         WHEN peer_data.ExpireTime < EXTRACT(EPOCH FROM NOW()) AND peer_data.Status != 'onhold' THEN 'expired'
+                                         ELSE peer_data.Status
+                                     END,
+                                     ExpireTime = CASE
+                                         WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN EXTRACT(EPOCH FROM NOW()) * 1000 + peer_data.OnHoldExpireDurection
+                                         ELSE peer_data.ExpireTime
+                                     END,
+                                     StartTime = CASE
+                                         WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN EXTRACT(EPOCH FROM NOW()) * 1000
+                                         ELSE StartTime
+                                     END
+                                 FROM peer_data
+                                 WHERE PEER.PublicKey = peer_data.PublicKey
+                                 RETURNING peer_data.InterfaceName, PEER.PublicKey, PEER.Status;
+                                 """;
 
             IEnumerable<PeerDto> updatedPeers;
             try

@@ -617,7 +617,7 @@ public class PeerRepository(
     {
         var query = """
                     SELECT * FROM PEER
-                    WHERE TotalReceivedVolume - COALESCE(TotalVolume, 0) < 0
+                    WHERE TotalReceivedVolume - COALESCE(TotalVolume, 0) < 0 AND ExpireTime < EXTRACT(EPOCH FROM NOW())
                     """;
 
         await using var connection =
@@ -630,7 +630,7 @@ public class PeerRepository(
         IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction: transaction);
 
         var command = """
-                      Update Peer SET Status = 'active'
+                      Update Peer SET Status = 'onhold'
                       WHERE PublicKey = @PublicKey
                       """;
 
