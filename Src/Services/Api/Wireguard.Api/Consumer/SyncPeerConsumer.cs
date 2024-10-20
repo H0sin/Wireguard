@@ -3,6 +3,7 @@ using EventBus.Messages.Events;
 using MassTransit;
 using Npgsql;
 using Wireguard.Api.Helpers;
+using System.Data;
 
 namespace Wireguard.Api.Consumer;
 
@@ -19,68 +20,89 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
 
         if (transferData != null && transferData.Count > 0)
         {
-            string command = """
-                             WITH peer_data AS (
-                                 SELECT 
-                                     p.LastDownloadVolume,
-                                     p.LastUploadVolume,
-                                     p.LastTotalReceivedVolume,
-                                     p.DownloadVolume,
-                                     p.UploadVolume,
-                                     p.TotalReceivedVolume,
-                                     i.UploadPercent,
-                                     i.DownloadPercent
-                                 FROM PEER p
-                                 JOIN Interface i ON p.InterfaceId = i.Id
-                                 WHERE p.PublicKey = @PublicKey
-                             )
-                             UPDATE PEER
-                             SET
-                                 LastDownloadVolume = @ReceivedBytes,
-                                 LastUploadVolume = @SentBytes,
-                                 LastTotalReceivedVolume = @SentBytes + @ReceivedBytes,                          
-                                 UploadVolume = CASE 
-                                                    WHEN @ReceivedBytes >= peer_data.LastDownloadVolume 
-                                                    THEN ROUND((@ReceivedBytes - peer_data.LastDownloadVolume) * peer_data.DownloadPercent) + peer_data.DownloadVolume 
-                                                    ELSE ROUND(@ReceivedBytes * peer_data.DownloadPercent) + peer_data.DownloadVolume
-                                                END,
-                                 DownloadVolume = CASE 
-                                                     WHEN @SentBytes >= peer_data.LastUploadVolume 
-                                                     THEN ROUND((@SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent) + peer_data.UploadVolume 
-                                                     ELSE ROUND(@SentBytes * peer_data.UploadPercent) + peer_data.UploadVolume
-                                                 END,
-                                 TotalReceivedVolume = CASE 
-                                                          WHEN (@ReceivedBytes + @SentBytes) >= peer_data.LastTotalReceivedVolume 
-                                                          THEN ROUND(((@ReceivedBytes + @SentBytes) - peer_data.LastTotalReceivedVolume) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume 
-                                                          ELSE ROUND((@ReceivedBytes + @SentBytes) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume
-                                                       END
-                             FROM peer_data
-                             WHERE PEER.PublicKey = @PublicKey;
-                             """;
-            try
+            // Create a temporary table to hold the data
+            string createTempTableQuery = """
+                CREATE TEMP TABLE TempPeerData (
+                    PublicKey VARCHAR PRIMARY KEY,
+                    ReceivedBytes BIGINT,
+                    SentBytes BIGINT
+                );
+                """;
+
+            await connection.ExecuteAsync(createTempTableQuery);
+
+            // Insert data into the temporary table
+            using (var importer = connection.BeginBinaryImport("COPY TempPeerData (PublicKey, ReceivedBytes, SentBytes) FROM STDIN (FORMAT BINARY)"))
             {
                 foreach (var transfer in transferData)
                 {
-                    await connection.ExecuteAsync(command, new
-                    {
-                        ReceivedBytes = transfer.ReceivedBytes,
-                        SentBytes = transfer.SentBytes,
-                        PublicKey = transfer.PeerPublicKey,
-                    });
+                    importer.StartRow();
+                    importer.Write(transfer.PeerPublicKey, NpgsqlTypes.NpgsqlDbType.Varchar);
+                    importer.Write(transfer.ReceivedBytes, NpgsqlTypes.NpgsqlDbType.Bigint);
+                    importer.Write(transfer.SentBytes, NpgsqlTypes.NpgsqlDbType.Bigint);
                 }
+
+                await importer.CompleteAsync();
+            }
+
+            // Update the PEER table using the data from the temporary table
+            string updateQuery = """
+                WITH peer_data AS (
+                    SELECT 
+                        p.LastDownloadVolume,
+                        p.LastUploadVolume,
+                        p.LastTotalReceivedVolume,
+                        p.DownloadVolume,
+                        p.UploadVolume,
+                        p.TotalReceivedVolume,
+                        i.UploadPercent,
+                        i.DownloadPercent,
+                        t.ReceivedBytes,
+                        t.SentBytes,
+                        t.PublicKey
+                    FROM PEER p
+                    JOIN Interface i ON p.InterfaceId = i.Id
+                    JOIN TempPeerData t ON p.PublicKey = t.PublicKey
+                )
+                UPDATE PEER
+                SET
+                    LastDownloadVolume = peer_data.ReceivedBytes,
+                    LastUploadVolume = peer_data.SentBytes,
+                    LastTotalReceivedVolume = peer_data.SentBytes + peer_data.ReceivedBytes,                          
+                    UploadVolume = CASE 
+                        WHEN peer_data.ReceivedBytes >= peer_data.LastDownloadVolume 
+                        THEN ROUND((peer_data.ReceivedBytes - peer_data.LastDownloadVolume) * peer_data.DownloadPercent) + peer_data.DownloadVolume 
+                        ELSE ROUND(peer_data.ReceivedBytes * peer_data.DownloadPercent) + peer_data.DownloadVolume
+                    END,
+                    DownloadVolume = CASE 
+                        WHEN peer_data.SentBytes >= peer_data.LastUploadVolume 
+                        THEN ROUND((peer_data.SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent) + peer_data.UploadVolume 
+                        ELSE ROUND(peer_data.SentBytes * peer_data.UploadPercent) + peer_data.UploadVolume
+                    END,
+                    TotalReceivedVolume = CASE 
+                        WHEN (peer_data.ReceivedBytes + peer_data.SentBytes) >= peer_data.LastTotalReceivedVolume 
+                        THEN ROUND(((peer_data.ReceivedBytes + peer_data.SentBytes) - peer_data.LastTotalReceivedVolume) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume 
+                        ELSE ROUND((peer_data.ReceivedBytes + peer_data.SentBytes) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume
+                    END
+                FROM peer_data
+                WHERE PEER.PublicKey = peer_data.PublicKey;
+                """;
+
+            try
+            {
+                await connection.ExecuteAsync(updateQuery);
             }
             catch (Exception e)
             {
-                await connection.CloseAsync();
-                Console.WriteLine("thorw exception :" + e.Message);
+                Console.WriteLine("Throw exception: " + e.Message);
             }
         }
         else
         {
-            Console.WriteLine("no data found");
-            await connection.CloseAsync();
+            Console.WriteLine("No data found");
         }
 
+        await connection.CloseAsync();
         await Task.CompletedTask;
     }
 }
