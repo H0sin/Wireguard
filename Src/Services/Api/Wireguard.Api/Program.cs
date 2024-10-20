@@ -40,18 +40,21 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<ActionPeerConsumer>(context);
             e.PrefetchCount = 1;
+            e.ConcurrentMessageLimit = 1;
         });
 
         cfg.ReceiveEndpoint(EventBusConstans.SyncPeerQueue, e =>
         {
             e.ConfigureConsumer<SyncPeerConsumer>(context);
             e.PrefetchCount = 1;
+            e.ConcurrentMessageLimit = 1;
         });
 
         cfg.ReceiveEndpoint(EventBusConstans.DeletePeerQueue, e =>
         {
             e.ConfigureConsumer<DeletePeerConsumer>(context);
             e.PrefetchCount = 1;
+            e.ConcurrentMessageLimit = 1;
         });
     });
 });
