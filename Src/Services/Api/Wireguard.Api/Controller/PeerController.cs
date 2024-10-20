@@ -141,4 +141,13 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
         await peerRepository.DeletePeerAsync(name);
         return Ok();
     }
+    
+    [HttpPost("{name}")]
+    [ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType]
+    public async Task<ApiResult> FixedActive(string @interfacename)
+    {
+        await peerRepository.FixedPeerAsync(interfacename);
+        return Ok();
+    }
 }

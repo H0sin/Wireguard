@@ -15,4 +15,5 @@ public interface IPeerRepository
     Task<Peer?> DisabledPeerAsync(string name);
     Task<Peer?> ActivePeerAsync(string name);
     Task DeletePeerAsync(string name);
+    Task FixedPeerAsync(string interfacename);
 }

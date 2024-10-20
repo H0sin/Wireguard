@@ -612,4 +612,38 @@ public class PeerRepository(
             throw e;
         }
     }
+
+    public async Task FixedPeerAsync(string interfacename)
+    {
+        var query = """
+                    SELECT * FROM PEER
+                    WHERE TotalReceivedVolume - COALESCE(TotalVolume, 0) < 0
+                    """;
+
+        await using var connection =
+            new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+
+        await connection.OpenAsync();
+
+        var transaction = await connection.BeginTransactionAsync();
+
+        IEnumerable<Peer> peers = await connection.QueryAsync<Peer>(query, transaction: transaction);
+
+        var command = """
+                      Update Peer SET Status = 'active'
+                      WHERE PublicKey = @PublicKey
+                      """;
+
+        var @interface = await connection.QuerySingleOrDefaultAsync<Interface>(
+            "SELECT * FROM INTERFACE WHERE Name = @Name",
+            new { Name = interfacename });
+
+        foreach (var peer in peers)
+        {
+            await connection.ExecuteAsync(command, peer);
+            WireguardHelpers.CreatePeer(new AddPeerDto(peer), @interface);
+        }
+
+        await transaction.CommitAsync();
+    }
 }
