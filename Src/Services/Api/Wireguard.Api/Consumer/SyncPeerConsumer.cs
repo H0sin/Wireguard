@@ -87,10 +87,10 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
                                          THEN ROUND((peer_data.SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent) + peer_data.UploadVolume 
                                          ELSE ROUND(peer_data.SentBytes * peer_data.UploadPercent) + peer_data.UploadVolume
                                      END,
-                                     TotalReceivedVolume = CASE 
-                                         WHEN (peer_data.ReceivedBytes + peer_data.SentBytes) >= peer_data.LastTotalReceivedVolume 
-                                         THEN ROUND(((peer_data.ReceivedBytes + peer_data.SentBytes) - peer_data.LastTotalReceivedVolume) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume 
-                                         ELSE ROUND((peer_data.ReceivedBytes + peer_data.SentBytes) * peer_data.UploadPercent * peer_data.DownloadPercent) + peer_data.TotalReceivedVolume
+                                     TotalReceivedVolume = CASE
+                                         WHEN (peer_data.ReceivedBytes + peer_data.SentBytes) >= peer_data.LastTotalReceivedVolume
+                                         THEN ROUND((peer_data.ReceivedBytes * peer_data.DownloadPercent) + (peer_data.SentBytes * peer_data.UploadPercent) - (peer_data.LastTotalReceivedVolume * (peer_data.UploadPercent + peer_data.DownloadPercent)) + peer_data.TotalReceivedVolume)
+                                         ELSE ROUND((peer_data.ReceivedBytes * peer_data.DownloadPercent) + (peer_data.SentBytes * peer_data.UploadPercent) + peer_data.TotalReceivedVolume)
                                      END,
                                      Status = CASE
                                          WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN 'active'

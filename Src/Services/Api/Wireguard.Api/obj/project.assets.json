@@ -1719,7 +1719,8 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hfara\\.nuget\\packages\\": {}
+    "C:\\Users\\hfara\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -1730,8 +1731,12 @@
       "packagesPath": "C:\\Users\\hfara\\.nuget\\packages\\",
       "outputPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\hfara\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
