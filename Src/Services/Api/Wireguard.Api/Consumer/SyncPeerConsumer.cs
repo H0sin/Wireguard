@@ -89,7 +89,7 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
                                      END,
                                      TotalReceivedVolume = CASE
                                          WHEN (peer_data.ReceivedBytes + peer_data.SentBytes) >= peer_data.LastTotalReceivedVolume
-                                         THEN ROUND(((peer_data.ReceivedBytes * peer_data.DownloadPercent) - peer_data.LastDownloadVolume) + ((peer_data.SentBytes * peer_data.UploadPercent) - peer_data.LastUploadVolume))
+                                         THEN ROUND(((peer_data.ReceivedBytes - peer_data.LastDownloadVolume) * peer_data.DownloadPercent) + ((peer_data.SentBytes - peer_data.LastUploadVolume) * peer_data.UploadPercent))
                                          ELSE ROUND((peer_data.ReceivedBytes * peer_data.DownloadPercent) + (peer_data.SentBytes * peer_data.UploadPercent) + peer_data.TotalReceivedVolume)
                                      END,
                                      Status = CASE
