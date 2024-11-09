@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Data;
+using System.Text;
 using Dapper;
 using Npgsql;
 using Wireguard.Api.Data.Dtos;
@@ -408,7 +409,7 @@ public class PeerRepository(
 
         await connection.OpenAsync();
 
-        var transaction = await connection.BeginTransactionAsync();
+        var transaction = await connection.BeginTransactionAsync(IsolationLevel.Serializable);
 
         try
         {
