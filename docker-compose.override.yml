@@ -50,6 +50,7 @@ services:
       - /root/backup/wireguard/interfaces:/etc/wireguard/
       - /root/Wireguard/Src/Services/Api/Wireguard.Api/Imperat/rc.local:/etc/rc.local
     network_mode: host
+    restart: always
     privileged: true
     cap_add:
       - NET_ADMIN
