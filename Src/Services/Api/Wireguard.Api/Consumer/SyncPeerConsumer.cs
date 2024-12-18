@@ -95,7 +95,7 @@ public class SyncPeerConsumer(IConfiguration configuration) : IConsumer<SyncPeer
                                      Status = CASE
                                          WHEN peer_data.Status = 'onhold' AND peer_data.TotalReceivedVolume != 0 THEN 'active'
                                          WHEN peer_data.TotalReceivedVolume - peer_data.TotalVolume > 0 AND peer_data.Status = 'active' THEN 'limited'
-                                         WHEN peer_data.ExpireTime < EXTRACT(EPOCH FROM NOW()) AND peer_data.Status != 'onhold' THEN 'expired'
+                                         WHEN peer_data.ExpireTime < EXTRACT(EPOCH FROM NOW()) * 1000 AND peer_data.Status != 'onhold' THEN 'expired'
                                          ELSE peer_data.Status
                                      END,
                                      ExpireTime = CASE
