@@ -5,6 +5,7 @@ using Npgsql;
 using Wireguard.Api.Helpers;
 using System.Data;
 using Wireguard.Api.Data.Dtos;
+using Wireguard.Api.Data.Dtos;
 
 namespace Wireguard.Api.Consumer;
 
