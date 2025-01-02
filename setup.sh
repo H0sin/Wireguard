@@ -4,8 +4,11 @@
 set -e
 
 # متغیرها
-REPO_URL="https://github.com/username/repository.git" # لینک گیت‌هاب خود را اینجا قرار دهید
+REPO_URL="https://github.com/username/repository.git" # لینک مخزن خصوصی گیت‌هاب
 PROJECT_DIR="wireguard-project" # نام پوشه پروژه پس از کلون کردن
+
+# درخواست توکن گیت‌هاب از کاربر
+read -p "لطفاً توکن گیت‌هاب خود را وارد کنید: " GITHUB_TOKEN
 
 # بررسی نصب Docker
 echo "بررسی نصب Docker..."
@@ -29,8 +32,8 @@ fi
 
 # کلون کردن پروژه از گیت‌هاب
 if [ ! -d "$PROJECT_DIR" ]; then
-  echo "کلون کردن پروژه از GitHub..."
-  git clone $REPO_URL $PROJECT_DIR
+  echo "کلون کردن پروژه از مخزن خصوصی گیت‌هاب..."
+  git clone https://$GITHUB_TOKEN@github.com/username/repository.git $PROJECT_DIR
 else
   echo "پروژه از قبل وجود دارد."
 fi
