@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Wireguard.Api.Data.Dtos;
 using Wireguard.Api.Data.Entities;
 using Wireguard.Api.Data.Repositories;
@@ -13,7 +15,7 @@ namespace Wireguard.Api.Controller;
 [Route("[controller]")]
 [ApiResultFilter]
 [ServiceFilter(typeof(ExceptionHandlerFilter))]
-public class PeerController(IPeerRepository peerRepository) : ControllerBase
+public class PeerController(IPeerRepository peerRepository,IBus bus) : ControllerBase
 {
     /// <summary>
     /// Adds a new peer to the specified interface.
@@ -86,7 +88,8 @@ public class PeerController(IPeerRepository peerRepository) : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ApiResult<Peer>> ResetVolume(string name, [FromBody] ResetPeerDto peer)
     {
-        return Ok(await peerRepository.ResetPeerAsync(peer, name));
+        bus.Publish(peerRepository.ResetPeerAsync(peer, name));
+        return Ok(await peerRepository.GetPeerByNameAsync(name));
     }
 
     /// <summary>

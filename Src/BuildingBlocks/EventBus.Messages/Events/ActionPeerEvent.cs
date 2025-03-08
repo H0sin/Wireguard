@@ -2,5 +2,5 @@
 
 public class ActionPeerEvent : IntegrationBaseEvent
 {
-    
+    public Task Action { get; set; }
 }
