@@ -40,7 +40,8 @@ services:
     user: root
     environment:
       - ASPNETCORE_HTTP_PORTS=8000
-      - DatabaseSettings__ConnectionString=Host=wireguarddb;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234;
+      - DatabaseSettings__ConnectionString=Host=localhost;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234;
+      - EventBusSettings__HostAddress=amqp://wireguard:hossein@localhost:5672
     ports:
       - "8000:8000"
     depends_on:
