@@ -8,7 +8,7 @@ ENV ASPNETCORE_URLS=http://+:8000
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Services/Api/Wireguard.Api/Wireguard.Api.csproj", "Services/Api/Wireguard.Api/"]
+COPY ["Src/Services/Api/Wireguard.Api/Wireguard.Api.csproj", "Services/Api/Wireguard.Api/"]
 COPY ["BuildingBlocks/EventBus.Messages/EventBus.Messages.csproj", "EventBus.Messages/"]
 
 RUN dotnet restore "./Services/Api/Wireguard.Api/Wireguard.Api.csproj"
