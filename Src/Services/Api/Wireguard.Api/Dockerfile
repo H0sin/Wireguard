@@ -27,12 +27,6 @@ COPY --from=publish /app/publish .
 
 RUN apt-get update && \
     apt-get install -y iproute2 wireguard wireguard-tools iptables
-#    apt-get clean && \
-#    rm -rf /var/lib/apt/lists/*
-
-#RUN apt upgrade -y && \
-#sudo modprobe ip_gre && \
-#lsmod | grep gre \
 
 ENTRYPOINT ["/bin/bash", "-c", "iptables -F && \
       dotnet Wireguard.Api.dll && \
