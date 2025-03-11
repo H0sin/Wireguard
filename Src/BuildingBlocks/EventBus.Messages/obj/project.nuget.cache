@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "k43vW1ij7Jw=",
+  "dgSpecHash": "AOXILaUN/hk=",
   "success": true,
-  "projectFilePath": "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
+  "projectFilePath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

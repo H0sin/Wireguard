@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {}
+    "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {}
   },
   "projects": {
-    "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj": {
+    "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
+        "projectUniqueName": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
         "projectName": "EventBus.Messages",
-        "projectPath": "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
-        "packagesPath": "C:\\Users\\Hossein1\\.nuget\\packages\\",
-        "outputPath": "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\obj\\",
+        "projectPath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj",
+        "packagesPath": "C:\\Users\\hfara\\.nuget\\packages\\",
+        "outputPath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Hossein1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hfara\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,8 +44,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -66,24 +65,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {
+    "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
+        "projectUniqueName": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
         "projectName": "Wireguard.Api",
-        "projectPath": "D:\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
-        "packagesPath": "C:\\Users\\Hossein1\\.nuget\\packages\\",
-        "outputPath": "D:\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\obj\\",
+        "projectPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\Wireguard.Api.csproj",
+        "packagesPath": "C:\\Users\\hfara\\.nuget\\packages\\",
+        "outputPath": "D:\\Wireguard\\Wireguard\\Src\\Services\\Api\\Wireguard.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Hossein1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hfara\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -99,8 +98,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj": {
-                "projectPath": "D:\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj"
+              "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj": {
+                "projectPath": "D:\\Wireguard\\Wireguard\\Src\\BuildingBlocks\\EventBus.Messages\\EventBus.Messages.csproj"
               }
             }
           }
@@ -114,8 +113,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -193,7 +191,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

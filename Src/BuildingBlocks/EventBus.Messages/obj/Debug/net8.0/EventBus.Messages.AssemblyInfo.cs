@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EventBus.Messages")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+96a2c991dc66faa7cb71dae2737bb4c7e99fa3bd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e5d924d3c35fb22e235cdb83a195db47125e038")]
 [assembly: System.Reflection.AssemblyProductAttribute("EventBus.Messages")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EventBus.Messages")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
