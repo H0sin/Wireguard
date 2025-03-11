@@ -1,4 +1,12 @@
 services:
+  wg-panel:
+    container_name: wg-panel
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://localhost:8000
+    network_mode: host
+    
   wireguarddb:
     container_name: wireguarddb
     environment:

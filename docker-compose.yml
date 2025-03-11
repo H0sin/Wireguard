@@ -1,7 +1,7 @@
 services:
-  #  rabbitmq:
-  #    image: rabbitmq:4.0-management-alpine
-  #  
+  wg-panel:    
+    image: ghcr.io/h0sin/wg-panel:latest
+    
   wireguarddb:
     image: postgres
 
