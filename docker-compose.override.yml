@@ -56,10 +56,3 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
-
-  wg-dashboard:
-    ports:
-      - "3000:3000"
-    depends_on:
-      - wireguard.api
-    network_mode: host
