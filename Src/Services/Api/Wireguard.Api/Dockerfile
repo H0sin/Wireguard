@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Services/Api/Wireguard.Api/Wireguard.Api.csproj", "Services/Api/Wireguard.Api/"]
-COPY ["Src/BuildingBlocks/EventBus.Messages/EventBus.Messages.csproj", "EventBus.Messages/"]
+COPY ["BuildingBlocks/EventBus.Messages/EventBus.Messages.csproj", "BuildingBlocks/EventBus.Messages/"]
 
 RUN dotnet restore "./Services/Api/Wireguard.Api/Wireguard.Api.csproj"
 COPY . .
