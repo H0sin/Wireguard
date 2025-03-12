@@ -19,7 +19,8 @@ services:
       - "5432:5432"
     volumes:
       - /root/backup/postgres/data:/var/lib/postgresql/data/
-    network_mode: host
+    networks:
+      - wireguard_network
   
   pgadmin:
     container_name: pgadmin
@@ -41,7 +42,8 @@ services:
       RABBITMQ_DEFAULT_USER: wireguard
       RABBITMQ_DEFAULT_PASS: hossein
     restart: always
-    network_mode: host
+    networks:
+      - wireguard_network
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
   
@@ -49,8 +51,8 @@ services:
     user: root
     environment:
       - ASPNETCORE_HTTP_PORTS=8000
-      - DatabaseSettings__ConnectionString=Host=localhost;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234;
-      - EventBusSettings__HostAddress=amqp://wireguard:hossein@localhost:5672
+      - DatabaseSettings__ConnectionString=Host=wireguarddb;Port=5432;Database=WireguardDb;User Id=admin;Password=admin1234;
+      - EventBusSettings__HostAddress=amqp://wireguard:hossein@rabbitmq:5672
     ports:
       - "8000:8000"
     depends_on:
