@@ -21,6 +21,10 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
 
+networks:
+  wireguard_network:
+    driver: bridge
+
 volumes:
   postgres_data:
   pgadmin_data:
