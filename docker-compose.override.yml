@@ -81,7 +81,3 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
-
-networks:
-  wireguard_network:
-    driver: bridge
