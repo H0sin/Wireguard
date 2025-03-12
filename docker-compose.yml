@@ -24,6 +24,7 @@ services:
 networks:
   wireguard_network:
     driver: bridge
+    name: wireguard_network
 
 volumes:
   postgres_data:

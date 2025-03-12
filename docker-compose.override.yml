@@ -60,6 +60,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
   
   wireguard.api:
+    container_name: wireguard.api
     user: root
     environment:
       - ASPNETCORE_HTTP_PORTS=8000
