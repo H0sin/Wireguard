@@ -5,7 +5,8 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_BASE_URL=http://localhost:8000
-    network_mode: host
+    networks:
+      - wireguard_network
     
   wireguarddb:
     container_name: wireguarddb
@@ -58,9 +59,14 @@ services:
     volumes:
       - /root/backup/wireguard/interfaces:/etc/wireguard/
       - /root/Wireguard/Src/Services/Api/Wireguard.Api/Imperat/rc.local:/etc/rc.local
-    network_mode: host
+    networks:
+      - wireguard_network
     restart: always
     privileged: true
     cap_add:
       - NET_ADMIN
       - NET_RAW
+
+networks:
+  wireguard_network:
+    driver: bridge
