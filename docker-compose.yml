@@ -7,7 +7,11 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-
+    
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    
   wireguard.api:
     image: wireguard.api
     build:
