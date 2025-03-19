@@ -4,7 +4,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BASE_URL=http://localhost:8000
+      - NEXT_PUBLIC_BASE_URL=http://host.docker.internal:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - wireguard_network
 
